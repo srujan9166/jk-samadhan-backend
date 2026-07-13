@@ -30,26 +30,34 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
-        String token = null;
-        String mobile = null;
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring(7);
-            mobile = jwtUtil.extractUsername(token);
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
+            String token = null;
+            String mobile = null;
+
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                token = authorizationHeader.substring(7);
+                mobile = jwtUtil.extractUsername(token);
+            }
+
+            if (mobile != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(mobile);
+
+                if (token != null && jwtUtil.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+        } catch (Exception e) {
+            // Invalid/expired/malformed JWT — clear context and let Spring Security
+            // handle the unauthenticated request (will return 401/403 appropriately).
+            SecurityContextHolder.clearContext();
         }
-
-       if(mobile != null && SecurityContextHolder.getContext().getAuthentication()==null){
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(mobile);
-
-        if(token!=null && jwtUtil.validateToken(token, userDetails)){
-           UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-           SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        }
-       }
 
         filterChain.doFilter(request, response);
-
     }
 
 }
+

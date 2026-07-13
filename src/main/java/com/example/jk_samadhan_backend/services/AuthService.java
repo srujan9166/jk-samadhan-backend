@@ -40,15 +40,15 @@ public class AuthService {
         String all = upper + lower + digits;
         java.security.SecureRandom random = new java.security.SecureRandom();
         StringBuilder password = new StringBuilder();
-        
+
         password.append(upper.charAt(random.nextInt(upper.length())));
         password.append(lower.charAt(random.nextInt(lower.length())));
         password.append(digits.charAt(random.nextInt(digits.length())));
-        
+
         for (int i = 3; i < 8; i++) {
             password.append(all.charAt(random.nextInt(all.length())));
         }
-        
+
         char[] array = password.toString().toCharArray();
         for (int i = array.length - 1; i > 0; i--) {
             int index = random.nextInt(i + 1);
@@ -120,19 +120,43 @@ public class AuthService {
 
     public Map<String, Object> login(LoginDTO loginDTO) {
 
+        Users user = userRepository.findByMobile(loginDTO.getMobile())
+                .orElseThrow(() -> new RuntimeException("User not found with mobile: " + loginDTO.getMobile()));
+
         AuthenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getMobile(), loginDTO.getPassword()));
 
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
+            if (loginDTO.getOtpCode() == null || loginDTO.getOtpCode().trim().isEmpty()) {
+                System.out.println("\n==================================================");
+                System.out.println("MOCK OTP SENT SUCCESSFULLY!");
+                System.out.println("User ID (Mobile): " + loginDTO.getMobile());
+                System.out.println("Mock OTP: 123456");
+                System.out.println("==================================================\n");
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "OTP_REQUIRED");
+                response.put("message", "Credentials verified. Mock OTP sent.");
+                return response;
+            }
+
+            if (!"123456".equals(loginDTO.getOtpCode().trim())) {
+                throw new RuntimeException("Invalid OTP code");
+            }
+        }
+
         String token = jwtUtil.generateToken(loginDTO.getMobile());
-        Users user = userRepository.findByMobile(loginDTO.getMobile())
-                .orElseThrow(() -> new RuntimeException("User not found with mobile number: " + loginDTO.getMobile()));
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
+        response.put("status", "SUCCESS");
 
         Map<String, String> userProfile = new HashMap<>();
-        String fullName = user.getFirstName() + " " + 
-                (user.getMiddleName() != null && !user.getMiddleName().trim().isEmpty() ? user.getMiddleName().trim() + " " : "") + 
+        String fullName = user.getFirstName() + " " +
+                (user.getMiddleName() != null && !user.getMiddleName().trim().isEmpty()
+                        ? user.getMiddleName().trim() + " "
+                        : "")
+                +
                 user.getLastName();
         userProfile.put("name", fullName.trim());
         userProfile.put("email", user.getEmail() != null ? user.getEmail() : "");

@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,6 +42,7 @@ public class Users implements UserDetails {
     private String lastName;
     @Column(nullable = false, name = "username")
     private String username;
+    @JsonIgnore
     @Column(nullable = false, name = "password")
     private String password;
     @Column(name = "email")
@@ -68,6 +70,22 @@ public class Users implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(
                 new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.mobile;
+    }
+
+    public String getName() {
+        String fullName = this.firstName + " " + 
+                (this.middleName != null && !this.middleName.trim().isEmpty() ? this.middleName.trim() + " " : "") + 
+                this.lastName;
+        return fullName.trim();
+    }
+
+    public String getPhone() {
+        return this.mobile;
     }
 
 }

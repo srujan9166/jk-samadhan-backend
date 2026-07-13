@@ -37,8 +37,8 @@ public class JWTUtil {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-
-        return !getTokenDetails(token).getExpiration().before(new Date());
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !getTokenDetails(token).getExpiration().before(new Date()));
     }
 
     private Claims getTokenDetails(String token) {

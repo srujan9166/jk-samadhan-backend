@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String mobile) throws UsernameNotFoundException {
 
             return userRepository.findByMobile(mobile)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + mobile));
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with mobile: " + mobile));
       
         
     }

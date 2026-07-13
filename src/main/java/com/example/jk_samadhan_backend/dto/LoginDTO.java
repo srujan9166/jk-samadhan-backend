@@ -16,5 +16,6 @@ public class LoginDTO {
     private String mobile;
     @NotBlank
     private String password;
-   
+
+    private String otpCode;
 }
