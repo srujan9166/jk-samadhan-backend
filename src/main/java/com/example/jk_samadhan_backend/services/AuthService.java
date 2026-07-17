@@ -24,16 +24,19 @@ public class AuthService {
     private final JWTUtil jwtUtil;
     private final CaptchaService captchaService;
     private final com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository;
+    private final com.example.jk_samadhan_backend.repositories.DistrictRepository districtRepository;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager AuthenticationManager, JWTUtil jwtUtil, CaptchaService captchaService,
-            com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository) {
+            com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository,
+            com.example.jk_samadhan_backend.repositories.DistrictRepository districtRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.AuthenticationManager = AuthenticationManager;
         this.jwtUtil = jwtUtil;
         this.captchaService = captchaService;
         this.userTypeRepository = userTypeRepository;
+        this.districtRepository = districtRepository;
     }
 
     private String generateRandomPassword() {
@@ -98,16 +101,26 @@ public class AuthService {
         user.setLastName(registerDTO.getLastName());
         user.setUsername(username);
         user.setDateOfBirth(registerDTO.getDateOfBirth());
+        if (registerDTO.getDateOfBirth() != null && !registerDTO.getDateOfBirth().trim().isEmpty()) {
+            try {
+                user.setDob(java.time.LocalDate.parse(registerDTO.getDateOfBirth()));
+            } catch (Exception e) {
+                System.err.println("Failed to parse DOB: " + e.getMessage());
+            }
+        }
         user.setGender(registerDTO.getGender());
         user.setEmail(email);
         user.setMobile(registerDTO.getMobile());
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRole("CITIZEN");
-        user.setCreatedAt(LocalDateTime.now().toString());
         user.setAddress(registerDTO.getAddress());
         user.setPincode(registerDTO.getPincode());
         user.setState(registerDTO.getState());
         user.setDistrict(registerDTO.getDistrict());
+        if ("Jammu & Kashmir".equalsIgnoreCase(registerDTO.getState()) && registerDTO.getDistrict() != null) {
+            districtRepository.findByNameIgnoreCase(registerDTO.getDistrict())
+                    .ifPresent(user::setDistrictEntity);
+        }
         userRepository.save(user);
 
         System.out.println("\n==================================================");

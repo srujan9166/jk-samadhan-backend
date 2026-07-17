@@ -3,6 +3,7 @@ package com.example.jk_samadhan_backend.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -105,8 +106,9 @@ public class Users implements UserDetails {
     @JoinColumn(name = "created_by_id")
     private Users createdBy;
 
-    @Column(name = "created_at")
-    private String createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
