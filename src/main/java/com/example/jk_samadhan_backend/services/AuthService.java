@@ -23,14 +23,17 @@ public class AuthService {
     private final AuthenticationManager AuthenticationManager;
     private final JWTUtil jwtUtil;
     private final CaptchaService captchaService;
+    private final com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            AuthenticationManager AuthenticationManager, JWTUtil jwtUtil, CaptchaService captchaService) {
+            AuthenticationManager AuthenticationManager, JWTUtil jwtUtil, CaptchaService captchaService,
+            com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.AuthenticationManager = AuthenticationManager;
         this.jwtUtil = jwtUtil;
         this.captchaService = captchaService;
+        this.userTypeRepository = userTypeRepository;
     }
 
     private String generateRandomPassword() {
@@ -88,6 +91,8 @@ public class AuthService {
         String rawPassword = generateRandomPassword();
 
         Users user = new Users();
+        user.setUuid(java.util.UUID.randomUUID());
+        user.setUserType(userTypeRepository.findById(10).orElseThrow(() -> new RuntimeException("Default UserType not found")));
         user.setFirstName(registerDTO.getFirstName());
         user.setMiddleName(registerDTO.getMiddleName());
         user.setLastName(registerDTO.getLastName());

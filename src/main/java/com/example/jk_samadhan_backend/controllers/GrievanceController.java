@@ -37,7 +37,7 @@ public class GrievanceController {
             return ResponseEntity.status(401).build();
         }
         String mobile = principal.getName();
-        List<GrievanceMaster> grievances = grievanceRepository.findByMobile(mobile)
+        List<GrievanceMaster> grievances = grievanceRepository.findBySubmittedByMobile(mobile)
                                             .orElseThrow(() -> new RuntimeException("Grievances not found for mobile " + mobile));
         return ResponseEntity.ok(grievances);
     }

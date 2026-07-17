@@ -9,7 +9,7 @@ import com.example.jk_samadhan_backend.models.GrievanceMaster;
 
 @Repository
 public interface GrievanceMasterRepository extends JpaRepository<GrievanceMaster, Long> {
-    Optional<List<GrievanceMaster>> findByMobile(String mobile);
+    Optional<List<GrievanceMaster>> findBySubmittedByMobile(String mobile);
 
     Optional<GrievanceMaster> findById(Long id);
 }

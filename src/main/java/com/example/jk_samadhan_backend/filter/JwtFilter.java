@@ -30,12 +30,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        String mobile = null;
 
         try {
-            String authorizationHeader = request.getHeader("Authorization");
-            String token = null;
-            String mobile = null;
-
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 token = authorizationHeader.substring(7);
                 mobile = jwtUtil.extractUsername(token);
@@ -45,19 +44,17 @@ public class JwtFilter extends OncePerRequestFilter {
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(mobile);
 
                 if (token != null && jwtUtil.validateToken(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
             }
         } catch (Exception e) {
-            // Invalid/expired/malformed JWT — clear context and let Spring Security
-            // handle the unauthenticated request (will return 401/403 appropriately).
-            SecurityContextHolder.clearContext();
+            logger.warn("JWT authentication failed: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
+
     }
 
 }
-

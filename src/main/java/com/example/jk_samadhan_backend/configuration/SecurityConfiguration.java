@@ -2,7 +2,6 @@ package com.example.jk_samadhan_backend.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,7 +18,7 @@ import com.example.jk_samadhan_backend.filter.JwtFilter;
 public class SecurityConfiguration {
     private final JwtFilter jwtFilter;
 
-    public SecurityConfiguration(JwtFilter jwtFilter){
+    public SecurityConfiguration(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
 
@@ -28,7 +27,13 @@ public class SecurityConfiguration {
         return http
                 .cors(cors -> cors.configurationSource(request -> {
                     org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
-                    config.setAllowedOrigins(java.util.List.of("http://localhost:5173"));
+                    config.setAllowedOrigins(java.util.List.of(
+                        "http://localhost:5173",
+                        "http://localhost:5174",
+                        "http://localhost:3000",
+                        "http://127.0.0.1:5173",
+                        "http://127.0.0.1:5174"
+                    ));
                     config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(java.util.List.of("*"));
                     config.setAllowCredentials(true);
@@ -36,9 +41,8 @@ public class SecurityConfiguration {
                 }))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Allow CORS preflight requests (OPTIONS) without authentication
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/api/geo/**", "/error")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -60,4 +64,3 @@ public class SecurityConfiguration {
     }
 
 }
-
