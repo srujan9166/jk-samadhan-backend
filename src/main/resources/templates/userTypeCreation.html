@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<title>NODAL ADMIN - Create user Type</title>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>User Type Creation</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">User Type Creation</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- <div class="text-danger">
+			Note: Dear Nodal, please map / create the users to whom below mentioned categories shall be assigned.
+		</div> -->
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<!--  -->
+			<div class="row">
+			
+			<div class="col-md-6">
+					<h5 class="card-title">Department</h5>
+					<div class="form-floating mb-3">
+						<input type="text" class="form-control input-f"
+							placeholder="User Type" th:value="${department}" id="Department" readonly> <label
+							for="Department">Department</label>
+					</div>
+				</div>	
+			
+				<div class="col-md-6">
+					<h5 class="card-title">User Type</h5>
+					<div class="form-floating mb-3">
+						<input type="text" class="form-control input-f"
+							placeholder="User Type" id="userTypeCreation"> <label
+							for="userTypeCreation">User Type </label>
+					</div>
+				</div>	
+				
+				
+				
+				<!--  	<div class="row" id="createUserDiv" style="display: none">
+					<div class="col-md-6">
+						<h5 class="card-title">Select User Level</h5>
+						<div class="form-floating mb-3">
+						<div>
+						<input type="radio" name="userType" class="userType" value="Official" id="Official">
+						<label for="Official">Official</label>
+						</div>
+						
+						<div>
+						<input type="radio" name="userType" class="userType" value="UT" id="UT">
+						<label for="UT">UT</label>
+						</div>
+						
+						<div>
+						<input type="radio" name="userType" class="userType" value="District" id="distUser">
+						<label for="distUser">District</label>
+						</div>
+						
+						<div>
+						<input type="radio" name="userType" class="userType" value="Division" id="Division">
+						<label for="Division">Division</label>
+						</div>
+							
+						
+					</div>
+				</div>
+			</div>	
+			
+			-->	
+			<div class="col-md-6 mt-3">
+									<div>
+										<button type="submit" class="btn btn-primary" id="createUserType">Create</button>
+									</div>
+								</div>
+				
+			</div>
+			
+			<!-- <div class="row" id="">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Create User Level</h5>
+							<div>
+								<div class="row">
+									
+									<div class="col-md-6 mt-3" id="userlevel">
+										<div class="form-floating">
+											<select id="inputUserLevel" class="form-select">
+												<option value="0">--Select user Level--</option>
+												<option  th:value="UT" th:text="UT"></option>
+												<option  th:value="District" th:text="District"></option>
+												<option  th:value="Division" th:text="Division"></option>
+												<option  th:value="RTO" th:text="RTO"></option>
+												<option  th:value="ARTO" th:text="ARTO"></option>
+											</select> <label
+												for="inputUserLevel">User Level </label>
+										</div>
+									</div>
+									
+								</div>
+
+								<div class="col-md-6 mt-3">
+									<div>
+										<button type="submit" class="btn btn-primary" id="createUserType">Create</button>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				End Left side columns
+			</div>
+			 -->
+			
+		</section>
+
+	</main>
+
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<script th:src="@{/js/user-mapping.js}"></script>
+
+
+</body>
+
+</html>

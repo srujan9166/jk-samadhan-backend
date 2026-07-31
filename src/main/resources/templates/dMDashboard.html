@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<style>
+  .card-box {
+    width: calc(20% - 1rem);
+    min-width: unset;
+  }
+
+  @media only screen and (max-width: 1600px) and (min-width: 1200px) {
+    .card-box {
+      width: calc(20% - 1rem) !important;
+      min-width: unset;
+    }
+
+    .card-box .count+img {
+      min-width: 3vw;
+      max-width: 45px;
+    }
+
+    .card-box .card-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-box .card-body p {
+      flex-grow: 1;
+    }
+  }
+</style>
+
+<body>
+  <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+  <div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+  <main id="main" class="main">
+
+    <div class="position-fixed mx-4 top-20 end-0" style="z-index: 999">
+      <div th:if="${showLoginToast}" id="loginToast" class="toast align-items-center text-bg-success border-0"
+        role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Successfully logged in.
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="switcherDiv mb-3">
+      <ul class="nav nav-pills mb-3 btn-sm rounded-pill border bg-light" id="pills-tab" role="tablist"
+        style="width: fit-content; margin-left: auto;">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link rg-customBtn btn-sm active custBtn rounded-pill" id="pills-home-tab"
+            data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+            value="'JKSAMADHAN','RAABITA'" aria-selected="true">Home</button>
+        </li>
+
+        <li class="nav-item" role="presentation" th:if="${userType!='ROLE_Secretary'}">
+          <button class="nav-link rg-customBtn btn-sm custBtn rounded-pill" id="pills-cpgram-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-cpgram" type="button" value="'CPGRAM'" role="tab" aria-controls="pills-cpgram"
+            aria-selected="false">CPGRAMS</button>
+        </li>
+
+      </ul>
+
+    </div>
+
+    <div class="pagetitle">
+      <nav class="d-flex justify-content-between align-items-center">
+        <ol class="breadcrumb">
+          <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+          <li class="breadcrumb-item active">DM Dashboard</li>
+        </ol>
+        <div class="d-flex justify-content-center align-items-center gap-3">
+          <div class="dropstart">
+            <span class="text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell-fill"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                th:text="${unreadmessagesSize}"
+                th:classappend="${T(java.lang.Integer).parseInt(unreadmessagesSize) > 10} ? 'mx-1': ''">
+                <span class="visually-hidden">unread messages</span>
+              </span>
+            </span>
+            <ul class="dropdown-menu">
+              <li class="dropdown-item" th:if="${notifications ne null and #lists.size(notifications) eq 0}">
+                No Older Notifications.
+              </li>
+              <li class="dropdown-item" th:each="notification : ${notifications}">
+                <span class="" th:text="${notification.notification}"></span>
+                <div class="d-flex justify-content-between text-sm text-muted font-monospace mt-2">
+                  <a class="view-file" th:if="${notification.filepath ne null}"
+                    th:href="@{'/download1?d=' + ${notification.filepath}}">
+                    <i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                  <span class="d-block ms-auto"
+                    th:text="${#dates.format(notification.createdat, 'MMM dd,yyyy hh:mm a')}"></span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <button type="button" class="btn btn-dark btn-sm border-0" data-bs-toggle="modal"
+            style="background-color: #8C39F9;" data-bs-target="#createAnnoucementModal">
+            Create Announcement
+            <i class="bi bi-plus-square"></i>
+          </button>
+
+          <!-- CREATE ANNOUCEMENT MODAL -->
+          <div class="modal fade" id="createAnnoucementModal" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="0" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel" style="color:#8C39F9">Create Announcement</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    <div class="mb-3">
+                      <label for="announcementTo" class="form-label">
+                        To
+                      </label>
+                      <select class="form-select" id="announcementTo">
+                        <option value="ALL">ALL (Registered Citizens & Departments)</option>
+                        <option value="PUBLIC">Public</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="validTill" class="form-label">
+                        Annoucement Valid Till
+                      </label>
+                      <input type="datetime-local" class="form-control" id="validTill">
+                    </div>
+                    <div class="mb-3">
+                      <label for="addfile" class="form-label">
+                        Attach Document if any
+                      </label>
+                      <input type="file" class="form-control" id="addfile"
+                        accept="application/pdf, image/jpg, image/png, image/jpeg">
+                      <span class="form-text text-danger text-sm">JPEG/JPG/PNG/PDF</span>
+                    </div>
+                    <div class="mb-3">
+                      <label for="annoucement" class="form-label">
+                        Announcement
+                      </label>
+                      <textarea class="form-control" id="annoucement" placeholder="Type an announcement"
+                        rows="3"></textarea>
+                    </div>
+                    <div class="text-center">
+                      <button type="button" id="createAnnoucementBtn" class="btn btn-sm text-white"
+                        style="background-color: #8C39F9;">Create Announcement</button>
+                      <button type="reset" class="btn btn-sm btn-dark" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row count-dash">
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+          <div class="row dbBox justify-content-center">
+            <!-- Sales Card -->
+            <div class="card-box">
+              <div class="card info-card sales-card pb-0">
+                <div class="card-body">
+                  <p class="mb-0">Total</p>
+
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="count">
+                      <div class="other-count">
+                        <div class="count count-total ">
+                          <h6 id="total"></h6>
+                        </div>
+                      </div>
+                    </div>
+                    <img src="../img/icons/total-icon.png" alt="Icon Image" class="img-fluid" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-box">
+              <div class="card info-card sales-card pb-0">
+                <div class="card-body">
+                  <p class="mb-0">Pending</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="count">
+                      <h6 id="pending"></h6>
+                    </div>
+                    <img src="../img/icons/online.png" alt="Icon Image" class="img-fluid" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-box">
+              <div class="card info-card sales-card pb-0">
+                <div class="card-body">
+                  <p class="mb-0">Resolved</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="count">
+                      <h6 id="resolved"></h6>
+                    </div>
+                    <img src="../img/icons/resolved-icon.png" alt="Icon Image" class="img-fluid" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-box">
+              <div class="card info-card sales-card pb-0">
+                <div class="card-body">
+                  <p class="mb-0">Rejected</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="count">
+                      <h6 id="rejected"></h6>
+                    </div>
+                    <img src="../img/icons/rejected-icon.png" alt="Icon Image" class="img-fluid" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-box">
+              <div class="card info-card sales-card pb-0">
+                <div class="card-body">
+                  <p class="mb-0">Appealed</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="count">
+                      <h6 id="appealed"></h6>
+                    </div>
+                    <img src="../img/icons/rejected-icon.png" alt="Icon Image" class="img-fluid" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- <div class="card-box mt-3">
+								<a href="#" data-value="'Forwarded'" class="filterData">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Forwarded</p>
+										<div class="d-flex justify-content-between align-items-end">
+
+											<div class="count">
+												<h6 th:text="${forwardedT}"></h6>
+
+											</div>
+											<img src="../img/icons/appealed-icon.png" alt="Icon Image" class="img-fluid">
+										</div>
+
+									</div>
+								</div>
+								</a>
+							</div> -->
+
+            <div class="card-box mt-3">
+              <a href="#" data-value="'dnpToOffice'" class="filterData">
+                <div class="card info-card sales-card pb-0">
+                  <div class="card-body ">
+                    <p class="mb-0">Does Not Pertain</p>
+                    <div class="d-flex justify-content-between align-items-end">
+
+                      <div class="count">
+                        <h6 id="dnp"></h6>
+
+                      </div>
+                      <img src="../img/icons/online.png" alt="Icon Image" class="img-fluid">
+                    </div>
+
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div class="card-box">
+              <a href="#" data-value="'Remark Added'" class="filterData">
+                <div class="card info-card sales-card pb-0">
+                  <div class="card-body ">
+                    <p class="mb-0">Remark Added</p>
+                    <div class="d-flex justify-content-between align-items-end">
+
+                      <div class="count">
+                        <h6 id="remark"></h6>
+
+                      </div>
+                      <img src="../img/icons/flagged.png" alt="Icon Image" class="img-fluid">
+                    </div>
+
+                  </div>
+                </div>
+              </a>
+            </div>
+
+
+          </div>
+
+        </div>
+        <!-- End Left side columns -->
+      </div>
+
+      <!--  -->
+      <div class="row">
+        <!-- Left side columns -->
+        <div class="col-lg-12 yrTab">
+          <div class="card">
+            <div class="card-body">
+              <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+                <div class="heading-part">
+                  <h4>List of Grievances</h4>
+                </div>
+
+                <div class="button-part btn-wrapper ms-2">
+                  <button class="btn btn-purple btn-customBtn" title="Download Excel" value="buttons-excel"> <i
+                      class="bi bi-filetype-xls"></i></button>
+                  <button class="btn btn-black btn-customBtn" title="Download PDF" value="buttons-pdf"> <i
+                      class="bi bi-filetype-pdf"></i></button>
+                </div>
+              </div>
+
+              <div class="yr-Rtable p-4">
+                <div class="table-responsive">
+                  <table class="table datatable table-bordered" id="YRreport"></table>
+                </div>
+              </div>
+
+              <!-- <div class="yr-Rtable p-4">
+                  <div class="table-responsive">
+                    <table class="table datatable table-bordered" id="YRreport">
+                      <thead>
+                        <tr>
+                          <th>S. No.</th>
+                          <th>Grievance ID</th>
+                          <th>Category</th>
+                          <th>Submitted Date</th>
+                          <th>Department</th>
+                          <th>Origin</th>
+                          <th>District Status</th>
+                          <th>Administrative Status</th>
+                          <th class="noExport">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr th:each="t,stat : ${grvList}">
+                          <th scope="row" th:text="${stat.index+1}"></th>
+                          <td th:text="${t.uniqid}"></td>
+                          <td th:text="${t.category}"></td>
+                          <td th:text="${t.createddate}"></td>
+                          <td th:text="${t.department}"></td>
+                          <td th:text="${t.appflag}"></td>
+                          <td th:text="${(t.action == 'Forwarded' || t.action == 'Under Process' || t.action == 'Acknowledged') ? 'Pending' : t.action}" class="text-success"></td>
+                          <td th:text="${t.status}" class="text-success"></td>
+                          <td>
+                            <button class="btn btn-sm btn-primary vHis" th:value='${t.appflag}'>
+                              Grievance details
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div> -->
+
+            </div>
+          </div>
+        </div>
+        <!-- End Left side columns -->
+      </div>
+    </section>
+
+    <!--Ministry/Department/State Government  -->
+
+    <!-- End -->
+  </main>
+  <!-- End #main -->
+
+  <!-- ==== modal start ==== -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-2">
+              <label for="recipient-name" class="col-form-label">User Name: <span th:text="${usrForPwd}"></span></label>
+            </div>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label">Current Password:</label>
+              <input type="text" class="form-control currentPwd" />
+              <label for="message-text" class="col-form-label">New Password:</label>
+              <input type="text" class="form-control newPwd" />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+          <button type="button" class="btn btn-danger chngPwd">
+            Change Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==== modal end ==== -->
+
+  <!-- Button trigger modal -->
+
+  <!-- ======= Footer ======= -->
+  <div lang="en" th:include="footer :: footer1"></div>
+</body>
+
+</html>

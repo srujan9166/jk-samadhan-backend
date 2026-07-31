@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<script th:src="@{/js/jspdf.js}"></script>
+<script th:src="@{/js/html2canvas.js}"></script>
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+
+
+
+    <main id="main" class="main">
+
+
+        <div id="content">
+            <h1>Sample HTML to PDF</h1>
+            <p>This content will be converted to PDF.</p>
+        </div>
+        <button id="generate-pdf">Generate PDF</button>
+
+
+
+        <div class="pagetitle mb-3">
+            <input type="hidden" id="usrVV" th:value="${usrDD}">
+            <nav>
+                <ol class="breadcrumb">
+                    <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+                    <li class="breadcrumb-item active">Super Admin Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- End Page Title -->
+
+        <!--  Dashboard  -->
+
+    </main>
+    <!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+    <script th:src="@{/js/reportModule.js}"></script>
+
+
+</body>
+
+</html>

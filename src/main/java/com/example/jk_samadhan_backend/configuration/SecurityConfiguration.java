@@ -14,7 +14,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.jk_samadhan_backend.filter.JwtFilter;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfiguration {
     private final JwtFilter jwtFilter;
 
@@ -40,9 +44,15 @@ public class SecurityConfiguration {
                     return config;
                 }))
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/api/geo/**", "/error")
-                        .permitAll()
+                        .requestMatchers("/auth/**", "/api/geo/**", "/api/v1/masters/**", "/api/masters/**", "/error").permitAll()
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_SuperAdmin", "ROLE_Admin", "SUPERADMIN", "ADMIN")
+                        .requestMatchers("/api/dept/**").hasAnyAuthority("ROLE_Department", "DEPARTMENT")
+                        .requestMatchers("/api/dm/**").hasAnyAuthority("ROLE_DM", "DM")
+                        .requestMatchers("/api/appellate/**").hasAnyAuthority("ROLE_Appellate", "APPELLATE")
+                        .requestMatchers("/api/dealingHand/**").hasAnyAuthority("ROLE_DealingHand", "DEALING_HAND")
+                        .requestMatchers("/api/user/**", "/api/users/**", "/api/grievances/**", "/api/dashboard/**").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

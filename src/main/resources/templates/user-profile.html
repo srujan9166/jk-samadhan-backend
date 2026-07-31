@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+<body>
+  <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+  <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+  <main id="main" class="main">
+    <div class="pagetitle mb-3">
+      <h1 th:if="${userType=='ROLE_SuperAdmin'}">Super Admin Dashboard</h1>
+      <h1 th:if="${userType=='ROLE_Secretary'}">Secretary Dashboard</h1>
+
+      <nav>
+        <ol class="breadcrumb">
+          <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <style>
+      /* Change Password Captcha - Responsive */
+      #changePwdCaptchaSection .captcha-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        flex-wrap: nowrap;
+      }
+
+      #changePwdCaptchaSection .captcha-container input.form-control {
+        flex: 1;
+        min-width: 0;
+        height: 45px;
+      }
+
+      #changePwdCaptchaSection .chng-captcha-refresh {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      #changePwdCaptchaSection .chng-captcha-refresh img {
+        height: 40px;
+        width: auto;
+        min-width: 110px;
+        max-width: 140px;
+        object-fit: contain;
+        border-radius: 8px;
+        border: 1px solid #0d6efd;
+        background-color: #e8f0fe;
+        padding: 3px 6px;
+        display: block;
+      }
+
+      #changePwdCaptchaSection .chng-captcha-refresh i {
+        font-size: 1rem;
+        color: #ffffff;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: transform 0.3s ease, background-color 0.2s ease;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* background-color: #0d6efd; */
+        border-radius: 50%;
+        border: none;
+      }
+
+      #changePwdCaptchaSection .chng-captcha-refresh i:hover {
+        /* background-color: #a81c62; */
+        transform: rotate(180deg);
+      }
+
+      /* Tablet */
+      @media (max-width: 995px) {
+        #changePwdCaptchaSection .captcha-container {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #changePwdCaptchaSection .captcha-container input.form-control {
+          width: 100%;
+        }
+
+        #changePwdCaptchaSection .chng-captcha-refresh {
+          margin-top: 5px;
+        }
+      }
+
+      /* Mobile */
+      @media (max-width: 576px) {
+        #changePwdCaptchaSection .captcha-container {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #changePwdCaptchaSection .captcha-container input.form-control {
+          width: 100%;
+        }
+
+        #changePwdCaptchaSection .chng-captcha-refresh {
+          margin-top: 5px;
+        }
+
+        #changePwdCaptchaSection .chng-captcha-refresh img {
+          min-width: 120px;
+          max-width: 160px;
+        }
+      }
+    </style>
+
+    <!-- section - start -->
+    <section class="section profile">
+      <input type="hidden" id="context_path" th:value="${globalContextPath}"></input>
+      <input type="hidden" id="sessionname" th:value="${sessionname}" />
+      <input type="hidden" id="sessionvalue" class="sessionvalue" />
+
+      <h5 class="text-center text-white yr-bg-secondary mb-3 py-2">
+        PROFILE SECTION
+      </h5>
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-body pt-3">
+              <!-- Bordered Tabs -->
+              <ul class="nav nav-tabs nav-tabs-bordered" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview"
+                    aria-selected="false" role="tab" tabindex="-1">
+                    Overview
+                  </button>
+                </li>
+
+                <li class="nav-item" role="presentation" th:if="${userType == 'ROLE_Individual'}">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-update-details"
+                    aria-selected="true" role="tab">
+                    Update Profile
+                  </button>
+                </li>
+
+
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password"
+                    aria-selected="true" role="tab">
+                    Change Password
+                  </button>
+                </li>
+              </ul>
+              <div class="tab-content pt-2">
+                <div class="tab-pane fade profile-overview active show" id="profile-overview" role="tabpanel">
+                  <h5 class="card-title">Member Since</h5>
+                  <p class="font-monospace" th:text="${memberSince + ' IST'}"></p>
+
+                  <h5 class="card-title">Profile Details</h5>
+
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Full Name</div>
+                    <div class="col-lg-9 col-md-8" th:text="${usr}"></div>
+
+                  </div>
+
+                  <div th:if="${userType!='ROLE_Individual'}" class="row">
+                    <div class="col-lg-3 col-md-4 label">Department</div>
+                    <div class="col-lg-9 col-md-8" th:text="${deptt}"></div>
+                  </div>
+
+                  <div th:if="${userType!='ROLE_Individual'}" class="row">
+                    <div class="col-lg-3 col-md-4 label">Designation</div>
+                    <div class="col-lg-9 col-md-8" th:text="${desig}"></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">STATE</div>
+                    <div class="col-lg-9 col-md-8" th:text="${stateName}"></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Mobile Number</div>
+                    <div class="col-lg-9 col-md-8" th:text="${'+91-' + mobileN}"></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Email</div>
+                    <div class="col-lg-9 col-md-8" th:text="${emailId}"></div>
+                  </div>
+                </div>
+
+                <!-- Update Profile Module by Naitik 17/11/2025 -->
+                <div class="tab-pane fade profile-update-details" id="profile-update-details" role="tabpanel">
+                  <div class="card-body">
+                    <h5 class="fw-bold">Update Profile Details</h5>
+                    <hr>
+
+                    <div class="row mb-3">
+                      <div class="col-md-4">
+                        <label class="form-label">First Name <span style="color: red;">*</span></label>
+                        <input type="text" id="firstName" class="form-control" maxlength="50">
+                        <span id="uName" style="color: red;"></span>
+                      </div>
+
+                      <div class="col-md-4">
+                        <label class="form-label">Middle Name</label>
+                        <input type="text" id="middleName" class="form-control" maxlength="50">
+                      </div>
+
+                      <div class="col-md-4">
+                        <label class="form-label">Last Name <span style="color: red;">*</span></label>
+                        <input type="text" id="lastName" class="form-control" maxlength="50">
+                        <span id="uLastName" style="color: red;"></span>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Gender <span style="color: red;">*</span></label>
+
+                        <select id="Ugender" class="form-select">
+                          <option value="0">Select</option>
+                          <option value="MALE">MALE</option>
+                          <option value="FEMALE">FEMALE</option>
+                          <option value="TRANSGENDER">TRANSGENDER</option>
+                        </select>
+                        <span id="genderup" style="color: red;"></span>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Mobile No. <span style="color: red;">*</span></label>
+                        <input type="text" id="mobileNo" class="form-control mobileNo" maxlength="10" disabled
+                          inputmode="numeric" pattern="[0-9]*"
+                          oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                        <span id="mNo" style="color: red;"></span>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">Email</span></label>
+                        <input type="email" id="email" class="form-control email" maxlength="50" />
+                        <span id="emailup"></span>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Date of Birth <span style="color: red;">*</span></label>
+                        <input type="date" id="dob" class="form-control dob" />
+                        <span id="dobup" style="color: red;"></span>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label">Pincode <span style="color: red;">*</span></label>
+                        <input type="text" id="pincode" class="form-control pincode" maxlength="6" />
+                        <span id="pinup" style="color: red;"></span>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-12">
+                        <label class="form-label">Address <span style="color: red;">*</span></label>
+                        <textarea id="address" class="form-control address" rows="3" maxlength="200"></textarea>
+                        <small id="Addup" style="color: red;">Only 200 characters are allowed.</small>
+                        <span id="addrup" style="color: red;"></span>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label">State <span style="color: red;">*</span></label>
+
+                        <select id="state" class="form-select state">
+                          <option value="0">Select State</option>
+                          <!-- <option th:each="st : ${state_List}" th:value="${st.values}" th:text="${st.values}">
+                          </option> -->
+
+                        </select>
+
+                        <span id="stateup" style="color: red;"></span>
+                      </div>
+
+
+                      <div class="col-md-6">
+                        <label class="form-label">District <span style="color: red;">*</span></label>
+                        <select id="district" class="form-select district">
+                          <option value="0">Select District</option>
+                        </select>
+                        <span id="districtup" style="color: red;"></span>
+                      </div>
+                    </div>
+
+                    <!-- UMRB - start -->
+
+                    <div class="umrb-section d-none">
+                      <div class="row m-0 py-2 pb-3 bg-light-purple">
+
+                        <div class="col-md-12">
+                          <div class="row py-2">
+                            <div class="col-lg-4 col-md-4 fw-bold">
+                              Wether under Municipality or Block?
+                              <span style="color: red;">*</span>
+                            </div>
+                            <div class="col-lg-8 col-md-8">
+                              <div class="form-check form-check-inline mx-3 mb-0">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input" name="umrb" value="Municipality">
+                                  Municipality
+                                </label>
+                              </div>
+                              <div class="form-check form-check-inline mb-0">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input" name="umrb" value="Block">
+                                  Block
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6 umrb1 d-none">
+                          <label class="form-label">Municipality</label>
+                          <span style="color: red;">*</span>
+                          <select class="form-select" id="municipality">
+                            <option value="0">Select Municipality</option>
+                          </select>
+                        </div>
+
+                        <div class="col-md-6 umrb1 d-none">
+                          <label class="form-label">Ward</label>
+                          <select class="form-select" id="ward">
+                            <option value="0">Select Ward</option>
+                          </select>
+                        </div>
+
+                        <div class="col-md-6 umrb2 d-none">
+                          <label class="form-label">Block</label>
+                          <span style="color: red;">*</span>
+                          <select class="form-select" id="block">
+                            <option value="0">Select Block</option>
+                          </select>
+                        </div>
+
+                        <div class="col-md-6 umrb2 d-none">
+                          <label class="form-label">Panchayat</label>
+                          <select class="form-select" id="panchayat">
+                            <option value="0">Select Panchayat</option>
+                          </select>
+                        </div>
+
+                      </div>
+                    </div>
+
+
+                  </div>
+                  <div class="col-12">
+                    <div class="row justify-content-center button-part">
+                      <button type="button" id="updateProfileBtn"
+                        class="btn btn-purple sm-2 col-2 text-white updateProfileBtn">
+                        Update Profile
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- NAITIK CHANGES END ON UPDATE PROFILE 17/11/2024 -->
+
+              <div class="tab-pane fade pt-3" id="profile-change-password" role="tabpanel">
+                <!-- Change Password Form -->
+
+                <!-- Naitik Minor Change on 17/11/2025 -->
+
+                <div class="mb-3">
+                  <div class="card-body">
+                    <h5 class="font-monospace text-primary">Change Password</h5>
+
+                    <h5 class="font-monospace text-danger">Note:</h5>
+                    <ul class="font-monospace text-danger">
+                      <li>
+                        The new password must be including:
+                        <ul>
+                          <li id="rule-1">
+                            At least 8 characters and should be alphanumeric.
+                          </li>
+                          <li id="rule-2">At least 1 uppercase letter.</li>
+                          <li id="rule-3">At least 1 lowercase letter.</li>
+                          <li id="rule-4">
+                            At least 1 digit and one special character from
+                            the set @$!%*?&.
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+
+                  </div>
+                </div>
+                <!-- Naitik Minor Change End on 17/11/2025 -->
+
+                <div class="row mb-3">
+                  <div class="row mb-3">
+                    <label for="currentEmailId2" class="col-md-4 col-lg-3 col-form-label">
+                      Mobile No.</label>
+                    <div class="col-6">
+                      <input name="email" th:value="${extUsrEmail}" type="email" class="form-control"
+                        id="currentEmailId2" disabled />
+                      <input type="hidden" th:value="${username}" id="username" />
+                    </div>
+                    <div class="col-3">
+                      <button type="button" class="input-group-text btn btn-primary verify-idbtn"
+                        id="sendOTPButtonMChangepass">
+                        Send OTP
+                      </button>
+                    </div>
+
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-3">
+                      <label class="col-form-label">Mobile OTP</label>
+                    </div>
+                    <div class="col-6">
+                      <input id="OTPValueM" placeholder="Mobile OTP*" maxlength="4" required="required"
+                        class="form-control" />
+                    </div>
+                    <div class="col-3">
+                      <!-- Verify Button -->
+                      <button class=" btn btn-warning" type="button" id="verifyOTPButtonM">
+                        Verify
+                      </button>
+                      <!-- Verify Button -->
+                    </div>
+                  </div>
+
+                  <div class="row mb-3" id="passwordDiv" style="display: none;">
+                    <div class="col-3">
+                      <label for="currentPassword" class="col-form-label">Current Password</label>
+                    </div>
+                    <div class="col-6">
+                      <input name="password" type="password" class="form-control" id="currentPassword" />
+                    </div>
+                    <div class="col-3">
+                      <!-- Verify Button -->
+                      <button class="verfiyCurrrentPwd2 btn btn-warning" name="verfiyCurrrentPwd2" type="button">
+                        Verify
+                      </button>
+                      <!-- Verify Button -->
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row chngPwdDiv d-none">
+
+                  <div class="row mb-3">
+                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                    <div class="col-6">
+                      <input name="newpassword" type="password" class="form-control" id="newPassword" />
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
+                    <div class="col-6">
+                      <input name="renewpassword" type="password" class="form-control" id="renewPassword" />
+                    </div>
+                  </div>
+
+                  <div class="appendAlert"></div>
+
+
+                  <!-- Captcha before Update Password changes by Naitik 13/04/2026-->
+                  <div class="row mb-3" id="changePwdCaptchaSection">
+                    <div class="col-6">
+                      <label class="form-label fw-bold">Enter Captcha</label>
+
+                      <div class="captcha-container">
+                        <input type="hidden" id="changePwdCaptchaId">
+                        <input type="text" class="form-control" id="changePwdCaptchaInput" placeholder="Enter Captcha">
+
+                        <div class="chng-captcha-refresh">
+                          <img id="changePwdCaptchaImage">
+                          <button type="button" id="changePwdResetCap" style="background-color:#0d6efd; color:#ffffff; border:none; 
+                           border-radius:8px; padding:6px 12px; cursor:pointer; 
+                           font-size:13px; font-weight:600; height:40px; 
+                           white-space:nowrap; flex-shrink:0;">
+                            &#8635; Refresh
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="mt-2">
+                        <button type="button" class="btn btn-primary" id="changePwdCaptchaVerifyBtn">
+                          Verify Captcha
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Captcha before Update Password End by Naitik 13/04/2026 -->
+
+                  <div class="text-center">
+                    <button type="button" class="btn btn-danger updatePwd" disabled>
+                      Update Password
+                    </button>
+                  </div>
+                </div>
+                <!-- End Change Password Form -->
+              </div>
+            </div>
+            <!-- End Bordered Tabs -->
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+    <!-- section - end -->
+  </main>
+  <!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <div lang="en" th:include="footer :: footer1"></div>
+  <script th:src="@{/js/userManagement.js}"></script>
+  <!-- <script th:src="@{/js/jquery.min.js}"></script> -->
+  <!-- <script th:src="@{/js/csrfToken.js}"></script> -->
+  <script th:src="@{/js/aesUtil.js}"></script>
+  <script th:src="@{/js/forge.js}"></script>
+  <script th:src="@{/js/HybridEncryption.js}"></script>
+  <!-- <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.js}"></script> -->
+  <!-- <script th:src="@{js/main.js}"></script> -->
+</body>
+
+</html>

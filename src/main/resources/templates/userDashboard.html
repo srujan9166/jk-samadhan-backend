@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<style>
+  .card-box {
+    width: calc(20% - 1rem);
+    min-width: unset;
+  }
+
+  @media only screen and (max-width: 1600px) and (min-width: 1200px) {
+    .card-box {
+      width: calc(20% - 1rem) !important;
+      min-width: unset;
+    }
+
+    .card-box .count+img {
+      min-width: 3vw;
+      max-width: 45px;
+    }
+
+    .card-box .card-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-box .card-body p {
+      flex-grow: 1;
+    }
+  }
+
+  /* Naitik New changes start 05/02/2026 */
+  .status-filter {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .status-filter:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Naitik New changes end 05/02/2026 */
+</style>
+
+<body>
+  <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+  <div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+  <main id="main" class="main">
+
+    <div class="position-fixed mx-4 top-20 end-0" style="z-index: 999">
+      <div th:if="${showLoginToast}" id="loginToast" class="toast align-items-center text-bg-success border-0"
+        role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Successfully logged in.
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="pagetitle">
+      <nav class="d-flex justify-content-between align-items-center">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+          <li class="breadcrumb-item active">User Dashboard</li>
+        </ol>
+        <div class="dropstart">
+          <span class="text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell-fill"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              th:text="${unreadmessagesSize}"
+              th:classappend="${T(java.lang.Integer).parseInt(unreadmessagesSize) > 10} ? 'mx-1': ''">
+              <span class="visually-hidden">unread messages</span>
+            </span>
+          </span>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item" th:if="${#lists.size(unreadmessages) eq 0 and #lists.size(notifications) eq 0}">
+              No Older Notifications.
+            </li>
+            <li class="dropdown-item" th:each="message : ${unreadmessages}">
+              <span class="d-flex justify-content-end text-sm text-muted font-monospace"
+                th:text="${#dates.format(message.createddate, 'MMM dd, yyyy hh:mm a')}"></span>
+              <span class="" th:text="'Need clarification on Grievance ID: ' + ${message.uniqid}"></span>
+            </li>
+            <li class="dropdown-item" th:each="notification : ${notifications}">
+              <span class="" th:text="${notification.notification}"></span>
+              <div class="d-flex justify-content-between text-sm text-muted font-monospace mt-2">
+                <a class="view-file" th:if="${notification.filepath ne null}"
+                  th:href="@{'/download1?d=' + ${notification.filepath}}">
+                  <i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+                <span class="d-block ms-auto"
+                  th:text="${#dates.format(notification.createdat, 'MMM dd,yyyy hh:mm a')}"></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="container-fluid">
+        <div class="row count-dash">
+          <!-- Left side columns -->
+          <!--Naitik New changes start 05/02/2026 -->
+          <div class="col-lg-12 p-0">
+            <div class="dbBox d-flex">
+              <!-- Sales Card -->
+              <div class="card-box status-filter" data-status="all">
+                <div class="card info-card sales-card pb-0">
+                  <div class="card-body">
+                    <p class="mb-0">Total Grievances Submitted</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="count">
+                        <h6 th:text="${totalG}"></h6>
+                      </div>
+                      <img src="../img/icons/total-icon.png" alt="Icon Image" class="img-fluid" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-box status-filter" data-status="Pending|Under Process|Acknowledged|Forwarded To CPGRAM">
+                <div class="card info-card sales-card pb-0">
+                  <div class="card-body">
+                    <p class="mb-0">Pending with Department</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="count">
+                        <h6 th:text="${pending}"></h6>
+                      </div>
+                      <img src="../img/icons/pending-icon.png" alt="Icon Image" class="img-fluid" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-box status-filter" data-status="Resolved">
+                <div class="card info-card sales-card pb-0">
+                  <div class="card-body">
+                    <p class="mb-0">Resolved</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="count">
+                        <h6 th:text="${resolved}"></h6>
+                      </div>
+                      <img src="../img/icons/resolved-icon.png" alt="Icon Image" class="img-fluid" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-box status-filter" data-status="Appealed">
+                <div class="card info-card sales-card pb-0">
+                  <div class="card-body">
+                    <p class="mb-0">Appealed</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="count">
+                        <h6 th:text="${pendingWithAdmin}"></h6>
+                      </div>
+                      <img src="../img/icons/rejected-icon.png" alt="Icon Image" class="img-fluid" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-box status-filter" data-status="Rejected">
+                <div class="card info-card sales-card pb-0">
+                  <div class="card-body">
+                    <p class="mb-0">Rejected</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="count">
+                        <h6 th:text="${rejected}"></h6>
+                      </div>
+                      <img src="../img/icons/appealed-icon.png" alt="Icon Image" class="img-fluid" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- NaitikNew changes end 05/02/2026 -->
+          <!-- End Left side columns -->
+        </div>
+      </div>
+      <!--  -->
+      <div class="row">
+        <!-- Left side columns -->
+        <div class="col-lg-12 yrTab">
+          <div class="card">
+            <div class="card-body">
+              <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+                <div class="heading-part">
+                  <h4>List of Grievances</h4>
+                </div>
+
+
+                <div class="search-part">
+                  <h4>Filter</h4>
+
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input data-search" type="radio" name="total-app" id="total-all-search"
+                      checked th:value="home"> <label class="form-check-label" for="total-all-search"> All </label>
+                  </div>
+
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input data-search" type="radio" name="total-app" id="total-web-search"
+                      th:value="web">
+                    <label class="form-check-label" for="total-web-search">
+                      Web</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input data-search" type="radio" name="total-app" id="total-app-search"
+                      th:value="mobile">
+                    <label class="form-check-label" for="total-app-search">
+                      Mobile</label>
+                  </div>
+                </div>
+
+
+
+                <div class="button-part btn-wrapper ms-2">
+
+
+                  <button class="btn btn-purple btn-customBtn" title="Download Excel" value="buttons-excel">
+                    <i class="bi bi-filetype-xls"></i>
+                  </button>
+                  <button class="btn btn-black btn-customBtn" title="Download PDF" value="buttons-pdf">
+                    <i class="bi bi-filetype-pdf"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="yr-Rtable">
+                <table class="table" id="YRreport" style="width: 100%">
+                  <!-- <thead>
+										<tr>
+											<th>S. No.</th>
+											<th>Grievance ID</th>
+											<th>Department</th>
+											<th>Main category</th>
+											<th>Date</th>
+											<th>Status</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="t,stat : ${totall}">
+											<th scope="row" th:text="${stat.index+1}"></th>
+											<td th:text="${t.uniqid}"></td>
+											<td th:text="${t.department}"></td>
+											<td th:text="${t.category}"></td>
+											<td th:text="${t.createddate}"></td>
+											<td ><button th:text="${t.status}" class="btn btn-success"></button></td>
+								
+											<td>
+											<div  class="dropdown">
+											<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+											<ul class="dropdown-menu yr-dropdown" aria-labelledby="dropdownMenuButton">
+
+											<li class="">
+											<button class="btn btn-sm view" title = "View Details">View</button>
+											</li>
+											<li class="" th:if="${t.status!='Pending'}">
+											<button class="btn btn-sm His" title = "History" >History</button>
+											</li>
+                                            </ul>
+											</div>
+											</td>
+											
+										</tr>
+									</tbody> -->
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Left side columns -->
+      </div>
+    </section>
+
+    <!--Ministry/Department/State Government  -->
+
+    <!-- End -->
+
+    <!--Ministry/Department/State Government  -->
+    <!-- <section class="section selectDepartment">
+				<div class="card border border-3 rounded-3">
+						<div class="card-body p-0">
+							<h6 class="card-title px-3 py-2 text-dark">Grievance registration form</h6>
+							<div class="p-4">
+								<div class="alert alert-danger">
+									<div class="row">
+									<div class="col-9 small text-primary">Please note : If specific information related to a service is not available / known, select Others/Misc. option for lodging of grievance, if available.
+										</div>
+										<div class="col small text-danger">Fields marked with * are mandatory.</div>
+									</div>								
+								</div>							
+							</div>
+							<div class="row px-4 mb-3">
+			                  <label for="inputEmail3" class="col-sm-2 col-form-label">Ministry / Department<span class="text-danger">*</span></label>
+			                  <div class="col-sm-10">
+			                    <select class="selectpicker" data-live-search="true" placeholder="Select Ministry / Department">
+								  <option data-tokens="Department 1"> Department 1 </option>
+								  <option data-tokens="Department 2">Department 2</option>
+								</select>
+			                  </div>
+			                </div>
+			                <div class="row px-4 mb-3">
+			                  <label for="inputEmail3" class="col-sm-2 col-form-label">Select main category<span class="text-danger">*</span></label>
+			                  <div class="col-sm-10">
+			                    <select class="selectpicker" data-live-search="true" placeholder="Select Ministry / Department">
+								  <option data-tokens="Department 1"> Department 1 </option>
+								  <option data-tokens="Department 2">Department 2</option>
+								</select>
+			                  </div>
+			                </div>
+						</div>
+				</div>
+		</section>
+ -->
+  </main>
+  <!-- End #main -->
+
+  <!-- ==== modal start ==== -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-2">
+              <label for="recipient-name" class="col-form-label">User Name: <span th:text="${usrForPwd}"></span>
+              </label>
+            </div>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label">Current Password:</label>
+              <input type="text" class="form-control currentPwd" />
+              <label for="message-text" class="col-form-label">New Password:</label>
+              <input type="text" class="form-control newPwd" />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+          <button type="button" class="btn btn-danger chngPwd">
+            Change Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ==== modal end ==== -->
+
+  <!-- Button trigger modal -->
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal12" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body py-3">
+                <div th:each="dt : ${dataList}">
+                  <div class="alert alert-primary fw-bold">
+                    Application Id :
+                    <span th:text="${dt.uniqid}" id="dec"></span>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Name:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.name}" id="usrName"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Mobile No.:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.mobile}" id="mobNo"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Email Id:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.submitted_by}" id="emailId"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Address:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.address}" id="add"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Category:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.category}" id="cat"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Department:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.department}" id="dep"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Description:</div>
+                    <div th:text="${dt.description}" id="dec"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Submitted On:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.createddate}" id="crdate"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Latitude:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.latitude}" id="lat"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Longitude:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.longitude}" id="lon"></div>
+                  </div>
+                  <div class="py-2 row border-bottom">
+                    <div class="col-lg-3 col-md-4 fw-bold">Document:</div>
+                    <a class="col-lg-9 col-md-8" th:text="${dt.file_name}" th:val="${dt.file_path}" id="doccss">
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+  </div>
+  <!-- New FeedBack Modal Changes by Naitik 30/12/2025 -->
+  <div class="modal fade" id="feedBackM" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="feedBackMLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="feedBackMLabel"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="container">
+            <div class="row g-5 justify-content-center">
+              <div class="right-side-content">
+
+                <!-- Q1 -->
+                <div class="form-group mb-3">
+                  <label class="fw-bold mb-3">
+                    Overall Experience of Grievance Disposal?
+                    <span class="text-danger">*</span>
+                  </label>
+
+                  <div class="form-check form-check-inline ps-0">
+                    <input class="form-check-input" type="radio" id="expExcellent" name="experience" value="Excellent">
+                    <label class="form-check-label" for="expExcellent">Excellent</label>
+                  </div>
+
+                  <div class="form-check form-check-inline ps-0">
+                    <input class="form-check-input" type="radio" id="expGood" name="experience" value="Good">
+                    <label class="form-check-label" for="expGood">Good</label>
+                  </div>
+
+                  <div class="form-check form-check-inline ps-0">
+                    <input class="form-check-input" type="radio" id="expAverage" name="experience" value="Average">
+                    <label class="form-check-label" for="expAverage">Average</label>
+                  </div>
+
+                  <div class="form-check form-check-inline ps-0">
+                    <input class="form-check-input" type="radio" id="expPoor" name="experience" value="Poor">
+                    <label class="form-check-label" for="expPoor">Poor</label>
+                  </div>
+                </div>
+
+                <!-- If Poor -->
+                <div class="form-group mb-3 visually-hidden noDiv">
+                  <label class="fw-bold mb-3">
+                    If poor, please specify reason.
+                    <span class="text-danger">*</span>
+                  </label>
+                  <textarea id="Newdescription-box" class="form-control" placeholder="Type here..."
+                    maxlength="255"></textarea>
+                </div>
+
+
+                <!-- Q2 -->
+                <div class="form-group mb-3">
+                  <label class="fw-bold mb-3">
+                    How satisfied are you with the time taken for disposal of your grievance?
+                    <span class="text-danger">*</span>
+                  </label>
+
+                  <div class="form-check ps-0">
+                    <input class="form-check-input" type="radio" id="timeVerySatisfied" name="time-satisfaction"
+                      value="Very Satisfied">
+                    <label class="form-check-label" for="timeVerySatisfied">Very Satisfied</label>
+                  </div>
+
+                  <div class="form-check ps-0">
+                    <input class="form-check-input" type="radio" id="timeSatisfied" name="time-satisfaction"
+                      value="Satisfied">
+                    <label class="form-check-label" for="timeSatisfied">Satisfied</label>
+                  </div>
+
+                  <div class="form-check ps-0">
+                    <input class="form-check-input" type="radio" id="timeDissatisfied" name="time-satisfaction"
+                      value="Dissatisfied">
+                    <label class="form-check-label" for="timeDissatisfied">Dissatisfied</label>
+                  </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="form-group mb-3">
+                  <label class="fw-bold mb-3">
+                    Will you prefer to use JK Samadhan again for submitting grievances in future?
+                    <span class="text-danger">*</span>
+                  </label>
+
+                  <div class="form-check ps-0">
+                    <input class="form-check-input" type="radio" id="reuseYes" name="reuse-portal" value="Yes">
+                    <label class="form-check-label" for="reuseYes">Yes</label>
+                  </div>
+
+                  <div class="form-check ps-0">
+                    <input class="form-check-input" type="radio" id="reuseMaybe" name="reuse-portal" value="Maybe">
+                    <label class="form-check-label" for="reuseMaybe">Maybe</label>
+                  </div>
+
+                  <div class="form-check ps-0">
+                    <input class="form-check-input" type="radio" id="reuseNo" name="reuse-portal" value="No">
+                    <label class="form-check-label" for="reuseNo">No</label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary btn-rounded feedB-btn" value="${uniqId}">
+            <span class="bi bi-chat-dots-fill me-1"></span>
+            Submit Feedback
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Naitik New FeedBack Modal Changes 30/12/2025 -->
+
+
+  <!-- ======= Footer ======= -->
+  <div lang="en" th:include="footer :: footer1"></div>
+</body>
+
+</html>

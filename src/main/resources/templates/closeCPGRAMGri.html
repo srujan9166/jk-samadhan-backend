@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+
+	<main id="main" class="main">
+
+		
+		<div class="pagetitle"> 
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="index.html">Home</a></li> -->
+					<li class="breadcrumb-item active">CPGRAM Dashboard</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+		
+		<!-- Intra Department Dashboard  -->
+		<div class="tab-content">
+		
+				<section class="section dashboard dash1 yrTab">
+					<!--  -->
+						<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body"> 	
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h5 class="fw-bold mb-0">Processed Grievances</h5>
+												</div>
+												
+												<div class="button-part btn-wrapper ms-2">
+													<button class="btn btn-purple btn-customBtn" title="Download Excel" value="buttons-excel">  <i class="bi bi-filetype-xls"></i></button>
+													<button class="btn btn-black btn-customBtn" title="Download PDF" value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+												</div>
+											</div>
+ 
+							<span ></span>
+							<!-- visually-hidden -->
+<form id="submitForm" action="your_action_url" method="post">
+    <div class="yr-Rtable p-4">
+        <table class="common-table table datatable table-bordered" id="MyTable1">
+            <thead>
+                <tr>
+                    <!-- <th><input type="checkbox" id="selectAll"></th> -->
+					<th>Select</th>
+                    <th>S.No</th>
+                    <th>Grievance ID</th>
+                    <th>Status</th>
+                    <th>Updated On</th>
+                  
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="grevH, stat : ${datraList}">
+                    <td><input type="checkbox" class="checkbox" name="selectedRegistrationNos[]" th:value="${grevH.registration_no}"></td>
+                    <th scope="row" th:text="${stat.index+1}"></th>
+                    <td th:text="${grevH.registration_no}"></td>
+                    <td th:text="${grevH.status}"></td>
+                    <td th:text="${grevH.updated_date}"></td>
+                   
+                </tr>
+            </tbody>
+        </table>
+            <button type="button" id="submitButton" class="common-btn">Close the grievances</button>
+			<div class="d-none">
+			<button type="button" id="griMov" class="common-btn">CGrievance movemenet</button>
+            <button type="button" id="caseRepRep" class="common-btn">Case report reply</button>
+            <button type="button" id="confcase" class="common-btn">Confirm case</button>
+		</div>
+
+		<!-- Forward cpgram integration APIs -->
+		<div class="d-none">
+			<button type="button"  class="common-btn cpgramGri" th:value="getReForwardedGrievances">ReForwarded Grievances</button>
+            <button type="button"  class="common-btn cpgramGri" th:value="GetClosedGrievance">Closed Grievances</button>
+            <button type="button"  class="common-btn cpgramGri" th:value="GetReminderClarification">Reminder Clarification</button>
+		</div>
+
+		<!-- Reverse cpgram integration APIs -->
+		<div class="d-none">
+			<button type="button"  class="common-btn cpgramGri" th:value="GetFinalClosureList">Get Final Closure List</button>
+		</div>
+        
+    </div>
+</form>
+
+						
+						</div>
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+				</section>
+		
+		
+		
+		
+		
+		</div>
+
+
+
+
+
+
+		
+		<div class="modal fade" id="assignedUsersList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<!-- <table class="table datatable table-bordered" id="rtb2"
+						style="width: 100%">
+						<thead>
+							<tr>
+								<th>Username</th>
+								<th>Assigned Category</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table> -->
+						<table class="table table-bordered" id="assignedTable" style="width: 100%">
+
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer"></div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- End #main -->
+
+	<div lang="en" th:include="footer :: footer1"></div>
+	<script th:src="@{/js/CPGRAMCloseApps.js}"></script>
+
+</body>
+
+</html>

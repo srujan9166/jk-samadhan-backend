@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .grievance-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .grievance-container p {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            background-color: #e9f5ff;
+        }
+
+        .grievance-container p span {
+            font-weight: bold;
+            color: #0056b3;
+        }
+    </style>
+
+</head>
+<title>NODAL ADMIN - User Mapping</title>
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1>CPGRAM Grievance Status</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+                    <li class="breadcrumb-item active">Forward Grievance</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- End Page Title -->
+
+        <section class="section dashboard">
+
+            <input type="hidden" th:value="${userType}" id="ussTp">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Grievance Detail</h5>
+                            <div>
+                                <div class="row">
+
+                                    <!-- <div class="grievance-container">
+        <p><span>Registration Number:</span> <span th:text="${gd.registrationNumber}" id="regNo"></span></p>
+        <p><span>Name:</span> <span th:text="${gd.Name}" id="name"></span></p>
+        <p><span>Date Of Receipt:</span> <span th:text="${gd.DateOfReceipt}" id="dor"></span></p>
+        <p><span>Receiving Organization:</span> <span th:text="${gd.receivingOrg}" id="recOrg"></span></p>
+        <p><span>Grievance Details:</span> <span th:text="${gd.grievanceDetails}" id="griDetail"></span></p>
+        <p th:if="${gd.GrievanceDocument!= null}"><span>Grievance Document:</span> <span><a href="#" id="griDoc" th:value="${gd.registrationNumber}">Download</a></span></p>
+        <p><span>Remark:</span> <span th:text="${gd.remark}" id="remark"></span></p>
+        <p><span>Date of Action:</span> <span th:text="${gd.dateOfAction}" id="doa"></span></p>
+        <p><span>CurrentStatus:</span> <span th:text="${gd.CurrentStatus}" id="curStatus"></span></p>
+        <p th:if="${gd.ReplyDocument!= null}"><span>Reply Document:</span> <span th:text="${gd.ReplyDocument}"></span></p>
+        <p><span>Pertain To Organization:</span> <span th:text="${gd.toOrg}" id="toOrg"></span></p>
+    </div>
+     -->
+
+                                    <!-- List group with active and disabled items -->
+                                    <ul class="list-group list-group-flush grievance-container">
+                                        <li class="list-group-item"><strong>Registration Number: </strong><span
+                                                th:text="${gd.registrationNumber}" id="regNo"></span></li>
+                                        <li class="list-group-item"><strong>Name: </strong><span th:text="${gd.Name}"
+                                                id="name"></span></li>
+                                        <li class="list-group-item"><strong>Date Of Receipt: </strong><span
+                                                th:text="${gd.DateOfReceipt}" id="dor"></span></li>
+                                        <li class="list-group-item"><strong>Receiving Organization: </strong><span
+                                                th:text="${gd.receivingOrg}" id="recOrg"></span></li>
+
+                                        <li class="list-group-item" th:if="${gd.GrievanceDocument!= null}">
+                                            <strong>Grievance Document: </strong><span><a href="#" id="griDoc"
+                                                    th:value="${gd.registrationNumber}">Download</a></span>
+                                        </li>
+                                        <li class="list-group-item"><strong>Remark: </strong><span
+                                                th:text="${gd.remark}" id="remark"></span></li>
+                                        <li class="list-group-item"><strong>Date of Action: </strong><span
+                                                th:text="${gd.dateOfAction}" id="doa"></span></li>
+                                        <li class="list-group-item"><strong>CurrentStatus: </strong><span
+                                                th:text="${gd.CurrentStatus}" id="curStatus"></span></li>
+                                        <li class="list-group-item"><strong>Pertain To Organization: </strong><span
+                                                th:text="${gd.toOrg}" id="toOrg"></span></li>
+                                        <li class="list-group-item"><strong>Grievance Details: </strong><span
+                                                th:text="${gd.grievanceDetails}" id="griDetail"></span></li>
+                                    </ul><!-- End Clean list group -->
+
+
+
+                                </div>
+
+                                <div class="col-md-4 mt-3" th:if="${gd.CurrentStatus=='Case closed'}">
+                                    <div>
+                                        <button type="submit" class="btn btn-primary" id="caseClose">Forward</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <!-- End Left side columns -->
+            </div>
+
+
+        </section>
+
+    </main>
+
+    <!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+
+
+
+</body>
+
+</html>

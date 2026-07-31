@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body class="toggle-sidebar chart-dash">
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<!-- <div lang="en" th:include="left_sidebar :: left_sidebar"></div> -->
+
+
+	<main id="main" class="main">
+		<div class="pagetitle mb-3">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Analysis Dashboard</li>
+
+				</ol>
+			</nav>
+		</div>
+		<section class="section dashboard dash1">
+			<div class="container-fluid">
+				<h5 class="text-center text-white yr-bg-secondary py-2">Analysis Dashboard</h5>
+				<div class="yrTab1">
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h4>Bar Chart</h4>
+								</div>
+
+							</div>
+							<hr>
+						</div>
+					</div>
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h4>Pie Chart</h4>
+								</div>
+
+							</div>
+							<hr>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-body">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h4>Line Graph</h4>
+								</div>
+								<div>
+									<select class="form-control">
+										<option>Select Department</option>
+										<option>Health</option>
+										<option>Education</option>
+										<option>Transport</option>
+									</select>
+								</div>
+
+							</div>
+							<hr>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<div class="yr-loader" style="display:none;">
+		<div class="spinner-border text-info" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</div>
+
+
+
+
+</body>
+
+</html>

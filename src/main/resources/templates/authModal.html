@@ -1,0 +1,776 @@
+<div th:fragment="authModal">
+    <style>
+        /* ===== Modal Glassmorphism ===== */
+        .loginRegModal .modal-Fontent {
+            border-radius: 16px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            background: #ffffff;
+        }
+
+        /* ===== Left Image Panel ===== */
+        .login-bg {
+            background: linear-gradient(135deg, #0d6efd, #6610f2),
+                url('/images/login-bg.jpg') center/cover no-repeat;
+            min-height: 100%;
+        }
+
+        /* ===== Right Content ===== */
+        .login-content {
+            padding: 2.5rem;
+            background: #ffffff;
+        }
+
+        .login-content h1 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        /* ===== Inputs ===== */
+        .loginRegModal .form-control {
+            border-radius: 10px;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .loginRegModal .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* ===== Labels ===== */
+        .loginRegModal .form-label {
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        /* ===== Buttons ===== */
+        .loginRegModal .btn {
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .loginRegModal .btn-success {
+            background: linear-gradient(135deg, #198754, #20c997);
+            border: none;
+        }
+
+        .loginRegModal .btn-primary {
+            background: linear-gradient(135deg, #0d6efd, #6610f2);
+            border: none;
+        }
+
+        .loginRegModal .btn-primary:hover,
+        .loginRegModal .btn-success:hover {
+            opacity: 0.95;
+        }
+
+        /* ===== Toggle Password Eye ===== */
+        .toggle-eye {
+            display: flex;
+            align-items: center;
+        }
+
+        /* ===== CAPTCHA ===== */
+        .captchaImage123,
+        .captchaImage {
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .resetCap {
+            color: #0d6efd;
+            transition: transform 0.2s ease;
+        }
+
+        .resetCap:hover {
+            transform: rotate(180deg);
+        }
+
+        /* ===== OTP Inputs ===== */
+        .verify-idbtn {
+            font-weight: 600;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* ===== Forgot Password Note ===== */
+        .font-monospace {
+            background: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* ===== Modal Close Button ===== */
+        .btn-close {
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+        }
+
+
+        /* Default flex layout for desktop and larger screens */
+        /* .captcha-container {
+            display: flex;
+            align-items: center;
+            gap: 10px; */
+        /* Space between the input and captcha image */
+        /* } */
+
+        /* For mobile view (max-width: 576px) */
+        /* @media (max-width: 576px) {
+            .captcha-container {
+                flex-direction: column; */
+        /* Stack elements vertically */
+        /* align-items: flex-start;
+                /* Align to the start */
+        /* } */
+
+        /* Input */
+        /* ===== FINAL CAPTCHA FIX (FLEX BASED) ===== */
+        /* ===== FINAL ALIGNMENT FIX ===== */
+        .captcha-container {
+            display: flex;
+            align-items: center;
+            /* vertical center */
+            gap: 10px;
+            width: 100%;
+        }
+
+        /* Input */
+        .captcha-container input {
+            flex: 1;
+            min-width: 0;
+            height: 45px;
+        }
+
+        /* CAPTCHA image */
+        .captcha-container img {
+            height: 45px;
+            width: auto;
+            min-width: 160px;
+            max-width: 220px;
+            object-fit: contain;
+
+            display: block;
+            margin-top: 0;
+        }
+
+        .captcha-container img,
+        .captcha-container input {
+            vertical-align: middle;
+        }
+
+        /* Refresh icon */
+        .resetCap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            /* match height */
+            cursor: pointer;
+        }
+
+        .captcha-refresh {
+
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+
+
+
+        @media (max-width: 995px) {
+
+            .captcha-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+
+
+            .captcha-container img {
+                margin-top: 5px;
+            }
+
+            .resetCap {
+                margin-top: 5px;
+            }
+
+            .captcha-refresh {
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+        }
+
+        /* Mobile only */
+        @media (max-width: 576px) {
+            .captcha-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .captcha-container img {
+                margin-top: 5px;
+            }
+
+            .resetCap {
+                margin-top: 5px;
+            }
+
+            .captcha-refresh {
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+
+        }
+
+        #captchaInput {
+            width: 100%;
+            /* Full width for the input field */
+            /* margin-bottom: 10px; */
+            /* Space between input field and image */
+        }
+
+        #captchaImage123 {
+            width: 100px;
+            /* Set width for the image */
+            height: 40px;
+            /* Keep the height same */
+            /* margin-top: 10px; */
+            /* Space between input and captcha image */
+        }
+
+        .resetCap {
+            margin-top: 10px;
+            /* Space for the reset icon */
+        }
+
+        #captchaVerifyBtn {
+            width: 100%;
+            /* Make the button full-width */
+        }
+
+
+
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .login-bg {
+                display: none;
+            }
+
+            .login-content {
+                padding: 1.75rem;
+            }
+        }
+    </style>
+
+    <!--Register Modal Start-->
+    <div class="modal fade loginRegModal" id="formRegister" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="formRegisterLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 tabindex="0" class="modal-title fs-5" id="formRegisterLabel">Sign Up to
+                        Your Account</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close Modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="#" th:object="${user}" id="registerForm" class="registeration-content"
+                        autocomplete="off">
+                        <div class="row g-3">
+                            <div class="col mb-3">
+                                <input type="text" class="form-control input-f" placeholder="First name*"
+                                    aria-label="First name" th:field="*{first_name}" required maxlength="50" id="fn" />
+                            </div>
+                            <div class="col mb-3">
+                                <input type="text" class="form-control input-f" placeholder="Middle name" maxlength="50"
+                                    aria-label="Middle name" th:field="*{middle_name}" id="mn" />
+                            </div>
+                            <div class="col mb-3">
+                                <input type="text" class="form-control input-f" placeholder="Last name*"
+                                    aria-label="Last name" maxlength="50" th:field="*{last_name}" required id="ln" />
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col mb-3">
+                                <select tabindex="0" id="inputGender" class="form-select">
+                                    <option value="0">--Select Gender--</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Transgender">Transgender</option>
+                                </select>
+                            </div>
+                            <div class="col mb-3">
+                                <div class="form-input-block d-flex gap-2 align-items-center">
+                                    <label class="flex-shrink-0" tabindex="0"><b>DOB :-</b></label> <input type="date"
+                                        class="form-control" id="dob" placeholder="Date of Birth"
+                                        aria-label="Date of Birth" th:field="*{date_of_birth}" required="required" />
+                                </div>
+                            </div>
+                            <!--<div class="col mb-3">
+								<input type="text" class="form-control" placeholder="Age"
+									aria-label="Age">
+							</div>-->
+                        </div>
+                        <div class="row g-3">
+                            <div class="col mb-3">
+                                <select id="inputRegion" class="form-select" tabindex="0">
+                                    <option value="0">--Select State--</option>
+                                    <!-- <option th:each="c : ${regiontList}" th:value="${c.statecode}"
+										th:text="${c.statename}"></option> -->
+
+                                </select>
+                            </div>
+                            <div class="col mb-3">
+                                <select id="inputDistrict" class="form-select" tabindex="0" disabled="disabled">
+                                    <option value="0">--Select District--</option>
+                                </select>
+                            </div>
+                            <div class="row d-none" id="muniPan">
+                                <div class="col-md-12">
+                                    <div class="row py-2">
+                                        <div class="col-lg-5 col-md-5 fw-bold">
+                                            Wether Municipality or Block?
+                                            <span style="color: red;">*</span>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="form-check form-check-inline mx-3 mb-0">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" name="umrb"
+                                                        value="Municipality"> Municipality
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline mb-0">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" name="umrb"
+                                                        value="Block"> Block
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col mb-3 umrb1 d-none">
+                                    <label for="" class="form-label">Municipality</label>
+                                    <span style="color: red;">*</span>
+                                    <select class="form-select" id="municipalityName" aria-label="Municipality Name"
+                                        disabled>
+                                        <option value="0">Select Municipality</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-3 umrb1 d-none">
+                                    <label for="" class="form-label">Ward</label>
+                                    <span style="color: red;">*</span>
+                                    <select class="form-select" id="wardName" aria-label="Ward Name" disabled>
+                                        <option value="0">Select Ward</option>
+                                    </select>
+                                </div>
+
+                                <div class="col mb-3 umrb2 d-none">
+                                    <label for="" class="form-label">Block</label>
+                                    <span style="color: red;">*</span>
+                                    <select class="form-select" id="blockName" aria-label="Sub Category of Grievance"
+                                        disabled>
+                                        <option value="0">Select Block</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-3 umrb2 d-none">
+                                    <label for="" class="form-label">Panchayat</label>
+                                    <span style="color: red;">*</span>
+                                    <select class="form-select" id="panchayatName"
+                                        aria-label="Sub Category of Grievance" disabled>
+                                        <option value="0">Select Panchayat</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col mb-3">
+                                <textarea maxlength="255" class="form-control" tabindex="0" placeholder="Address*"
+                                    aria-label="Address" th:field="*{address}" required="required"
+                                    id="address"></textarea>
+                            </div>
+                            <div class="col-4 mb-3">
+                                <input type="text" class="form-control" id="pin" placeholder="Enter Pincode*"
+                                    maxlength="6" aria-label="Enter Pincode" th:field="*{pincode}"
+                                    required="required" />
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="lang-form-wrapper">
+                                <div class="form-block">
+                                    <label class="me-3">Select Prefered Communication langauge :</label>
+                                </div>
+                                <div class="form-block">
+                                    <label for="eng">Eng</label>
+                                    <input type="radio" id="eng" name="prefCommlangauge" value="eng">
+                                </div>
+                                <div class="form-block">
+                                    <label for="hin">Hindi (हिन्दी)</label>
+                                    <input type="radio" id="hin" name="prefCommlangauge" value="hindi">
+                                </div>
+                                <div class="form-block">
+                                    <label for="urdu">Urdu (اردو)</label>
+                                    <input type="radio" id="urdu" name="prefCommlangauge" value="urdu">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="mobile" placeholder="Mobile no*"
+                                        required="required" name="mobile" maxlength="10" />
+                                    <button type="button" class="input-group-text btn btn-primary verify-idbtn"
+                                        id="sendOTPButtonM" disabled>
+                                        Send OTP</button>
+                                </div>
+                                <span id="lblErroremail" style="color: red" tabindex="0"></span>
+                                <!-- <div>
+									OTP will expire in <span id="countdown">60</span> seconds.
+								  </div> -->
+                                <!--<div class="text-end" id="EmailresendDiv"
+									style="display: block;">
+									<a href="#" id="resendOTPButton">Resend OTP</a>
+								</div>-->
+                            </div>
+                            <div class="col-4 mb-3" id="verifyMDiv">
+                                <div class="input-group" id="verifyDiv">
+                                    <input type="password" autocomplete="new-password" class="form-control"
+                                        placeholder="Mobile OTP*" maxlength="4" required="required" name="mobileOTP"
+                                        value="" id="OTPValueM" />
+                                    <button type="button" class="input-group-text btn btn-primary verify-idbtn afterVer"
+                                        id="verifyOTPButtonM">Verify</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Email Alert Required or Not -->
+                        <!-- <div class="row g-3 d-flex align-items-center">
+							<div class="col mb-3">
+								<div class="d-flex align-items-center">
+									<label class="form-check-label text-danger me-3" tabindex="0"
+										for="grievanceEmail"> Would you like to get details
+										regarding your grievance on email? </label> <input
+										class="form-check-input" type="checkbox" id="grievanceEmail">
+								</div>
+							</div>
+						</div> -->
+
+                        <!-- Email Alert Required or Not -->
+                        <!-- Email Verification -->
+                        <div class="row g-3 emailVerificationDiv">
+                            <div class="col mb-3">
+                                <div class="input-group">
+                                    <input type="search" class="form-control" id="email" placeholder="Email ID*"
+                                        required="required" th:field="*{email}" maxlength="50">
+                                    <button type="button" class="input-group-text btn btn-primary verify-idbtn"
+                                        id="sendOTPButton" disabled>Send OTP</button>
+
+                                </div>
+
+                                <span id="lblErroremailE" style="color: red" tabindex="0"></span>
+                            </div>
+                            <div class="col-4 mb-3" id="verifyEDiv">
+                                <div class="input-group" id="verifyDiv">
+                                    <input type="password" autocomplete="new-password" class="form-control"
+                                        placeholder="Email OTP*" maxlength="4" required="required" name="emailOTP"
+                                        value="" id="OTPValueV">
+                                    <!-- 									<button type="button" -->
+                                    <!-- 										class="input-group-text btn btn-primary verify-idbtn afterVer2" -->
+                                    <!-- 										id="verifyOTPButton">Verify</button> -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Email Verification -->
+
+                        <div id="newRegisterCaptchaVerification">
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Enter Captcha</label>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="hidden" id="registerCaptchaId" name="registerCaptchaId">
+                                    <input type="text" name="captcha" class="form-control" id="registerCaptchaInput"
+                                        placeholder="Enter Captcha" required>
+
+                                    <img id="registerCaptchaImage123" class="registerCaptchaImage123"
+                                        style="height:40px">
+                                    <i class="fas fa-sync-alt resetCap" style="cursor:pointer"></i>
+                                </div>
+                            </div>
+
+                            <div class="col-6 d-grid m-auto mt-3" id="registerDiv">
+                                <button type="button" class="btn btn-primary my-3" id="registerB"
+                                    disabled>Register</button>
+                            </div>
+
+                        </div>
+
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+    <!-- login modal -->
+    <div class="modal fade loginRegModal" id="newLoginModal" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="newLoginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content position-relative">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                    style="z-index:1056; font-size:1.2rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <div class="modal-body p-0">
+                    <div class="d-flex">
+
+                        <!-- LEFT IMAGE -->
+                        <div class="w-35 login-bg"></div>
+
+                        <!-- RIGHT CONTENT -->
+                        <div class="w-65 login-content">
+
+                            <h1 class="modal-title fs-5" id="newLoginModalLabel">
+                                Login Your Account
+                            </h1>
+
+
+                            <form id="newLoginForm" class="row g-3 needs-validation" novalidate th:action="@{/login}"
+                                method="POST" autocomplete="off">
+
+                                <!-- ================= LogIn ================= -->
+                                <div id="newLoginCredentials">
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Username</label>
+                                        <input type="text" id="newUsername" name="username" class="form-control"
+                                            autocomplete="off" placeholder="Username" required>
+                                        <div class="invalid-feedback" id="usernameError">
+                                            Please enter a valid username.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 position-relative">
+                                        <label class="form-label fw-bold">Password</label>
+                                        <input type="password" id="newPassword" name="password" class="form-control"
+                                            autocomplete="new-password" placeholder="Password" required>
+                                        <div id="togglePassword" class="toggle-eye"
+                                            style="position:absolute; top:45px; right:10px; cursor:pointer; font-size:1.2rem; color:#0d6efd;">
+                                            <i class="fas fa-eye d-none" tabindex="0"></i> <i class="fas fa-eye-slash"
+                                                tabindex="0"></i>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Please enter your password.
+                                        </div>
+
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn" style="color:#0d6efd;" type="button"
+                                                data-bs-target="#newForgotPwdModal" data-bs-toggle="modal">Forgot
+                                                Password?</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6 d-grid m-auto mt-3">
+                                        <button type="button" class="btn btn-success w-100" id="loginBtnStep1">
+                                            Next
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <!-- ================= Captcha ================= -->
+                                <div id="newCaptchaVerification" class="d-none">
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Enter Captcha</label>
+
+                                        <div class="captcha-container">
+                                            <!-- CAPTCHA input field -->
+                                            <input type="hidden" id="captchaId" name="captchaId">
+                                            <input type="text" name="captcha" class="form-control" id="captchaInput"
+                                                placeholder="Enter Captcha" required>
+
+                                            <!-- CAPTCHA image -->
+
+                                            <div class="captcha-refresh">
+                                                <img id="captchaImage123" class="captchaImage123" style="height:40px">
+                                                <i class="fas fa-sync-alt resetCap" style="cursor:pointer"></i>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Verify CAPTCHA Button -->
+                                    <div class="col-6 d-grid m-auto mt-3">
+                                        <button type="button" id="captchaVerifyBtn" class="btn btn-primary w-100">
+                                            Verify CAPTCHA
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade loginRegModal" id="newForgotPwdModal" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="newForgotPwdModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content position-relative">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                    style="z-index:1056; font-size:1.2rem;" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <div class="modal-body p-0">
+                    <div class="d-flex">
+
+                        <div class="w-auto login-content">
+
+                            <h1 class="modal-title fs-5" id="newForgotPwdModalLabel">
+                                Forgot Password
+                            </h1>
+
+                            <!-- forgot password div - start -->
+                            <div class="forgotPwd">
+                                <!-- Mobile verification -->
+                                <div class="row g-3">
+                                    <div class="col mb-3">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="mobile1"
+                                                placeholder="Mobile no*" required="required" name="mobile1"
+                                                maxlength="10" />
+                                            <button type="button" class="input-group-text btn btn-primary verify-idbtn"
+                                                id="sendOTPButtonM1" disabled>
+                                                Send OTP</button>
+                                        </div>
+                                        <span id="lblErroremail" style="color: red"></span>
+                                    </div>
+                                    <div class="col-4 mb-3" style="pointer-events: none" id="verifyMDiv1">
+                                        <div class="input-group" id="verifyDiv1">
+                                            <input type="password" autocomplete="new-password" class="form-control"
+                                                placeholder="OTP Mobile*" maxlength="4" required="required"
+                                                name="mobileOTP" value="" id="OTPValueM1" />
+                                            <button type="button"
+                                                class="input-group-text btn btn-primary verify-idbtn afterVer"
+                                                id="verifyOTPButtonM1">
+                                                Verify</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Mobile verification -->
+                                <!-- Email Verification -->
+                                <div id="emlVerfDiv" class="row g-3 d-none">
+                                    <div class="col mb-3">
+                                        <div class="input-group">
+                                            <input type="search" class="form-control" id="email1"
+                                                placeholder="Email ID*" required="required" maxlength="50" />
+                                            <button type="button" class="input-group-text btn btn-primary verify-idbtn"
+                                                id="sendOTPButton1" disabled>
+                                                Send OTP</button>
+                                        </div>
+                                        <span id="lblErroremailE" style="color: red" tabindex="0"></span>
+                                    </div>
+                                    <div class="col-4 mb-3" id="verifyEDiv1">
+                                        <div class="input-group" id="verifyDiv1">
+                                            <input type="password" autocomplete="new-password" class="form-control"
+                                                placeholder="OTP Email*" maxlength="4" required="required"
+                                                name="emailOTP" value="" id="OTPValueV1" />
+                                            <button type="button"
+                                                class="input-group-text btn btn-primary verify-idbtn afterVer2"
+                                                id="verifyOTPButton1">
+                                                Verify</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Email Verification -->
+                                <!-- newPassword -->
+                                <div class="col-12">
+                                    <label tabindex="0" for="newPassword1" class="form-label fw-bold">New
+                                        Password</label>
+                                    <div class="input-group has-validation">
+                                        <input type="password" autocomplete="new-password" name="password"
+                                            placeholder="New Password" class="form-control" id="newPassword1" disabled
+                                            onkeyup="this.value = this.value.replace(/[^0-9a-zA-Z!@#$%^&*_.\\-]/g,'');"
+                                            required />
+                                        <div tabindex="0" class="invalid-feedback">Please enter your
+                                            password!</div>
+                                    </div>
+                                </div>
+                                <!-- newPassword -->
+                                <!-- confirmNewPassword -->
+                                <div class="col-12">
+                                    <label tabindex="0" for="confirmNewPassword1" class="form-label fw-bold">Confirm
+                                        Password</label>
+                                    <div class="input-group has-validation">
+                                        <input type="password" autocomplete="new-password" name="password"
+                                            placeholder="Confirm Password" class="form-control" id="confirmNewPassword1"
+                                            disabled
+                                            onkeyup="this.value = this.value.replace(/[^0-9a-zA-Z!@#$%^&*_.\\-]/g,'');"
+                                            required />
+                                        <div tabindex="0" class="invalid-feedback">Please enter your
+                                            password!</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Enter Captcha</label>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="hidden" id="forgotPwdCaptchaId" name="forgotPwdCaptchaId">
+                                        <input type="text" name="captcha" class="form-control"
+                                            id="forgotPwdCaptchaInput" placeholder="Enter Captcha" required>
+
+                                        <img id="captchaImage1234" class="captchaImage1234" style="height:40px">
+                                        <i class="fas fa-sync-alt resetCap" style="cursor:pointer"></i>
+                                    </div>
+                                </div>
+
+
+
+                                <!-- forgot password div - start -->
+
+
+                                <div class="col-12 mt-3">
+                                    <span tabindex="0" class="font-monospace text-danger">Note:The
+                                        new password must include at least 8 alphanumeric characters
+                                        with at least 1 uppercase letter, 1 lowercase letter, 1 digit,
+                                        and 1 special character from the set @$!%*?&.</span>
+                                </div>
+                                <!-- confirmNewPassword -->
+                                <p tabindex="0" id="message"></p>
+                                <div class="col-6 d-grid m-auto mt-3">
+                                    <button class="btn btn-primary w-100" type="button" id="updateB">Update</button>
+                                    <!-- cmt_25 -->
+                                </div>
+                            </div>
+                            <!-- forgot password div - end -->
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

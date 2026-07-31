@@ -1,0 +1,151 @@
+<!-- Custom Datatable Buttons -->
+<!-- Use this to include Custom Buttons on datatables -->
+<!-- <div lang="en" th:include="FilterFragments :: cBtnFrag"></div> -->
+<div th:fragment="cBtnFrag">
+    <div class="button-part btn-wrapper ms-2">
+        <button class="btn btn-yellow btn-customBtn" title="Reload" value="buttons-reset"> <i
+                class="bi bi-bootstrap-reboot"></i></button>
+        <button type="button" class="btn btn-warning filter-btn" title="Filter">
+            <i class="bi bi-funnel"></i>
+        </button>
+        <button class="btn btn-purple btn-customBtn" title="Download Excel" value="buttons-excel"> <i
+                class="bi bi-filetype-xls"></i></button>
+
+        <button class="btn btn-black btn-customBtn" title="Download PDF" value="buttons-pdf"> <i
+                class="bi bi-filetype-pdf"></i></button>
+    </div>
+</div>
+
+<!-- Filter Box -->
+<!-- Use this to include Filter - Box -->
+<!-- <div lang="en" th:include="FilterFragments :: FilterBoxFrag"></div> -->
+<div th:fragment="FilterBoxFrag">
+    <div class="filter-box">
+        <div class="filter-box-head">
+            <h4>Filter</h4>
+            <div class="d-flex align-items-center gap-2">
+                <button class="filter-close-btn">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div class="filter-box-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-input-block">
+                        <label for="dateFrom">From / on</label>
+                        <input type="date" class="form-control" id="dateFrom">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-input-block">
+                        <label for="dateTo">To</label>
+                        <input type="date" class="form-control" id="dateTo" disabled>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row gy-2">
+                <div class="col-md-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input data-search" type="radio" name="total-app" id="total-all-search"
+                            checked th:value="home"> <label class="form-check-label" for="total-all-search"> All
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input data-search" type="radio" name="total-app" id="total-web-search"
+                            th:value="web">
+                        <label class="form-check-label" for="total-web-search">
+                            Web</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input data-search" type="radio" name="total-app" id="total-app-search"
+                            th:value="mobile">
+                        <label class="form-check-label" for="total-app-search">
+                            Mobile</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input data-search" type="radio" name="total-app"
+                            id="total-normal-search" th:value="Normal">
+                        <label class="form-check-label" for="total-normal-search">
+                            Normal </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input data-search" type="radio" name="total-app" id="total-pri-search"
+                            th:value="Priority">
+                        <label class="form-check-label" for="total-pri-search">
+                            Priority </label>
+                    </div>
+                </div>
+                <!-- Naitik Changes 03/10/2025 -->
+                <div class="col-md-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input data-search" type="radio" name="total-app" id="Beyond-7"
+                            th:value="7">
+                        <label class="form-check-label" for="Beyond-7">
+                            Beyond 7 days </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input data-search" type="radio" name="total-app" id="Beyond-28"
+                            th:value="28">
+                        <label class="form-check-label" for="Beyond-28">
+                            Beyond 28 days </label>
+                    </div>
+                </div>
+                <!-- Naitik Changes End -->
+            </div>
+            <hr>
+
+            <div class="col-12">
+                <div class="form-input-block">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="0">Select</option>
+                        <option th:each="disD : ${statusData}" th:text="${disD.status}" th:value="${disD.status}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="row gy-2">
+                <div class="col-12">
+                    <div class="form-input-block">
+                        <label for="districtFilter">District</label>
+                        <select id="districtFilter" class="form-select">
+                            <option value="0">Select</option>
+                            <option th:each="disD : ${districtData}" th:text="${disD.district_name}"
+                                th:value="${disD.district_name}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-input-block">
+                        <label for="deptFilter">Department</label>
+                        <select id="deptFilter" class="form-select">
+                            <option value="0">Select</option>
+                            <option th:each="deptD : ${deptData}" th:text="${deptD.department_name}"
+                                th:value="${deptD.department_name}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-input-block">
+                        <label for="categFilter">Category</label>
+                        <select id="categFilter" class="form-select" disabled>
+                            <option value="0">Select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

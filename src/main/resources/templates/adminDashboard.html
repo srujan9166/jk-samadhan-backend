@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+
+	<main id="main" class="main">
+
+		<div class="position-fixed mx-4 top-20 end-0" style="z-index: 999">
+			<div th:if="${showLoginToast}" id="loginToast" class="toast align-items-center text-bg-success border-0"
+				role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="d-flex">
+					<div class="toast-body">
+						Successfully logged in.
+					</div>
+					<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+						aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
+
+		<div class="pagetitle">
+			<nav class="d-flex justify-content-between align-items-center">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+					<li class="breadcrumb-item active">Department Nodal Dashboard <span
+							th:text="'(' + ${department} + ')'"></span></li>
+				</ol>
+				<div class="d-flex justify-content-center align-items-center gap-3">
+					<div class="dropstart">
+						<span class="text-decoration-none" href="#" role="button" data-bs-toggle="dropdown"
+							aria-expanded="false">
+							<i class="bi bi-bell-fill"></i>
+							<span
+								class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+								th:text="${unreadmessagesSize}"
+								th:classappend="${T(java.lang.Integer).parseInt(unreadmessagesSize) > 10} ? 'mx-1': ''">
+								<span class="visually-hidden">unread messages</span>
+							</span>
+						</span>
+						<ul class="dropdown-menu">
+							<li class="dropdown-item"
+								th:if="${unreadmessages ne null and #lists.size(unreadmessages) eq 0}">
+								No Older Notifications.
+							</li>
+							<li class="dropdown-item"
+								th:if="${notifications ne null and #lists.size(notifications) eq 0}">
+								No Older Notifications.
+							</li>
+							<!-- <li class="dropdown-item" th:each="message : ${unreadmessages}">
+							<span
+							  class="d-flex justify-content-end text-sm text-muted font-monospace"
+							  th:text="${#dates.format(message.createddate, 'MMM dd,yyyy hh:mm a')}"
+							></span>
+							<span
+							  class=""
+							  th:text="'Need clarification on Grievance ID: ' + ${message.uniqid}"
+							></span>
+						  </li> -->
+							<li class="dropdown-item" th:each="notification : ${notifications}">
+								<span class="" th:text="${notification.notification}"></span>
+								<div class="d-flex justify-content-between text-sm text-muted font-monospace mt-2">
+									<a class="view-file" th:if="${notification.filepath ne null}"
+										th:href="@{'/download1?d=' + ${notification.filepath}}">
+										<i class="bi bi-file-earmark-arrow-down-fill"></i></a>
+									<span class="d-block ms-auto"
+										th:text="${#dates.format(notification.createdat, 'MMM dd,yyyy hh:mm a')}"></span>
+								</div>
+							</li>
+						</ul>
+					</div>
+
+					<button type="button" class="btn btn-dark btn-sm border-0" data-bs-toggle="modal"
+						style="background-color: #8C39F9;" data-bs-target="#createAnnoucementModal">
+						Create Announcement
+						<i class="bi bi-plus-square"></i>
+					</button>
+
+					<!-- CREATE ANNOUCEMENT MODAL -->
+					<div class="modal fade" id="createAnnoucementModal" data-bs-backdrop="static"
+						data-bs-keyboard="false" tabindex="0" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h1 class="modal-title fs-5" id="staticBackdropLabel" style="color:#8C39F9">Create
+										Announcement</h1>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"
+										aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<form>
+										<div class="mb-3">
+											<label for="announcementTo" class="form-label">
+												To
+											</label>
+											<select class="form-select" id="announcementTo">
+												<option value="ALL">ALL (Registered Citizens & Departments)</option>
+												<option value="PUBLIC">Public</option>
+												<option th:value="${user_department}" th:text="${user_department}">
+												</option>
+											</select>
+										</div>
+										<div class="mb-3">
+											<label for="validTill" class="form-label">
+												Announcement Valid Till
+											</label>
+											<input type="datetime-local" class="form-control" id="validTill">
+										</div>
+										<div class="mb-3">
+											<label for="addfile" class="form-label">
+												Attach Document if any
+											</label>
+											<input type="file" class="form-control" id="addfile"
+												accept="application/pdf, image/jpg, image/png, image/jpeg">
+											<span class="form-text text-danger text-sm">JPEG/JPG/PNG/PDF</span>
+										</div>
+										<div class="mb-3">
+											<label for="annoucement" class="form-label">
+												Announcement
+											</label>
+											<textarea class="form-control" id="annoucement"
+												placeholder="Type an announcement" rows="3"></textarea>
+										</div>
+										<div class="text-center">
+											<button type="button" id="createAnnoucementBtn"
+												class="btn btn-sm text-white" style="background-color: #8C39F9;">Create
+												Announcement</button>
+											<button type="reset" class="btn btn-sm btn-dark"
+												data-bs-dismiss="modal">Cancel</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+		<div class="switcherDiv mb-3">
+			<ul class="nav nav-pills mb-3 float-end btn-sm rounded-pill border" id="pills-tab" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link rg-customBtn active custBtn rounded-pill  btn-sm" id="pills-home-tab"
+						data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab"
+						aria-controls="pills-home" value="dash" aria-selected="true">Within/Intra Department</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link rg-customBtn custBtn rounded-pill  btn-sm" id="pills-interdept-tab"
+						data-bs-toggle="pill" data-bs-target="#pills-interdept" type="button" value="other" role="tab"
+						aria-controls="pills-interdept" aria-selected="false">Outside/Inter Department</button>
+				</li>
+
+				<input type="hidden" th:value="${usrFlag}" id="usrFlg">
+				<!-- JK-IGRAMS -->
+				<!-- <li class="nav-item" role="presentation" th:if="${userType!='ROLE_Secretary'}">
+					<button class="nav-link rg-customBtn btn-sm custBtn rounded-pill" id="pills-jkigram-tab"
+						data-bs-toggle="pill" data-bs-target="#pills-jkigrams" type="button" value="jkigrams" role="tab"
+						aria-controls="pills-jkigrams" aria-selected="false">JK-IGRAMS</button>
+				</li> -->
+
+				<a href="cpgramDashboard">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link rg-customBtn custBtn rounded-pill btn-sm" id="pills-cpgram-tab"
+							data-bs-toggle="pill" data-bs-target="#pills-cpgram" type="button" role="tab"
+							aria-controls="pills-cpgram" aria-selected="false">CPGRAMS</button>
+					</li>
+				</a>
+
+
+			</ul>
+
+		</div>
+		<div class="clearfix"></div>
+		<!-- WITHIN / INTRA Dashboard  -->
+		<div class="tab-content" id="pills-tabContent">
+
+			<div class="tab-pane fade show  active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+				tabindex="0">
+
+				<section class="section dashboard dash1">
+					<h5 class="text-center text-white yr-bg-secondary py-2">Within / Intra Department</h5>
+					<div class="row count-dash">
+						<!-- Left side columns -->
+						<div class="col-lg-12">
+
+							<div class="dbBox row">
+
+								<!-- Sales Card -->
+								<div class="card-box">
+									<a href="#" data-value="Total" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Total Grievances Submitted</p>
+
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+
+														<div class="other-count">
+
+															<div class="count count-total  border-bottom">
+																<small>Total</small>
+																<h6 th:text="${totalG}"></h6>
+															</div>
+															<div class="d-flex mt-1">
+																<div class="count count-first">
+																	<small>Web</small>
+																	<h6 th:text="${web}"></h6>
+																</div>
+																<div class="count count-second  border-start">
+																	<small>App</small>
+																	<h6 th:text="${App}"></h6>
+																</div>
+															</div>
+														</div>
+
+
+
+													</div>
+													<img src="../img/icons/total-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+
+								<div class="card-box">
+									<a href="#" data-value="'Pending','Acknowledged','Under Process'"
+										class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Pending with Department</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 th:text="${pending}"></h6>
+													</div>
+													<img src="../img/icons/pending-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+
+
+								<div class="card-box">
+									<a href="#" data-value="'Final Disposed'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Final Disposed</p>
+
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+
+														<div class="other-count">
+
+															<div class="count count-total  border-bottom">
+																<small>Total</small>
+																<h6 th:text="${totalClosed}"></h6>
+															</div>
+															<div class="d-flex mt-1">
+																<div class="count count-first">
+																	<small>Resolved</small>
+																	<h6 th:text="${resolved}"></h6>
+																</div>
+																<div class="count count-second  border-start">
+																	<small>Rejected</small>
+																	<h6 th:text="${rejected}"></h6>
+																</div>
+															</div>
+														</div>
+
+
+
+													</div>
+													<img src="../img/icons/total-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+
+								<div class="card-box">
+									<a href="#" data-value="'Recieved','Proposed Disposed'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Proposed Disposed</p>
+												<div class="d-flex justify-content-between align-items-center">
+
+													<div class="count">
+														<h6 th:text="${propDisp}"></h6>
+													</div>
+													<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+								<div class="card-box">
+									<!-- <a href="flaggedGrievances"> -->
+									<a href="#" data-value="'Appealed'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Appealed</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 th:text="${pendingWithAdmin}"></h6>
+
+													</div>
+													<img src="../img/icons/rejected-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+
+								<div class="card-box">
+									<a href="#" data-value="'Forwarded'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Forwarded</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 th:text="${forwarded}"></h6>
+
+													</div>
+													<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+
+								<div class="card-box">
+									<a href="#" data-value="'dnpToOffice'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Does Not Pertain</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 th:text="${DNP}"></h6>
+
+													</div>
+													<img src="../img/icons/online.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="card-box">
+									<a href="#" data-value="'Remark Added'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Remark Added</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 id="remark" th:text="${remark}"></h6>
+
+													</div>
+													<img src="../img/icons/flagged.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="card-box">
+									<a href="#" data-value="'Forwarded To CPGRAM'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">CPGRAM</p>
+
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+
+														<div class="other-count">
+
+															<div class="count count-total  border-bottom">
+																<small>Total</small>
+																<h6 th:text="${totalCPGRAM}"></h6>
+															</div>
+															<div class="d-flex mt-1">
+																<div class="count count-first">
+																	<small>Forwarded</small>
+																	<h6 th:text="${fwdToCPGRAM}"></h6>
+																</div>
+																<div class="count count-second  border-start">
+																	<small>Closed</small>
+																	<h6 th:text="${cpgramClosed}"></h6>
+																</div>
+															</div>
+														</div>
+
+													</div>
+													<img src="../img/icons/offline.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+
+							</div>
+						</div>
+						<!-- End Left side columns -->
+
+					</div>
+
+					<!--  -->
+					<div class="row grivance-wrapper">
+						<!-- Left side columns -->
+
+						<div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel"
+								aria-labelledby="home-tab" tabindex="0">
+								<div class="col-lg-12 ">
+									<div class="card">
+
+										<div class="card-body ">
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h4>Total Applications Table</h4>
+												</div>
+												<div class="search-part">
+													<h4>Filter</h4>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-all-search" checked
+															th:value="home"> <label class="form-check-label"
+															for="total-all-search"> All </label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-web-search" th:value="web">
+														<label class="form-check-label" for="total-web-search">
+															Web</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-app-search" th:value="mobile">
+														<label class="form-check-label" for="total-app-search">
+															Mobile</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-normal-search" th:value="Normal">
+														<label class="form-check-label" for="total-normal-search">
+															Normal </label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-pri-search" th:value="Priority">
+														<label class="form-check-label" for="total-pri-search">
+															Priority </label>
+													</div>
+												</div>
+												<div class="button-part btn-wrapper ms-2">
+													<button class="btn btn-purple btn-customBtn" title="Download Excel"
+														value="buttons-excel"> <i
+															class="bi bi-filetype-xls"></i></button>
+													<button class="btn btn-black btn-customBtn" title="Download PDF"
+														value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+												</div>
+											</div>
+
+											<!-- filter button start -->
+											<!-- <div class="row justify-content-center dbBox">
+										<div class="col-1 me-4 backBtn visually-hidden">
+											<button type="button" class="btn btn-info position-relative tt_griev11" value="all_tblHome">
+												<i class="bi bi-arrow-left"></i>												
+												Back
+											</button>
+										</div>
+										<div class="col-1 me-4">
+											<button type="button" class="btn btn-info position-relative tt_griev11" value="Normal">
+												<i class="bi bi-megaphone-fill"></i>
+												Normal
+												<span th:text="${normalFlagCount}"
+													class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger p-2 spinner-grow">
+												</span>
+											</button>
+										</div>
+										<div class="col-1">
+											<button type="button" class="btn btn-warning position-relative tt_griev11" value="Priority">
+												<i class="bi bi-star-fill"> </i>
+												Priority
+												<span th:text="${priorityFlagCount}"
+													class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bg-danger p-2 spinner-grow">
+												</span>
+											</button>
+										</div>
+									</div>
+ --> <!-- filter button end -->
+
+
+											<div class="yr-Rtable" id="homeDiv">
+												<!-- <div class="searchFilter">Web Search <span
+														class="webSearchColor"></span> App Search <span
+														class="appSearchColor"></span> </div> -->
+
+												<table class="table table-bordered stripe" id="all_tblHome"
+													style="width: 100%;"></table>
+
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- For Pull Application -->
+							<!-- <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel"
+											aria-labelledby="contact-tab" tabindex="0">
+											<div class="col-lg-12 yrTab1">
+												<div class="card">
+													<div class="card-body p-0 border border-3 rounded-3">
+														<h5 class="card-title px-3 py-2 text-dark">Pulled
+															Grievances Table</h5>
+														<div class="yr-Rtable p-4">
+															<table class="table table-bordered stripe"
+																id="all_tblPulledApplications" style="width: 100%;">
+															</table>
+														</div>
+				
+													</div>
+												</div>
+				
+											</div>
+				
+										</div> -->
+							<!-- For Does not Pertain Applications -->
+							<div class="tab-pane fade" id="doesNot-tab-pane" role="tabpanel"
+								aria-labelledby="doesNot-tab" tabindex="0">
+								<div class="col-lg-12 ">
+									<div class="card">
+										<div class="card-body ">
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h4>Doe Not Pertain Grievances Table</h4>
+												</div>
+												<!-- <div class="search-part">
+													<h4>Filter</h4>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-all-search" checked
+															th:value="all_tblHome"> <label class="form-check-label"
+															for="total-all-search"> All </label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-web-search" th:value="web">
+														<label class="form-check-label" for="total-web-search">
+															Web</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-app-search" th:value="mobile">
+														<label class="form-check-label" for="total-app-search">
+															Mobile</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-normal-search" th:value="Normal">
+														<label class="form-check-label" for="total-normal-search">
+															Normal </label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-pri-search" th:value="Priority">
+														<label class="form-check-label" for="total-pri-search">
+															Priority </label>
+													</div>
+												</div> -->
+												<div class="button-part btn-wrapper ms-2">
+													<button class="btn btn-purple" title="Download Excel"> <i
+															class="bi bi-filetype-xls"></i></button>
+													<button class="btn btn-black" title="Download PDF"> <i
+															class="bi bi-filetype-pdf"></i></button>
+												</div>
+											</div>
+
+
+
+
+											<div class="yr-Rtable ">
+												<!-- <div class="searchFilter">Web Search <span
+														class="webSearchColor"></span> App Search <span
+														class="appSearchColor"></span> </div> -->
+
+												<table class="table table-bordered stripe" id="all_tblDoesNotPertain"
+													style="width: 100%;">
+												</table>
+
+											</div>
+
+										</div>
+									</div>
+
+								</div>
+
+							</div>
+
+							<div class="tab-pane fade" id="fwd-tab-pane" role="tabpanel" aria-labelledby="fwd-tab"
+								tabindex="0">
+								<div class="col-lg-12 ">
+									<div class="card">
+										<div class="card-body ">
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h4>Forwarded Grievances</h4>
+												</div>
+
+												<div class="form-check form-check-inline">
+													<input class="form-check-input data-search" type="radio"
+														name="total-app" id="total-pri-search" th:value="Priority">
+													<label class="form-check-label" for="total-pri-search">
+														Priority </label>
+												</div>
+											</div>
+											<div class="button-part btn-wrapper ms-2">
+												<button class="btn btn-purple" title="Download Excel"> <i
+														class="bi bi-filetype-xls"></i></button>
+												<button class="btn btn-black" title="Download PDF"> <i
+														class="bi bi-filetype-pdf"></i></button>
+											</div>
+										</div>
+
+
+
+
+										<h5 class="card-title px-3 py-2 text-dark">Forwarded Grievances</h5>
+										<div class="yr-Rtable ">
+											<!-- <div class="searchFilter">Web Search <span
+														class="webSearchColor"></span> App Search <span
+														class="appSearchColor"></span> </div> -->
+
+											<table class="table table-bordered stripe" id="all_tblfwdGrivances"
+												style="width: 100%;">
+											</table>
+
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- <div class="tab-pane fade" id="rmk-tab-pane" role="tabpanel" aria-labelledby="rmk-tab"
+									tabindex="0">
+									<div class="col-lg-12 yrTab1">
+										<div class="card">
+											<div class="card-body p-0 border border-3 rounded-3">
+												<h5 class="card-title px-3 py-2 text-dark">Remarked Grievances</h5>
+												<div class="yr-Rtable p-4">
+													<table class="table table-bordered stripe" id="all_tblRmkGrievances"
+														style="width: 100%;">
+													</table>
+												</div>
+		
+											</div>
+										</div>
+		
+									</div>
+		
+								</div> -->
+
+
+						<!-- 	<div class="tab-pane fade" id="fwdByOtherDep-tab-pane" role="tabpanel"
+									aria-labelledby="fwdByOtherDep-tab" tabindex="0">
+									<div class="col-lg-12 yrTab1">
+										<div class="card">
+											<div class="card-body p-0 border border-3 rounded-3">
+												<h5 class="card-title px-3 py-2 text-dark">Grievances</h5>
+												<div class="yr-Rtable p-4">
+													<table class="table table-bordered stripe" id="all_tblfwdByOtherDep"
+														style="width: 100%;">
+													</table>
+												</div>
+		
+											</div>
+										</div>
+		
+									</div>
+		
+								</div> -->
+
+					</div>
+
+
+
+
+					<!-- End Left side columns -->
+
+
+				</section>
+
+
+			</div>
+
+			<div id="appealTabData" style="display: none;">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body ">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h4>Appeals</h4>
+								</div>
+							</div>
+
+
+
+
+							<div class="yr-appealtable">
+
+								<table class="table table-bordered stripe" id="all_tblappeal" style="width: 100%;">
+								</table>
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+			<!-- OUTSIDE / INTER Dashboard  -->
+			<div class="tab-pane fade" id="pills-interdept" role="tabpanel" aria-labelledby="pills-interdept-tab"
+				tabindex="0">
+
+				<section class="section dashboard dash2">
+					<h5 class="text-center text-white yr-bg-secondary py-2">Outside / Inter Department</h5>
+					<!-- 					<div class="row"> -->
+
+					<!-- Left side columns -->
+					<!-- 						<div class="col-lg-12"> -->
+					<div class="row count-dash mb-4">
+						<!-- Left side columns -->
+						<div class="col-lg-12">
+
+							<div class="dbBox row">
+
+								<!-- Sales Card -->
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Total Grievance Received</p>
+
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="count">
+													<h6 th:text="${fwdByOtherDep}"></h6>
+
+												</div>
+												<img src="../img/icons/total-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+
+
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Pending with Department</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${pendingAtOtherDep}"></h6>
+
+												</div>
+												<img src="../img/icons/pending-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+
+
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Resolved</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${resolvedByOtherDep}"></h6>
+
+												</div>
+												<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+
+
+
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Rejected</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${rejectedByOtherDep}"></h6>
+
+												</div>
+												<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+
+								<div class="card-box">
+									<a href="#" data-value="'Recieved','Proposed Disposed'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Proposed Disposed</p>
+												<div class="d-flex justify-content-between align-items-center">
+
+													<div class="count">
+														<h6 th:text="${proposeDispAtOtherDep}"></h6>
+													</div>
+													<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+								<div class="card-box">
+									<a href="#" data-value="'Forwarded'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Forwarded</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 th:text="${forwardedpAtOtherDep}"></h6>
+
+													</div>
+													<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+								<div class="card-box">
+									<a href="#" data-value="'dnpToOffice'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Does Not Pertain</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 th:text="${dnpAtOtherDep}"></h6>
+
+													</div>
+													<img src="../img/icons/online.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="card-box">
+									<a href="#" data-value="'Remark Added'" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Remark Added</p>
+												<div class="d-flex justify-content-between align-items-end">
+
+													<div class="count">
+														<h6 id="remark" th:text="${remarkAtOtherDep}"></h6>
+
+													</div>
+													<img src="../img/icons/flagged.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+
+
+
+
+
+
+
+
+
+					<!--old code -->
+
+					<!-- <div class="row">
+		
+								Sales Card
+								<div class="col-xxl-3 col-md-6">
+									<div class="card info-card sales-card border-top border-3 border-info">
+										<div class="card-body">
+											<h5 class="card-title">Total Grievance Received</h5>
+											<div class="d-flex align-items-center justify-content-between">
+												<div
+													class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+													<i class="bi bi-folder-check"></i>
+												</div>
+												<div class="ps-3">
+													<h6 th:text="${fwdByOtherDep}"></h6>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+		
+		
+								<div class="col-xxl-3 col-md-6">
+									<div class="card info-card customers-card border-top border-3 border-warning">
+										<div class="card-body">
+											<h5 class="card-title">Pending</h5>
+											<div class="d-flex align-items-center justify-content-between">
+												<div
+													class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+													<i class="bi bi-hourglass-top"></i>
+												</div>
+												<div class="ps-3">
+													<h6 th:text="${pendingAtOtherDep}"></h6>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+		
+							
+		
+								<div class="col-xxl-3 col-md-6">
+									<div class="card info-card revenue-card border-top border-3 border-success">
+										<div class="card-body">
+											<h5 class="card-title">Resolved</h5>
+											<div class="d-flex align-items-center justify-content-between">
+												<div
+													class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+													<i class="bi bi-file-check"></i>
+												</div>
+												<div class="ps-3">
+													<h6 th:text="${resolvedByOtherDep}"></h6>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+		
+							
+								<div class="col-xxl-3 col-md-6">
+									<a href="flaggedGrievances">
+										<div class="card info-card customers-card2 border-top border-3 border-primary">
+											<div class="card-body">
+												<h5 class="card-title">Rejected</h5>
+												<div class="d-flex align-items-center justify-content-between">
+													<div
+														class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+														<i class="bi bi-file-earmark-excel-fill"></i>
+													</div>
+													<div class="ps-3">
+														<h6 th:text="${rejectedByOtherDep}"></h6>
+													</div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+		
+		
+								
+		
+								<div class="col-xxl-3 col-md-6">
+											<div
+												class="card info-card customers-card3 border-top border-3 border-info">
+												<div class="card-body">
+													<h5 class="card-title">Total Forwarded Grievances</h5>
+													<div class="d-flex align-items-center justify-content-between">
+														<div
+															class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+															<i class="bi bi-wifi-off"></i>
+														</div>
+														<div class="ps-3">
+															<h6 th:text="${forwarded}"></h6>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+		
+							</div>
+						 -->
+					<!-- 						</div> -->
+					<!-- End Left side columns -->
+					<!-- 					</div> -->
+
+					<!--  -->
+					<!-- 					<div class="row"> -->
+					<!-- Left side columns -->
+					<!-- 						<ul class="nav nav-tabs d-flex align-items-center justify-content-center mt-4" id="myTab" -->
+					<!-- 							role="tablist"> -->
+					<!-- <li class="nav-item" role="presentation">
+								<button class="nav-link  position-relative tt_griev active" id="fwdByOtherDep-tab"
+									data-bs-toggle="tab" data-bs-target="#fwdByOtherDep-tab-pane" type="button"
+									role="tab" aria-controls="fwd-tab-pane" aria-selected="true" value="fwdByOtherDep">
+									Total Applications <span th:text="${fwdByOtherDep}"
+										class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bg-danger p-2">
+									</span>
+								</button>
+							</li> -->
+					<!-- for does not to pertain grievances -->
+					<!-- <li class="nav-item" role="presentation">
+								<button class="nav-link position-relative tt_griev" id="doesNotOtherDep-tab"
+									data-bs-toggle="tab" data-bs-target="#doesNotOtherDep-tab-pane" type="button"
+									role="tab" aria-controls="doesNotOtherDep-tab-pane" aria-selected="false"
+									value="DoesNotPertainOtherDep">
+									Does Not Pertain Grievances <span th:text="${dNpCount}"
+										class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bg-danger p-2">
+									</span>
+								</button>
+							</li> -->
+
+
+					<!-- 	<li class="nav-item" role="presentation">
+								<button class="nav-link position-relative tt_griev" id="fwd2-tab" data-bs-toggle="tab"
+									data-bs-target="#fwd2-tab-pane" type="button" role="tab" aria-controls="fwd2-tab-pane"
+									aria-selected="true" value="forwardedGriOtherDep">
+									Forwarded Grievances <span th:text="${fwdOtherDep}"
+										class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bg-danger p-2">
+									</span>
+								</button>
+							</li> -->
+					<!-- 						</ul> -->
+
+					<!-- Total Grievances Table Div -->
+					<div class="tab-content" id="myTabContent">
+						<div class="tab-pane fade" id="fwdByOtherDep-tab-pane" role="tabpanel"
+							aria-labelledby="fwdByOtherDep-tab" tabindex="0">
+							<div class="col-lg-12 yrTab">
+								<div class="card">
+									<div class="card-body">
+
+										<div
+											class="table-header-section d-flex justify-content-between align-items-center mb-3">
+											<div class="heading-part">
+												<h4> Grievances</h4>
+											</div>
+
+										</div>
+
+
+
+										<div class="yr-Rtable ">
+
+											<table class="table table-bordered stripe" id="all_tblfwdByOtherDep"
+												style="width: 100%;">
+											</table>
+
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+						<!-- For Pull Application -->
+						<!-- <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel"
+										aria-labelledby="contact-tab" tabindex="0">
+										<div class="col-lg-12 yrTab1">
+											<div class="card">
+												<div class="card-body p-0 border border-3 rounded-3">
+													<h5 class="card-title px-3 py-2 text-dark">Pulled
+														Grievances Table</h5>
+													<div class="yr-Rtable p-4">
+														<table class="table table-bordered stripe"
+															id="all_tblPulledApplications" style="width: 100%;">
+														</table>
+													</div>
+			
+												</div>
+											</div>
+			
+										</div>
+			
+									</div> -->
+						<!-- For Does not Pertain Applications -->
+						<div class="tab-pane fade" id="doesNotOtherDep-tab-pane" role="tabpanel"
+							aria-labelledby="doesNotOtherDep-tab" tabindex="0">
+							<div class="col-lg-12 yrTab">
+								<div class="card">
+									<div class="card-body ">
+										<div
+											class="table-header-section d-flex justify-content-between align-items-center mb-3">
+											<div class="heading-part">
+												<h4>Doe Not Pertain Grievances Table</h4>
+											</div>
+											<div class="search-part">
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="pertain-gri"
+														id="pertain-gri-web-search"> <label class="form-check-label"
+														for="pertain-gri-web-search"> Web
+														Search </label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="pertain-gri"
+														id="pertain-gri-app-search" checked>
+													<label class="form-check-label" for="pertain-gri-app-search">
+														App Search </label>
+												</div>
+											</div>
+										</div>
+
+
+
+
+
+										<div class="yr-Rtable ">
+
+											<table class="table table-bordered stripe"
+												id="all_tblDoesNotPertainOtherDep" style="width: 100%;">
+											</table>
+
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+						<div class="tab-pane fade" id="fwd2-tab-pane" role="tabpanel" aria-labelledby="fwd2-tab"
+							tabindex="0">
+							<div class="col-lg-12 yrTab">
+								<div class="card">
+									<div class="card-body ">
+										<div
+											class="table-header-section d-flex justify-content-between align-items-center mb-3">
+											<div class="heading-part">
+												<h4>Forwarded Grievances</h4>
+											</div>
+											<div class="search-part">
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="fwd-gri"
+														id="fwd-gri-web-search"> <label class="form-check-label"
+														for="fwd-gri-web-search"> Web
+														Search </label>
+												</div>
+												<div class="form-check form-check-inline">
+													<input class="form-check-input" type="radio" name="fwd-gri"
+														id="fwd-gri-app-search" checked>
+													<label class="form-check-label" for="fwd-gri-app-search">
+														App Search </label>
+												</div>
+											</div>
+										</div>
+
+
+
+
+										<div class="yr-Rtable ">
+
+											<table class="table table-bordered stripe" id="all_tblfwdGrivancesOtherDep"
+												style="width: 100%;">
+											</table>
+
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- 	<div class="tab-pane fade" id="rmk-tab-pane" role="tabpanel" aria-labelledby="rmk-tab"
+								tabindex="0">
+								<div class="col-lg-12 yrTab1">
+									<div class="card">
+										<div class="card-body p-0 border border-3 rounded-3">
+											<h5 class="card-title px-3 py-2 text-dark">Remarked Grievances</h5>
+											<div class="yr-Rtable p-4">
+												<table class="table table-bordered stripe" id="all_tblRmkGrievances"
+													style="width: 100%;">
+												</table>
+											</div>
+	
+										</div>
+									</div>
+	
+								</div>
+	
+							</div> -->
+
+
+
+
+					</div>
+					<!-- End Left side columns -->
+					<!-- 					</div> -->
+
+				</section>
+
+
+			</div>
+
+			<!-- JKIGRAMS - start - Dashboard  -->
+			<div class="tab-pane fade" id="pills-jkigrams" role="tabpanel" aria-labelledby="pills-jkigram-tab"
+				tabindex="0">
+				<section class="section dashboard dash3">
+					<h5 class="text-center text-white yr-bg-secondary py-2">JK-IGRAMS</h5>
+					<div class="row count-dash">
+						<!-- Left side columns -->
+						<div class="row dbBox">
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Total Grievance Received</p>
+										<a href="#" class="count" data-value="Total">
+											<div class="d-flex justify-content-between align-items-center">
+												<div class="count">
+													<h6 id="totalGri" th:text="${jkiTotal}"></h6>
+												</div>
+												<img src="../img/icons/total-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Pending with Department</p>
+										<a href="#" class="count" data-value="Pending">
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 id='pendingGri' th:text="${jkiPending}"></h6>
+
+												</div>
+												<img src="../img/icons/pending-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Forwarded</p>
+
+										<div class="d-flex justify-content-between align-items-center">
+
+											<div class="count">
+												<h6 th:text="${jkiForwarded}"></h6>
+											</div>
+											<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+												class="img-fluid">
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Remark Added</p>
+
+										<div class="d-flex justify-content-between align-items-center">
+
+											<div class="count">
+												<h6 th:text="${jkiRemarksAdded}"></h6>
+											</div>
+											<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+												class="img-fluid">
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Resolved</p>
+
+										<div class="d-flex justify-content-between align-items-center">
+
+											<div class="count">
+												<h6 th:text="${jkiResolved}"></h6>
+											</div>
+											<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+												class="img-fluid">
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Rejected</p>
+
+										<div class="d-flex justify-content-between align-items-center">
+
+											<div class="count">
+												<h6 th:text="${jkiRejected}"></h6>
+											</div>
+											<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+												class="img-fluid">
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<div class="card-body ">
+										<p class="mb-0">Does Not Pertain</p>
+
+										<div class="d-flex justify-content-between align-items-center">
+
+											<div class="count">
+												<h6 th:text="${jkiDNP}"></h6>
+											</div>
+											<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+												class="img-fluid">
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- End Left side columns -->
+					</div>
+					<div class="row grivance-wrapper">
+						<!-- Total Grievances Table Div -->
+						<div class="tab-content" id="myTabContent">
+							<div class="col-lg-12 yrTab1">
+								<div class="card">
+									<div class="card-body">
+										<div
+											class="table-header-section d-flex justify-content-between align-items-center mb-3">
+											<div class="heading-part">
+												<h4 id="dynGri">Grievances</h4>
+											</div>
+											<div class="button-part btn-wrapper ms-2">
+												<button class="btn btn-purple btn-customBtn" title="Download Excel"
+													value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+												<button class="btn btn-black btn-customBtn" title="Download PDF"
+													value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+											</div>
+										</div>
+										<!-- Table Div -->
+										<div class="yr-Rtable p-4" id="">
+											<table class="table stripe datatable" id="YRreport010" style="width: 100%;">
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</section>
+
+
+			</div>
+			<!-- JKIGRAMS - end - Dashboard  -->
+
+
+		</div>
+
+		<div class="modal fade" id="assignedUsersList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body yr-Rtable">
+						<!-- <table class="table datatable table-bordered" id="rtb2"
+						style="width: 100%">
+						<thead>
+							<tr>
+								<th>Username</th>
+								<th>Assigned Category</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table> -->
+
+						<table class="table table-bordered datatable" id="assignedTable" style="width: 100%">
+
+							</tbody>
+						</table>
+
+					</div>
+					<div class="modal-footer"></div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+	<!-- <div class="modal fade" id="gidmodal" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered yrTab">
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			<div class="card" id="downloadgrpdf">
+				<div class="card-body py-3">
+					<div>
+						<div class="alert alert-primary fw-bold">
+							Application Id:
+							<span id="grvID"></span>
+						</div>
+						<div class="py-2 bg-light-purple row m-0" style="border-radius: 25px 25px 0px 0px">
+							<div class="col-lg-3 col-md-4 fw-bold">Name:</div>
+							<div class="col-lg-9 col-md-8" id="usrName"></div>
+						</div>
+						<div class="py-2 row bg-light-pink m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Mobile No.:</div>
+							<div class="col-lg-9 col-md-8" id="mobNo"></div>
+						</div>
+
+						<div class="py-2 row bg-light-purple m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Email Id:</div>
+							<div class="col-lg-9 col-md-8" id="emailId"></div>
+						</div>
+						<div class="py-2 row bg-light-pink m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Address:</div>
+							<div class="col-lg-9 col-md-8" id="add"></div>
+						</div>
+						<div class="py-2 row bg-light-purple m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Pincode:</div>
+							<div class="col-lg-9 col-md-8" id="pincode"></div>
+						</div>
+						<div class="py-2 row bg-light-pink m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Department:</div>
+							<div class="col-lg-9 col-md-8" id="dep"></div>
+						</div>
+						<div class="py-2 row bg-light-purple m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Category:</div>
+							<div class="col-lg-9 col-md-8" id="cat"></div>
+						</div>
+
+						<div class="py-2 row bg-light-pink m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">
+								Next Level Category:
+							</div>
+							<div class="col-lg-9 col-md-8" id="nxt1"></div>
+						</div>
+
+						<div class="py-2 row bg-light-purple m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">
+								Next Level Category:
+							</div>
+							<div class="col-lg-9 col-md-8" id="nxt2"></div>
+						</div>
+
+						<div class="py-2 row bg-light-pink m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">
+								Next Level Category:
+							</div>
+							<div class="col-lg-9 col-md-8" id="nxt3"></div>
+						</div>
+
+						<div class="py-2 row bg-light-purple m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">
+								Next Level Category:
+							</div>
+							<div class="col-lg-9 col-md-8" id="nxt4"></div>
+						</div>
+
+						<div class="py-2 row bg-light-pink m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Description:</div>
+							<div class="col-lg-9 col-md-8" id="dec"></div>
+						</div>
+						<div class="py-2 row bg-light-purple m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Submitted On:</div>
+							<div class="col-lg-9 col-md-8" id="crdate"></div>
+						</div>
+						<div class="py-2 row bg-light-pink m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Latitude:</div>
+							<div class="col-lg-9 col-md-8" id="lat"></div>
+						</div>
+						<div class="py-2 row bg-light-purple m-0">
+							<div class="col-lg-3 col-md-4 fw-bold">Longitude:</div>
+							<div class="col-lg-9 col-md-8" id="lon"></div>
+						</div>
+
+						<div class="py-2 row bg-light-pink m-0 align-items-center">
+							<div class="col-lg-3 col-md-4 fw-bold">
+								Acknowledgement Slip:
+							</div>
+							<div class="col-lg-9 col-md-8">
+								<div class="view-btn-wrapper">
+									<a class="btn-view btn-pur" th:href="@{'/fileViewer?filename=' +  + '&name=' + }"
+										target="_blank" title="View"><i class="bi bi-eye-fill"></i></a>
+									<a class="btn-view btn-blue fileDownloader" th:href="@{'/download1?d=' + }"
+										title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a>
+								</div>
+							</div>
+						</div>
+
+						<div class="py-2 row bg-light-purple m-0 align-items-center no-print">
+							<div class="col-lg-3 col-md-4 fw-bold">Document:</div>
+							<div class="col-lg-9 col-md-8">
+								<div class="view-btn-wrapper">
+									<a class="btn-view btn-pur" th:href="@{'/fileViewer?filename=' +  + '&name=' + }"
+										target="_blank" title="View"><i class="bi bi-eye-fill"></i></a>
+									<a class="btn-view btn-blue fileDownloader" th:href="@{'/download1?d=' + }"
+										title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a>
+								</div>
+							</div>
+							</div>
+
+						<div class="py-2 row bg-light-pink m-0 align-items-center no-print"
+							style="border-radius: 0px 0px 25px 25px">
+							<div class="col-lg-3 col-md-4 fw-bold">Audio/Video:</div>
+							<div class="col-lg-9 col-md-8">
+								<div class="view-btn-wrapper">
+									<a class="btn-view btn-pur fileViewer"
+										th:href="@{'/fileViewer?filename=' +  + '&name=' + }" target="_blank"
+										title="View"><i class="bi bi-eye-fill"></i></a>
+									<a class="btn-view btn-blue fileDownloader" th:href="@{'/download1?d=' + }"
+										title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="btn-block">
+						<button class="common-btn btn-black">Grievance Details</button>
+						<button class="common-btn btn-black">History</button>
+						<button class="common-btn btn-black">Process</button>
+						<button class="common-btn btn-black">Forward</button>
+						<button class="common-btn btn-black">Forward to CPGRAM</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div> -->
+
+</body>
+
+</html>

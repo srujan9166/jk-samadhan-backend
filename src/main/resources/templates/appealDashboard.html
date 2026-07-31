@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+    <div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+
+    <main id="main" class="main">
+
+        <div class="position-fixed mx-4 top-20 end-0" style="z-index: 999">
+            <div th:if="${showLoginToast}" id="loginToast" class="toast align-items-center text-bg-success border-0"
+                role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        Successfully logged in.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagetitle mb-3">
+            <input type="hidden" id="usrType" th:value="${userType}">
+            <nav class="d-flex justify-content-between align-items-center">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">Appeal Dashboard <span
+							th:text="'(' + ${department} + ')'"></span></li>
+
+                </ol>
+            </nav>
+        </div>
+        <!-- End Page Title -->
+
+        <div class="tab-content" id="pills-tabContent">
+
+            <!-- HOME Dashboard  -->
+            <div class="tab-pane fade show  active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+                tabindex="0">
+
+                <section class="section dashboard dash1">
+                    <!-- <h5 class="text-center text-white yr-bg-secondary py-2">HOME</h5> -->
+                    <div class="row count-dash">
+                        <div class="dbBox row">
+
+                            <!-- Sales Card -->
+                            <div class="card-box">
+                                <a href="#" data-status="" class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Total Appeals</p>
+
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+                                                    <h6 id="totalGri" th:text="${allCounts[0].total}"></h6>
+
+                                                </div>
+                                                <img src="../img/icons/total-icon.png" alt="Icon Image"
+                                                    class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+                            <div class="card-box">
+                                <a href="#" data-status="Resolved" class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Appeal Disposed</p>
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+                                                    <h6 id="pendingGri" th:text="${allCounts[0].disposed}"></h6>
+
+                                                </div>
+                                                <img src="../img/icons/pending-icon.png" alt="Icon Image"
+                                                    class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+                            <div class="card-box">
+                                <a href="#" data-status="Rejected" class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Appeals Rejected</p>
+
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+
+                                                    <h6 id='totalGri' th:text="${allCounts[0].rejected}"></h6>
+
+                                                </div>
+                                                <img src="../img/icons/resolved-icon.png" alt="Icon Image"
+                                                    class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="card-box">
+                                <!-- <a href="flaggedGrievances"> -->
+                                <a href="#" data-status="Appealed" class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Appeales Pending</p>
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+                                                    <h6 id="flagged" th:text="${allCounts[0].pending}"></h6>
+
+                                                </div>
+                                                <img src="../img/icons/rejected-icon.png" alt="Icon Image"
+                                                    class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+                            <div class="card-box mt-3">
+                                <a href="#" data-status='Appeal Forwarded,Remark Recieved' class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Appeals Under Process</p>
+                                            <p>(Forwarded To Subordinate Users)</p>
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+                                                    <h6 th:text="${allCounts[0].underprocess}"></h6>
+
+                                                </div>
+                                                <img src="../img/icons/appealed-icon.png" alt="Icon Image"
+                                                    class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+                            <div class="card-box mt-3">
+                                <a href="#" data-status="Appeal Forwarded,Remark Recieved,Appealed"
+                                    class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Appeals Open</p>
+                                            <p>(Pending+Forwarded)</p>
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+                                                    <h6 th:text="${allCounts[0].appealopen}"></h6>
+
+                                                </div>
+                                                <img src="../img/icons/online.png" alt="Icon Image" class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="card-box">
+                                <a href="#" data-status="Resolved,Rejected" class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Appeals Closed</p>
+                                            <p>(Disposed+Rejected)</p>
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+                                                    <h6 id="remark" th:text="${allCounts[0].appealclosed}"></h6>
+
+                                                </div>
+                                                <img src="../img/icons/flagged.png" alt="Icon Image" class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="card-box">
+                                <a href="#">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Disposal %</p>
+
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+
+                                                    <h6 th:text="${allCounts[0].disposed_percentage}"></h6>
+                                                </div>
+                                                <img src="../img/icons/offline.png" alt="Icon Image" class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- changes by Utkarsh 13-03-2026 for new  crad box for appellate remark received count changes -->
+                            <div class="card-box mt-3">
+                                <a href="#" data-status="Remark Recieved"
+                                    class="filter-status">
+                                    <div class="card info-card sales-card pb-0">
+                                        <div class="card-body ">
+                                            <p class="mb-0">Remarks Received</p>
+                                            <!-- <p>(Pending+Forwarded)</p> -->
+                                            <div class="d-flex justify-content-between align-items-end">
+
+                                                <div class="count">
+                                                    <h6 th:text="${allCounts[0].remarkrecieved}"></h6>
+
+                                                </div>
+                                               <img src="../img/icons/resolved-icon.png" alt="Icon Image" 
+                                                class="img-fluid">
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- end by Utkarsh 13-03-2026 -->
+                        </div>
+                    </div>
+
+                    <!--  -->
+                    <div class="row grivance-wrapper">
+
+
+                        <!-- <div lang="en" th:include="FilterFragments :: FilterBoxFrag"></div> -->
+
+                        <!-- Left side columns -->
+                        <ul class="nav nav-tabs d-flex align-items-center justify-content-start" id="myTab"
+                            role="tablist">
+                        </ul>
+                        <!-- Total Grievances Table Div -->
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel"
+                                aria-labelledby="home-tab" tabindex="0">
+                                <div class="col-lg-12 yrTab1">
+                                    <div class="card">
+                                        <div class="card-body ">
+                                            <!-- <h5 class="card-title px-3 py-2 text-dark"> Total Applications Table</h5> -->
+                                            <div
+                                                class="table-header-section d-flex justify-content-between align-items-center mb-3">
+                                                <div class="heading-part">
+                                                    <h4>Total Applications Table</h4>
+                                                </div>
+                                                <!-- <div lang="en" th:include="FilterFragments :: cBtnFrag"></div> -->
+                                            </div>
+
+                                            <div class="yr-Rtable py-3">
+                                                <div class="button-part btn-wrapper mb-2 float-end">
+                                                    <button class="btn btn-purple btn-customBtn" title="Download Excel"
+                                                        value="buttons-excel"> <i
+                                                            class="bi bi-filetype-xls"></i></button>
+                                                    <button class="btn btn-black btn-customBtn" title="Download PDF"
+                                                        value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+                                                </div>
+                                                <table class="table stripe datatable table-bordered" id="appealTable"
+                                                    style="width: 100%;"></table>
+                                                <!-- <table class="table table-bordered stripe" id="all_tblHome" style="width: 100%;"></table> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Left side columns -->
+                    </div>
+                </section>
+
+
+            </div>
+
+        </div>
+    </main>
+    <!-- End #main -->
+
+    <div class="yr-loader" style="display:none;">
+        <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+        <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+    <script th:src="@{/js/appealDashboardMIS.js}"></script>
+
+
+</body>
+
+</html>

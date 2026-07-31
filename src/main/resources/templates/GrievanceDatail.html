@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+<style>
+	.left-panel {
+		border-right: 1px solid #ddd;
+		height: 100%;
+	}
+
+	.upper-part {
+		border-bottom: 1px solid #ccc;
+		/* Border between upper and scrollable part */
+		padding: 10px;
+		background-color: #f8f9fa;
+	}
+
+	.scrollable-part {
+		overflow-y: auto;
+	}
+
+	.small-label {
+		font-size: 0.875rem;
+		font-weight: bold;
+	}
+
+	.value {
+		word-break: break-word;
+		/* Allow long descriptions to break into new lines */
+	}
+
+	.row:nth-child(even) {
+		background-color: #f2f2f2;
+		/* Alternate row background color */
+	}
+
+	.created-div {
+		border: 1px solid #ccc;
+		/* Add border to divs */
+		padding: 10px;
+		/* Add padding inside divs */
+		margin: 5px 0;
+		/* Add margin between divs */
+		border-radius: 5px;
+		/* Rounded corners */
+		background-color: #f8f9fa;
+		/* Light background */
+		position: relative;
+	}
+
+	.remark,
+	.status {
+		font-weight: bold;
+		/* Bold for labels */
+		margin-bottom: 5px;
+		/* Space below remark */
+	}
+
+	.status {
+		margin: 0;
+	}
+
+	.timestamp,
+	.updated-by {
+		display: inline-block;
+		/* Inline block for positioning */
+		font-size: 0.875rem;
+		/* Smaller font size */
+		color: #6c757d;
+		/* Gray color */
+	}
+
+	.updated-by {
+		display: block;
+		text-align: end;
+		/* Align to the right */
+	}
+
+	.gr-table .update-by {
+		position: absolute;
+		bottom: 8px;
+		right: 20px;
+	}
+
+	.updated-by span {
+		font-size: 12px;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 20px 0;
+	}
+
+	th,
+	td {
+		border: 1px solid #000;
+		padding: 10px;
+		text-align: left;
+	}
+
+	.pdf-head {
+		background-color: var(--blue-clr);
+		color: #fff;
+		font-size: 1.5rem;
+		padding: 8px 12px;
+		margin-bottom: 1rem;
+	}
+
+	.pdf-content {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.pdf-content>div {
+		width: 50%;
+		border: 1px solid black;
+	}
+
+	.pdf-content div h4 {
+		border-block: 1px solid black;
+		margin: 0;
+		padding: 6px 12px;
+		color: white;
+		background-color: var(--purple);
+		font-size: 1.25rem;
+	}
+
+	.pdf-content div p {
+		background: var(--body);
+		margin: 0;
+		padding: 6px 12px;
+		color: #2E3B55;
+		font-size: 1.25rem;
+	}
+
+	.gr-table-wrapper {
+		border: 1px solid black;
+		margin-bottom: 20px;
+	}
+
+	.gr-table-wrapper .table-block {
+		padding: 6px;
+	}
+
+	.gr-table {
+		margin-top: 10px;
+		margin-bottom: 0;
+	}
+
+	.gr-table td {
+		padding: 6px;
+	}
+
+	.gr-table td p {
+		margin: 0;
+	}
+
+	.sidebar-wrapper {
+		transform: translateX(100%);
+		transition: all 0.6s;
+		height: calc(100vh - 60px);
+		z-index: 22;
+		position: fixed;
+		right: 0;
+		top: 60px;
+		background: #ECD8FD;
+		width: 500px;
+	}
+
+	.sidebar-wrapper.active {
+		transform: translateX(0);
+	}
+
+	.sidebar-wrapper .attech-btn {
+		position: absolute;
+		left: 0;
+		top: 40%;
+		background: var(--purple);
+		border: 1px solid var(--purple);
+		color: white;
+		writing-mode: tb;
+		transform: scale(-1) translateX(100%);
+		transition: all 0.6s;
+	}
+
+	.sidebar-content {
+		height: 100%;
+		overflow: auto;
+	}
+
+	.descHisDoc {
+		background: transparent;
+		padding: 0px;
+		border: 0px;
+	}
+
+	.printableDiv {
+		border: 1px solid #000;
+		padding: 10px;
+		margin: 10px 0;
+		font-family: Arial, sans-serif;
+	}
+
+	.custom-style {
+		color: red;
+		font-size: 20px;
+	}
+
+
+	.header-line p {
+		font-size: 0.8rem;
+	}
+
+	.header-line a {
+		font-size: 0.8rem;
+	}
+
+	.header-line {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+	}
+</style>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<!-- <div lang="en" th:include="left_sidebar :: returnToDashboard"></div> -->
+
+
+	<main id="main" style="margin-left: 0px !important;" class="main position-relative">
+
+		<div class="sidebar-wrapper">
+			<button class="attech-btn">View Attachments</button>
+			<div class="sidebar-content">
+
+
+
+
+				<div class="p-3 flex-grow-1" style="background: var(--body)">
+					<div th:each="vdetail : ${list}">
+						<div th:if="${vdetail['file_name'] != null && vdetail['file_name'] != ''}"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">Document uploaded By User</div>
+								<div class="remarks">
+									File Name: <span th:text="${vdetail['file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp" th:text="${vdetail['created_date']}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur"
+									th:href="@{'/fileViewer?filename=' + ${vdetail['file_path']} + '&name=' + ${vdetail['file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+						
+						<div class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status"> System Generated Acknowledement Slip</div>
+								<div class="remarks">
+									File Name: <span>Acknowledgement Slip</span>
+								</div>
+								<div class="timestamp"
+									th:text="${#dates.format(list[0].createddate, 'dd-MM-yyyy HH:mm:ss')}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur ackSlip" href="#" data-status="false"
+									th:data-value="${list[0].uniqid}" title="View"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+
+
+						<div th:if="${vdetail['second_file_name'] != null && vdetail['second_file_name'] != ''}"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">Audio/Video uploaded By User</div>
+								<div class="remarks">
+									File Name: <span th:text="${vdetail['second_file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp" th:text="${vdetail['created_date']}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur" href="#"
+									th:href="@{'/fileViewer?filename=' + ${vdetail['second_file_path']} + '&name=' + ${vdetail['second_file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+					</div>
+
+							
+
+					<div class="descHisDoc" th:each="detail : ${hisQ}">
+						<!--  Department document -->
+
+						<!--  User document -->
+						<div th:if="${detail['dept_file_name'] != null && detail['dept_file_name'] != ''}"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">
+									Uploaded By <span th:text="${detail['action_taken_by'] ?: 'N/A'}"></span>
+								</div>
+								<div class="remarks">
+									File Name: <span th:text="${detail['dept_file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp">
+									<span th:text="${detail['updated_on']}"></span>
+								</div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur"
+									th:href="@{'/fileViewer?filename=' + ${detail['depdocument']} + '&name=' + ${detail['dept_file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+								<!-- Uncomment the following line to include the download button -->
+								<!-- <a class="btn-view btn-blue fileDownloader" title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a> -->
+							</div>
+						</div>
+						<!--  User Appeal document -->
+						<div th:if="${detail['file_name'] != null && detail['file_name'] != '' && detail['status'] =='Appealed' }"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">Appeal Document uploaded By User</div>
+								<div class="remarks">
+									File Name: <span th:text="${detail['file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp" th:text="${detail['created_date']}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur"
+									th:href="@{'/fileViewer?filename=' + ${detail['file_path']} + '&name=' + ${detail['file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		</div>
+		<div class="pagetitle mb-3">
+			<input type="hidden" id="usrVV" th:value="${usrDD}">
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="#">Grievance Details</a></li>
+				</ol>
+			</nav>
+		</div>
+
+
+
+		<!--  Dashboard  -->
+		<div class="tab-content" id="pills-tabContent">
+			<div class="tab-pane fade show  active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+				tabindex="0">
+				<section class="section dashboard dash1">
+
+					<!--  <button id="start-button">Start Recording</button>
+    <button id="stop-button">Stop Recording</button>
+    <p id="transcript"></p> -->
+					<!-- correspondences -->
+					<!-- 					<button class="grievancepdf btn btn-purple ms-auto mb-3" -->
+					<!-- 						data-value="downloadgrpdf" data-value1="Grievance Detail"> -->
+					<!-- 						<i class='bx bx-download'></i> -->
+					<!-- 					</button> -->
+					<div class="d-flex align-items-center justify-content-end gap-3">
+						<button class="grievancepdf btn-purple common-btn mx-0" th:data-grievance-id="${list[0].uniqid}"
+							th:data-appflag="${radioVal}" data-value1="Grievance Detail">
+							Download PDF
+						</button>
+
+
+						<!-- View Feedback Button Naitik Changes 21/01/2026 -->
+						<button class="btn-purple common-btn mx-0 vfbFormPreview1"
+							th:if="${userType == 'ROLE_SuperAdmin' and (origin !='cpgrams') }" data-value="viewfeedback"
+							data-value1="Feedback Detail">
+							View Feedback
+						</button>
+					</div>
+
+					<!-- Naitik Changes End 21/01/2026 -->
+
+
+
+					<div class="mt-1" id="downloadgrpdf">
+
+
+						<div class="row grivance-wrapper">
+							<div class="col-lg-12">
+								<div class="card">
+									<div class="gr-table-wrapper">
+										<h2 class='header-line mt-3'>Department of Public Grievances</h2>
+										<div class='header-line'>
+											<p>website: <a href='https://samadhan.jk.gov.in'
+													target='_blank'>samadhan.jk.gov.in</a></p>
+											<p>Email : <a href='mailto:jk-grievance@jk.gov.in'
+													target='_blank'>jk-grievance@jk.gov.in</a></p>
+										</div>
+										<h5
+											style="margin: 0; padding: 4px 8px; background: #7246f5; text-align: center; color: white; font-size: 18px; line-height: 30px; font-weight: 600;">
+											ACKNOWLEDGEMENT - ONLINE GRIEVANCE
+										</h5>
+										<div class="table-block">
+
+
+											<table class="gr-table" th:each="Gdetail:${list}">
+												<tr>
+													<th colspan="4" style="background: #546F7A; color: white">Grievance
+														Details</th>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Grievance ID</td>
+													<td><span id="gId" th:text="${Gdetail.uniqid}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Grievance Date</td>
+													<td>
+														<p id="gvDate"
+															th:text="${#dates.format(Gdetail.createddate, 'dd-MM-yyyy HH:mm:ss')}">
+														</p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Applicant Name</td>
+													<td><span th:text="${Gdetail.name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Mobile No.
+													</td>
+													<td>
+														<p th:text="${Gdetail.mobile}"></p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Department:</td>
+													<td><span th:text="${Gdetail.department}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Category</td>
+													<td>
+														<p th:text="${Gdetail.category}"></p>
+													</td>
+												</tr>
+												<tr th:if="${(Gdetail.sub_category != null and Gdetail.sub_category != '')  or (Gdetail.sub_Cat_Next_Level2 != null and Gdetail.sub_Cat_Next_Level2 != '')}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_category!=null}">Next Level Category:</td>
+													<td th:if="${Gdetail.sub_category!=null}"><span
+															th:text="${Gdetail.sub_category}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_Cat_Next_Level2!=null}">Next Level
+														Category:
+
+													</td>
+													<td th:if="${Gdetail.sub_Cat_Next_Level2!=null}">
+														<p th:text="${Gdetail.sub_Cat_Next_Level2}"></p>
+													</td>
+												</tr>
+												<tr th:if="${(Gdetail.sub_Cat_Next_Level3 != null and Gdetail.sub_Cat_Next_Level3 != '')  or (Gdetail.sub_Cat_Next_Level4 != null and Gdetail.sub_Cat_Next_Level4 != '')}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_Cat_Next_Level3!=null}">Next Level
+														Category :</td>
+													<td th:if="${Gdetail.sub_Cat_Next_Level3!=null}"><span
+															th:text="${Gdetail.sub_Cat_Next_Level3}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_Cat_Next_Level4!=null}">Next Level
+														Category:
+													</td>
+													<td th:if="${Gdetail.sub_Cat_Next_Level4!=null}">
+														<p th:text="${Gdetail.sub_Cat_Next_Level4}"></p>
+													</td>
+												</tr>
+
+												<!-- Naitik changes to show these fields in history 30/01/2026 -->
+
+												<!-- District and Division  -->
+												<tr th:if="${Gdetail.division_name != null and Gdetail.division_name != '' and Gdetail.division_name != 'NA' or Gdetail.district_name != null and Gdetail.district_name != '' and Gdetail.district_name != 'NA'}">
+													<td style="color: #546F7A; font-weight: 700;">Pertain Division</td>
+													<td><span th:text="${Gdetail.division_name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Pertain District
+													</td>
+													<td>
+														<p th:text="${Gdetail.district_name}"></p>
+													</td>
+
+												</tr>
+
+												<!-- Municipality and Block -->
+												<tr th:if="${Gdetail.municipality_name != null and Gdetail.municipality_name != '' and Gdetail.municipality_name != 'NA' or Gdetail.ward_name != null and Gdetail.ward_name != '' and Gdetail.ward_name != 'NA'}">
+													<td style="color: #546F7A; font-weight: 700;">Municipality</td>
+													<td><span th:text="${Gdetail.municipality_name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Ward
+													</td>
+													<td>
+														<p th:text="${Gdetail.ward_name}"></p>
+													</td>
+												</tr>
+
+
+												<!-- Block and Panchayat -->
+												<tr th:if="${Gdetail.block_name != null and Gdetail.block_name != '' and Gdetail.block_name != 'NA' or Gdetail.panchayat_name != null and Gdetail.panchayat_name != '' and Gdetail.panchayat_name != 'NA'}">
+													<td style="color: #546F7A; font-weight: 700;">Block</td>
+													<td><span th:text="${Gdetail.block_name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Panchayat
+													</td>
+													<td>
+														<p th:text="${Gdetail.panchayat_name}"></p>
+													</td>
+												</tr>
+
+												<!-- Naitik changes End 30/01/2026 -->
+
+
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/')) && (Gdetail.email != null && Gdetail.email != '' && Gdetail.email != 'NA')}">
+														Email ID</td>
+													<td
+														th:if="${(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/')) && (Gdetail.email != null && Gdetail.email != '' && Gdetail.email != 'NA')}">
+														<span th:text="${Gdetail.email}"></span>
+													</td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${!(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/'))}">
+														Email ID</td>
+													<td
+														th:if="${!(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/'))}">
+														<span th:text="${Gdetail.email}"></span>
+													</td>
+
+													<td style="color: #546F7A; font-weight: 700;">Address</td>
+													<td>
+														<p th:text="${Gdetail.address}"></p>
+													</td>
+												</tr>
+												<tr
+													th:if="${(Gdetail.uniqid.startsWith('RMC/') || Gdetail.uniqid.startsWith('DLH/'))}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.modeofcomplaint != null && Gdetail.modeofcomplaint != '' && Gdetail.modeofcomplaint != 'NA'}">
+														Mode Of Complaint</td>
+													<td
+														th:if="${Gdetail.modeofcomplaint != null && Gdetail.modeofcomplaint != '' && Gdetail.modeofcomplaint != 'NA'}">
+														<span th:text="${Gdetail.modeofcomplaint}"></span>
+													</td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.post_trackingno != null && Gdetail.post_trackingno != '' && Gdetail.post_trackingno != 'NA'}">
+														Post Tracking No.</td>
+													<td
+														th:if="${Gdetail.post_trackingno != null && Gdetail.post_trackingno != '' && Gdetail.post_trackingno != 'NA'}">
+														<p th:text="${Gdetail.post_trackingno}"></p>
+													</td>
+												</tr>
+												<tr
+													th:if="${(Gdetail.uniqid.startsWith('RMC/') || Gdetail.uniqid.startsWith('DLH/'))}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.grievancereference != null && Gdetail.grievancereference != '' && Gdetail.grievancereference != 'NA'}">
+														Grievance / Reference Received from.</td>
+													<td
+														th:if="${Gdetail.grievancereference != null && Gdetail.grievancereference != '' && Gdetail.grievancereference != 'NA'}">
+														<span th:text="${Gdetail.grievancereference}"></span>
+													</td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.previous_fileno != null && Gdetail.previous_fileno != '' && Gdetail.previous_fileno != 'NA'}">
+														Previous Tracking Number.</td>
+													<td
+														th:if="${Gdetail.previous_fileno != null && Gdetail.previous_fileno != '' && Gdetail.previous_fileno != 'NA'}">
+														<p th:text="${Gdetail.previous_fileno}"></p>
+													</td>
+												</tr>
+												<tr
+													th:if="${(Gdetail.uniqid.startsWith('RMC/') || Gdetail.uniqid.startsWith('DLH/'))}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.communicationrmcno != null && Gdetail.communicationrmcno != '' && Gdetail.communicationrmcno != 'NA'}">
+														Communication Number.</td>
+													<td
+														th:if="${Gdetail.communicationrmcno != null && Gdetail.communicationrmcno != '' && Gdetail.communicationrmcno != 'NA'}">
+														<span th:text="${Gdetail.communicationrmcno}"></span>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Latitude</td>
+													<td><span th:text="${Gdetail.latitude}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Longitude</td>
+													<td>
+														<p th:text="${Gdetail.longitude}"></p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;" colspan="4">
+														Grievance Description:</td>
+												</tr>
+												<tr>
+													<td colspan="4">
+														<p th:text="${Gdetail.description}"></p>
+													</td>
+												</tr>
+
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;" colspan="4">
+														Appeal Description:</td>
+												</tr>
+												<!-- <tr th:each="grevH,stat : ${hisQ}">
+													<td colspan="4" th:if="${grevH.status=='Appealed'}">
+														<p th:text="${grevH.description}"></p>
+													</td>
+												</tr> -->
+												<tr>
+												<td colspan="4">
+													<p th:text="${appealDescription}"></p>
+												</td>
+											</tr>
+											</table>
+
+
+											<table id="grvDetailsTblComm" class="gr-table mt-2">
+												<tr>
+													<th style="background: #546F7A; color: white">
+														Grievance History</th>
+												</tr>
+												<tr>
+
+													<div class="yr-Rtable pt-3">
+														<div class=" table-responsive">
+															<table class="table">
+																<thead>
+																	<tr>
+																		<th>S.No</th>
+																		<th>Grievance ID</th>
+																		<th>Action By</th>
+																		<th>Date / Time Of Action</th>
+																		<th>Action Taken</th>
+																		<th>Remarks</th>
+																		<th>Privilege Assign</th>
+																		<th>Department</th>
+																		<th>Status</th>
+																		<th>Action Taken Time(days)</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr th:each="grevH,stat : ${hisQ}">
+																		<th scope="row" th:text="${stat.index+1}"></th>
+																		<td>
+																			<span th:text="${grevH.uniqid}"></span>
+																			<span
+																				th:if="${grevH.userflag == 'JKIGRAMS'}">
+																				<div class="flashing-label text-danger mt-2"
+																					role="alert">JK-IGRAMS</div>
+																			</span>
+																		</td>
+																		<td th:text="${grevH.action_taken_by}"></td>
+																		<td
+																			th:text="${#dates.format(grevH.date_and_time_of_action, 'dd-MM-yyyy HH:mm:ss')}">
+																		</td>
+																		<td th:text="${grevH.action_taken}"></td>
+																		<td th:text="${grevH.remarks}"></td>
+																		<td th:text="${grevH.authority}"></td>
+																		<td th:text="${grevH.department}"></td>
+																		<td th:text="${grevH.status}"></td>
+																		<td th:text="${grevH.app_processing_time}"></td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+												</tr>
+											</table>
+											<div class="addremarkreply"
+												th:if="${btnstatus == 'Pending' or btnstatus == 'Seek Clarification'}">
+												<div class="card mb-4">
+													<div class="card-body">
+														<h5 class="mb-3">Remark For Appeal:</h5>
+
+														<div class="mb-3">
+															<textarea name="remarkDetail" id="remarksDetailsId"
+																class="form-control"
+																placeholder="Enter your remarks here..."
+																rows="4"></textarea>
+														</div>
+
+														<div class="mb-3">
+															<input type="file" name="remarkDocument"
+																class="form-control" id="remarkDocument"
+																accept="application/pdf, image/png, image/jpeg, image/jpg">
+															<small class="text-danger fw-semibold">Max File Size: 2
+																MB</small>
+														</div>
+														<div class="text-center">
+															<button class="btn btn-success procesApp"
+																value="Remark Added" id="addRem11">Add Remark</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-12 button-part"
+											th:if="${getStatus=='Pending' || getStatus=='Acknowledged' || getStatus=='Under Process'}">
+											<div class="d-flex justify-content-center gap-2">
+												<button class="btn btn-purple grevP" th:value="${list[0].uniqid}"
+													th:if="${auth=='Process' && userType!='ROLE_SuperAdmin'}">Process
+													Grievance</button>
+												<button class="btn btn-purple grevP" th:value="${list[0].uniqid}"
+													th:if="${auth=='Remark' && userType!='ROLE_SuperAdmin'}">Add
+													Remark</button>
+												<button class="btn btn-purple forward" th:value="${list[0].uniqid}"
+													th:if="${auth=='Process' && fnStatus!='Recieved' && userType!='ROLE_SuperAdmin'}">Forward
+													Grievance</button>
+												<button class="btn btn-purple forward" th:value="${list[0].uniqid}"
+													th:if="${fnStatus=='Recieved' && userType!='ROLE_SuperAdmin'}">Send
+													Back</button>
+											</div>
+										</div>
+										<div class="col-12 button-part"
+											th:if="${(getStatus=='Forwarded' || getStatus=='Under Process' || getStatus=='Acknowledged')}">
+											<div class="d-flex justify-content-center gap-2">
+												<button class="btn btn-purple pbInitiated" data-bs-toggle="modal"
+													data-bs-target="#pullGrievance"
+													th:if="${(userType=='ROLE_Admin' || userType=='ROLE_Department')}">Pull
+													Back Grievance</button>
+											</div>
+										</div>
+										<div class="col-12 button-part">
+											<div class="d-flex justify-content-center gap-2">
+												<button class="btn btn-purple pbInitiated" data-bs-toggle="modal"
+													data-bs-target="#sendreturnCase"
+													th:if="${userType=='ROLE_SuperAdmin' && origin=='cpgrams' &&(getStatus=='Pending' || getStatus=='dnpToOffice')}">Return
+													To CPGRAM</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			</div>
+
+			<!-- correspondences -->
+
+			</section>
+
+
+			<!-- Naitik Changes on Clarification Seek on 10/10/2025 -->
+
+			<section id="clarificationSection" class="section dashboard my-2"
+				th:if="${clarificationRequested} and ${list[0].final_status ne 'Final Disposed'}">
+				<div class="card" style="border-radius: 25px">
+					<div class="card-body">
+						<div class="alert alert-primary fw-bold mt-3">Clarification</div>
+						<div class="row mx-2 gap-2">
+							<div class="col-12">
+								<textarea id="userClarificationMessage" class="form-control" rows="3"
+									placeholder="Type a message"></textarea>
+							</div>
+							<div class="col-12">
+								<label class="form-label" for="userClarificationMessageFile">Select file (if
+									required)</label>
+								<input id="userClarificationMessageFile" class="form-control" type="file"
+									accept="image/*, application/pdf" />
+							</div>
+							<div class="col-6">
+								<button class="btn text-white border-0 px-3" style="background: #8c39f9"
+									id="userClarificationBtn" th:each="dt : ${list}" th:value="${dt.uniqid}">
+									Post
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Naitik changes End -->
+
+
+		</div>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- Modal -->
+	<div class="modal fade" id="pullGrievance" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="pullGrievanceLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="pullGrievanceLabel"
+						th:text="'Pull Grievance: ' + ${list[0].uniqid}"></h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="message-text" class="col-form-label">Remarks:</label>
+						<textarea class="form-control stRemarks"></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button id="pbInitiated" type="button" class="btn btn-primary" th:data-value="${list[0].uniqid}"
+						th:data-applicant="${list[0].name}">
+						Submit
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--cpgram return Modal -->
+
+	<div class="modal fade" id="sendreturnCase" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header border-0" th:each="Gdetail:${list}">
+					<p class="fw-semibold text-primary mb-3" id="regNo" th:text="${Gdetail.uniqid}"></p>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+				<div class="modal-body">
+					<div class="mb-4">
+						<label for="returnRemark" class="form-label fw-semibold">Reason for return of the case</label>
+						<textarea class="form-control" id="returnRemark" placeholder="Enter Remark" maxlength="2000"
+							rows="5"></textarea>
+					</div>
+
+					<div class="d-flex justify-content-end">
+						<button type="button" id="rtnCaseBtn" class="btn btn-success">Return To CPGRAM</button>
+					</div>
+
+				</div>
+
+				<div class="modal-footer border-0"></div>
+
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Feedback Modal Naitik Changes 21/01/2026 -->
+	<div class="modal fade" id="fbFormPreview1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- Feedback Start -->
+					<div class="py-2" id="Feedback">
+						<div class="container">
+							<div class="row g-5 justify-content-center">
+								<div class="col-md-12 right-side-content">
+									<div class="card mb-0">
+										<div class="card-body">
+											<div class="row g-3 align-items-center">
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Grievance
+															ID:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="uniqueID"></span>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Grievance
+															Status:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="Grevstatus"></span>
+													</div>
+												</div>
+											</div>
+											<div class="row g-3 align-items-center">
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Department:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="departmentId">
+														</span>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Updated
+															On:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="last_updated_on">
+														</span>
+													</div>
+												</div>
+											</div>
+
+
+											<hr class="mt-1">
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">
+													Overall, were you satisfied with the solution provided by
+													Department officials?
+													<span class="text-danger">*</span>
+												</label>
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" name="satisfied-feed"
+														id="satisfied-Yes" value="Yes">
+													<label class="form-check-label" for="satisfied-Yes">Yes</label>
+												</div>
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" name="satisfied-feed"
+														id="satisfied-No" value="No">
+													<label class="form-check-label" for="satisfied-No">No</label>
+												</div>
+											</div>
+
+											<div class="form-group mb-3 noDiv visually-hidden">
+												<label class="fw-bold mb-3">
+													If no, please write in two lines.
+													<span class="text-danger">*</span>
+												</label>
+												<input type="text" placeholder="Type here..." class="form-control"
+													id="description-box">
+											</div>
+
+
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">Have you received any call or message
+													from Department?
+													<span class="text-danger">*</span></label><br>
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" name="call-msg"
+														id="call-msg-Yes" value="Yes">
+													<label class="form-check-label" for="call-msg-Yes">
+														Yes
+													</label>
+												</div>
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" name="call-msg"
+														id="call-msg-No" value="No">
+													<label class="form-check-label" for="call-msg-No">
+														No
+													</label>
+												</div>
+											</div>
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">Overall, Experience of Grievance
+													Disposal?<span class="text-danger">*</span></label><br>
+												<div class="rating-btn rBtn1">
+
+													<button type="button" class="rating1">1</button>
+													<button type="button" class="rating1">2</button>
+													<button type="button" class="rating1">3</button>
+													<button type="button" class="rating1">4</button>
+													<button type="button" class="rating1">5</button>
+													<button type="button" class="rating1">6</button>
+													<button type="button" class="rating1">7</button>
+													<button type="button" class="rating1">8</button>
+													<button type="button" class="rating1">9</button>
+													<button type="button" class="rating1">10</button>
+												</div>
+											</div>
+
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">Grievance Lodging Process<span
+														class="text-danger">*</span></label><br>
+												<div class="rating-btn rBtn2">
+													<button type="button" class="rating2">1</button>
+													<button type="button" class="rating2">2</button>
+													<button type="button" class="rating2">3</button>
+													<button type="button" class="rating2">4</button>
+													<button type="button" class="rating2">5</button>
+													<button type="button" class="rating2">6</button>
+													<button type="button" class="rating2">7</button>
+													<button type="button" class="rating2">8</button>
+													<button type="button" class="rating2">9</button>
+													<button type="button" class="rating2">10</button>
+												</div>
+											</div>
+
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">Would you recommend this portal for
+													Grievance lodging to
+													others too? <span class="text-danger">*</span></label><br />
+												<div class="form-check form-check-inline ps-0 me-0 w-40">
+													<input class="form-check-input" type="radio" name="loading"
+														id="loading1" value="Yes, definitely" />
+													<label class="form-check-label" for="loading1">
+														Yes, definitely
+													</label>
+												</div>
+												<div class="form-check form-check-inline ps-0 me-0">
+													<input class="form-check-input" type="radio" name="loading"
+														id="loading2" value="Maybe, if it take less time" />
+													<label class="form-check-label" for="loading2">
+														Maybe, if it take less time
+													</label>
+												</div>
+												<div class="clearfix"></div>
+												<div class="form-check form-check-inline ps-0 me-0 w-40">
+													<input class="form-check-input" type="radio" name="loading"
+														id="loading3" value="No, never" />
+													<label class="form-check-label" for="loading3">
+														No, never
+													</label>
+												</div>
+												<div class="form-check form-check-inline ps-0 me-0">
+													<input class="form-check-input" type="radio" name="loading"
+														id="loading4" value="Maybe, if the process will change" />
+													<label class="form-check-label" for="loading4">
+														Maybe, if the process will change
+													</label>
+												</div>
+
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Feedback End -->
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- New Updated Model for View Feedback at history Naitik Changes 21/01/2026 -->
+
+	<div class="modal fade" id="NewfbFormPreview1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- Feedback Start -->
+					<div class="py-2" id="Feedback">
+						<div class="container">
+							<div class="row g-5 justify-content-center">
+								<div class="col-md-12 right-side-content">
+									<div class="card mb-0">
+										<div class="card-body">
+											<div class="row g-3 align-items-center">
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Grievance
+															ID:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="uniqueidd"></span>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Grievance
+															Status:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="Grevstatuss"></span>
+													</div>
+												</div>
+											</div>
+											<div class="row g-3 align-items-center">
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Department:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="departmentIds">
+														</span>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="col-auto fw-bold">
+														<label for="uniqueID" class="col-form-label">Updated
+															On:</label>
+													</div>
+													<div class="col-auto">
+														<span class="uniqueIDClass" id="last_updatedon">
+														</span>
+													</div>
+												</div>
+											</div>
+
+
+											<hr class="mt-1">
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">
+													Overall Experience of Grievance Disposal?
+													<span class="text-danger">*</span>
+												</label>
+
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" id="expExcellent"
+														name="experience" value="Excellent">
+													<label class="form-check-label" for="expExcellent">Excellent</label>
+												</div>
+
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" id="expGood"
+														name="experience" value="Good">
+													<label class="form-check-label" for="expGood">Good</label>
+												</div>
+
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" id="expAverage"
+														name="experience" value="Average">
+													<label class="form-check-label" for="expAverage">Average</label>
+												</div>
+
+												<div class="form-check form-check-inline ps-0">
+													<input class="form-check-input" type="radio" id="expPoor"
+														name="experience" value="Poor">
+													<label class="form-check-label" for="expPoor">Poor</label>
+												</div>
+											</div>
+
+											<div class="form-group mb-3 noDiv visually-hidden">
+												<label class="fw-bold mb-3">
+													If poor, specify reason.
+													<span class="text-danger">*</span>
+												</label>
+												<textarea placeholder="Type here..." class="form-control"
+													id="Newdescription-box" rows="2" maxlength="255"
+													style="overflow-y: auto; resize: none; max-height: 120px;"></textarea>
+											</div>
+
+											<!-- Q2 -->
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">
+													How satisfied are you with the time taken for disposal of your
+													grievance?
+													<span class="text-danger">*</span>
+												</label>
+
+												<div class="form-check ps-0">
+													<input class="form-check-input" type="radio" id="timeVerySatisfied"
+														name="time-satisfaction" value="Very Satisfied">
+													<label class="form-check-label" for="timeVerySatisfied">Very
+														Satisfied</label>
+												</div>
+
+												<div class="form-check ps-0">
+													<input class="form-check-input" type="radio" id="timeSatisfied"
+														name="time-satisfaction" value="Satisfied">
+													<label class="form-check-label"
+														for="timeSatisfied">Satisfied</label>
+												</div>
+
+												<div class="form-check ps-0">
+													<input class="form-check-input" type="radio" id="timeDissatisfied"
+														name="time-satisfaction" value="Dissatisfied">
+													<label class="form-check-label"
+														for="timeDissatisfied">Dissatisfied</label>
+												</div>
+											</div>
+
+
+											<!-- Q3 -->
+											<div class="form-group mb-3">
+												<label class="fw-bold mb-3">
+													Will you prefer to use JK Samadhan again for submitting
+													grievances in future?
+													<span class="text-danger">*</span>
+												</label>
+
+												<div class="form-check ps-0">
+													<input class="form-check-input" type="radio" id="reuseYes"
+														name="reuse-portal" value="Yes">
+													<label class="form-check-label" for="reuseYes">Yes</label>
+												</div>
+
+												<div class="form-check ps-0">
+													<input class="form-check-input" type="radio" id="reuseMaybe"
+														name="reuse-portal" value="Maybe">
+													<label class="form-check-label" for="reuseMaybe">Maybe</label>
+												</div>
+
+												<div class="form-check ps-0">
+													<input class="form-check-input" type="radio" id="reuseNo"
+														name="reuse-portal" value="No">
+													<label class="form-check-label" for="reuseNo">No</label>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Feedback End -->
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- New Updated Model for View Feedback at history Naitik Changes 21/01/2026 -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer2"></div>
+	<!-- <script th:src="@{/js/searchModule.js}"></script> -->
+	<script th:src="@{/js/appealDashboardMIS.js}"></script>
+
+
+</body>
+
+</html>

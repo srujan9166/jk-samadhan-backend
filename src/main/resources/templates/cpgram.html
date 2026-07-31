@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+	<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+	
+	<div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>Super Admin Dashboard</h1>
+			<input type = "hidden"  id  = "usrVV" th:value ="${usrDD}">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Dashboard</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<!-- <div class="row">
+
+				Left side columns
+				<div class="col-lg-12">
+					<div class="row">
+               
+						Sales Card
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card sales-card border-top border-3 border-info">
+								<div class="card-body">
+									<h5 class="card-title">Total Grievance Received</h5>
+								
+								<a href="#" class="count" data-value="Total">
+									<div class="d-flex align-items-center justify-content-between">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-folder-check"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id='totalGri'  th:text="${totalG}"></h6>
+										</div>
+									</div>
+									</a>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card customers-card border-top border-3 border-warning">
+								<div class="card-body">
+									<h5 class="card-title">Pending with Department</h5>
+								<a href="#"  class="count" data-value="Pending">
+									<div class="d-flex align-items-center justify-content-between">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-hourglass-top"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id='pendingGri' th:text="${pending}"></h6>
+										</div>
+									</div>
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card  customers-card1  border-top border-3 border-secondary">
+								<div class="card-body">
+									<h5 class="card-title">Grievance Received Online</h5>
+									<a href="#"  class="count" data-value="Total">
+									<div class="d-flex align-items-center justify-content-between">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-laptop"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id='online' th:text="${totalG}"></h6>
+										</div>
+									</div>
+									</a>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card revenue-card border-top border-3 border-success">
+								<div class="card-body">
+									<h5 class="card-title">Resolved</h5>
+								<a href="#"  class="count" data-value="Resolved">
+									<div class="d-flex align-items-center justify-content-between">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-file-check"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id='resolved' th:text="${resolved}"></h6>
+										</div>
+									</div>
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card customers-card2 border-top border-3 border-primary">
+								<div class="card-body">
+									<h5 class="card-title">Flagged Grievances</h5>
+						    	<a href="#"  class="count" data-value="Appealed">
+									<div class="d-flex align-items-center justify-content-between">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-flag"></i>
+										</div>
+										<div class="ps-3">
+											<h6 id='flagged' th:text="${pendingWithAdmin}"></h6>
+										</div>
+									</div>
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xxl-4 col-md-6">
+							<div class="card info-card customers-card3 border-top border-3 border-info">
+								<div class="card-body">
+									<h5 class="card-title">Grievance Received Offline</h5>
+								<a href="#" class="count" data-value="Offline">
+									<div class="d-flex align-items-center justify-content-between">
+										<div
+											class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-wifi-off"></i>
+										</div>
+										<div class="ps-3">
+											<h6  id='offline'>0</h6>
+										</div>
+									</div>
+									</a>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				End Left side columns
+			</div> -->
+
+			<!--  -->
+			<div class="row">
+				<!-- Left side columns -->
+				<ul class="nav nav-tabs" id="myTab" role="tablist">
+					<!-- Total Grievances Tab Switcher -->
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active position-relative tt_griev" id="home-tab" data-bs-toggle="tab"
+						data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
+						aria-selected="true" value="Home"><span id="dynGrii">Total Applications</span>
+							<span th:text="${totalG}"
+								class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bg-danger p-2">
+							</span>
+						</button>
+					</li>
+					<!-- Pulled Applications Tab Switcher -->
+					<!-- <li class="nav-item" role="presentation">
+						<button class="nav-link position-relative tt_griev" id="contact-tab" data-bs-toggle="tab"
+							data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane"
+							aria-selected="false" value="PulledApplications">Pulled Applications
+							<span th:text="${pullAppResCount}"
+							class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bg-danger p-2">
+						</span>
+						</button>
+					</li> -->
+					<!--does not to pertain Tab Switcher -->
+					<!-- <li class="nav-item" role="presentation">
+						<button class="nav-link position-relative tt_griev" id="doesNot-tab" data-bs-toggle="tab"
+							data-bs-target="#doesNot-tab-pane" type="button" role="tab" aria-controls="doesNot-tab-pane"
+							aria-selected="false" value="DoesNotPertain">Does Not Pertain Grievances
+							<span th:text="${dNpCount}"
+							class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger bg-danger p-2">
+						</span>
+						</button>
+					</li> -->
+				</ul>
+				<!-- Total Grievances Table Div -->
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+						tabindex="0">
+						<div class="col-lg-12 yrTab1">
+							<div class="card">
+								<div class="card-body p-0 border border-3 rounded-3">
+									<!-- <h5 class="card-title px-3 py-2 text-dark"> Total Applications Table</h5> -->
+									<h5 class="card-title px-3 py-2 text-dark" id="dynGri">Grievances</h5>
+									<div class="yr-Rtable p-4" id="homeDiv">
+										<div class="searchFilter">Web Search <span class="webSearchColor"></span> App Search <span class="appSearchColor"></span> </div>
+										<table class="table stripe datatable" id="" style="width: 100%;" >
+										<thead>
+										<tr>
+											<th>Sr.No</th>
+											<th>Grievance Id</th>
+											<th>Name</th>
+											<th>Gender</th>
+											<th>Address</th>
+											<th>Submitted on</th>
+											<th>Category</th>
+											<th>Action</th>
+																					</tr>
+									</thead>
+									<!-- <tbody>
+										<tr >
+										<td >1</td>
+											<th scope="row" >PMOPG/D/2015/53250</th>
+											<td >Shri DEPUTY NATH</td>
+											<td>Male</td>
+											<td >VILL-ROHI MORE PO-GADI GARH</td>
+											<td >2024-04-09 13:26:18</td>
+											<td>State Government(Miscellaneous) - Others</td>
+										
+											<td><a><button type="button"
+														class="btn btn-sm btn btn-primary"
+														>Process</button></a></td>
+										</tr>
+									</tbody> -->
+									</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Pulled Application Table Div -->
+					<!-- <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab"
+						tabindex="0">
+						<div class="col-lg-12 yrTab1">
+							<div class="card">
+								<div class="card-body p-0 border border-3 rounded-3">
+									<h5 class="card-title px-3 py-2 text-dark">Pulled Grievances Table</h5>
+									<div class="yr-Rtable p-4">
+										<table class="table table-bordered stripe" id="all_tblPulledApplications" style="width: 100%;">
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> -->
+					<!-- Does not Pertain Table Div -->
+					<div class="tab-pane fade" id="doesNot-tab-pane" role="tabpanel" aria-labelledby="doesNot-tab"
+						tabindex="0">
+						<div class="col-lg-12 yrTab1">
+							<div class="card">
+								<div class="card-body p-0 border border-3 rounded-3">
+									<h5 class="card-title px-3 py-2 text-dark">Doe Not Pertain Grievances Table</h5>
+									<div class="yr-Rtable p-4">
+										<table class="table table-bordered stripe" id="all_tblDoesNotPertain" style="width: 100%;">
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Left side columns -->
+			</div>
+
+			<!-- <div class="row">
+				<div class="col-lg-12" style="display:none" id="dataCount">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title" id="dynGri">Grievances</h5>
+							<div class="yr-Rtable">
+								<table class="table stripe datatable" id="YRreport999" style="width: 100%;" ></table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div> -->
+
+
+
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+
+</body>
+
+</html>

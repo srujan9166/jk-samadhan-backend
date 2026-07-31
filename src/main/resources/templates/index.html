@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <link rel="apple-touch-icon" sizes="76x76" href="img/favicon/apple-icon-76x76.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="img/favicon/android-icon-192x192.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="img/favicon/favicon-512x512.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png" />
+  <link rel="icon" href="img/favicon/favicon.ico" />
+
+  <style>
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      /* Semi-transparent black background */
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      /* Ensure the preloader is on top of everything */
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      /* Light semi-transparent border */
+      border-top: 4px solid #ffffff;
+      /* White border on top for spinning effect */
+      border-radius: 50%;
+      /* Circular border radius */
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      /* Animation for spinning effect */
+    }
+
+    .ai-chat-bot-modal {
+      display: none !important;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    /* Ticker For Development Server */
+
+    .ticker-wrapper {
+      background-color: #ffc107;
+      /* Bootstrap warning color */
+      color: #212529;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-text {
+      display: inline-block;
+      padding-left: 100%;
+      /* start outside from the right */
+      animation: ticker 18s linear infinite;
+      font-weight: bold;
+    }
+
+    @keyframes ticker {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+  </style>
+</head>
+
+<body id="translate-body">
+  <div id="preloader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Spinner Start -->
+  <!--<div id="spinner"
+		class="show position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+		<div class="spinner-grow text-primary" role="status"></div>
+	</div>-->
+  <!-- Spinner End -->
+
+  <!--- New header -->
+
+  <!-- Topbar Start -->
+  <div lang="en" th:insert="~{mainHeader :: mainHeader}"></div>
+
+  <!-- Ticker -->
+  <div th:if="${ticker}" class="ticker-wrapper py-2">
+    <div class="ticker-text">
+      ⚠️ This is a DEVELOPMENT SERVER ⚠️ &nbsp; This is a DEVELOPMENT SERVER ⚠️ &nbsp; This is a DEVELOPMENT SERVER ⚠️
+    </div>
+  </div>
+
+  <!-- Navbar End -->
+
+  <section class="home-banner">
+
+    <div class="banner-title">
+      <h1>Welcome To</h1>
+      <div class="both-logo">
+        <img src="img/both-logo.png" alt="logo">
+      </div>
+    </div>
+
+    <div class="title-list">
+      <h3>Transparency</h3>
+      <h3>Accountability</h3>
+      <h3>Accessibility</h3>
+      <h3>Responsiveness</h3>
+    </div>
+    <div class="banner-slider owl-carousel owl-theme">
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-1.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-2.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-3.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-4.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-5.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-6.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-7.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-8.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-9.jpg" alt="img">
+        </div>
+      </div>
+      <div class="item">
+        <div class="banner-img">
+          <img src="img/slide-10.jpg" alt="img">
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="announce" th:if="${!#lists.isEmpty(publicNotifications)}">
+    <div class="container">
+      <div class="anouncement-card">
+        <h4>Latest Announcement</h4>
+        <ul class="announcement-list">
+          <li class="border-bottom-0" th:if="${#lists.isEmpty(publicNotifications)}">
+            <p>No new notifications available.</p>
+          </li>
+          <li th:each="notification, stat : ${publicNotifications}">
+            <p><span th:text="${stat.index + 1}"></span>. <span th:text="${notification.notification}"></span></p>
+            <a th:if="${notification.filepath != null and notification.filepath != ''}"
+              th:href="@{ '/fileViewer?filename=' + ${notification.filepath} + '&name=' + 'JKSamadhan-Public_Release'}"
+              title="View Notice" target="_blank" class="announce-link">View Notice</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Right bottom side sticky button div end -->
+
+  <!-- Carousel Start -->
+  <div class="container-fluid px-0 click-content d-none">
+    <div id="carouselId" class="carousel slide" data-bs-ride="carousel">
+      <ol class="carousel-indicators" aria-label="Carousel">
+        <li data-bs-target="#carouselId" data-bs-slide-to="0" class="active" aria-current="true"
+          aria-label="First slide"></li>
+        <li data-bs-target="#carouselId" data-bs-slide-to="1" aria-label="Second slide"></li>
+        <li data-bs-target="#carouselId" data-bs-slide-to="2" aria-label="third slide"></li>
+        <li data-bs-target="#carouselId" data-bs-slide-to="3" aria-label="forth slide"></li>
+        <li data-bs-target="#carouselId" data-bs-slide-to="4" aria-label="fifth slide"></li>
+      </ol>
+      <div class="carousel-inner" role="listbox">
+        <div class="carousel-item active" tabindex="0" aria-label="Carousel Banner">
+          <img src="img/banner_01.jpg" class="img-fluid" alt="First slide" loading="lazy" />
+        </div>
+        <div class="carousel-item" tabindex="0" aria-label="Carousel Banner">
+          <img src="img/banner_02.jpg" class="img-fluid" alt="Second slide" loading="lazy" />
+        </div>
+        <div class="carousel-item" tabindex="0" aria-label="Carousel Banner">
+          <img src="img/banner_03.jpg" class="img-fluid" alt="third slide" loading="lazy" />
+        </div>
+        <div class="carousel-item" tabindex="0" aria-label="Carousel Banner">
+          <img src="img/banner_04.jpg" class="img-fluid" alt="forth slide" loading="lazy" />
+        </div>
+        <div class="carousel-item" tabindex="0" aria-label="Carousel Banner">
+          <img src="img/banner_05.jpg" class="img-fluid" alt="Fifth slide" loading="lazy" />
+        </div>
+      </div>
+      <div class="text_on_carousel">
+        <h1 tabindex="0" aria-label="Carousel Caption">
+          transparency <span> | </span> Accountability
+          <span> | </span> Accessibility <span> | </span>
+          Responsiveness
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carousel End -->
+
+
+  <!-- Authorities Says section starts -->
+
+  <div class="container-fluid py-4 authorities_intro click-content d-none">
+    <div class="container desktop-authorities">
+      <div class="col-sm-12 col-md-10 wrapper">
+        <div class="authorities d-flex flex-wrap">
+          <div class="big-img mb-1" tabindex="0" aria-label="Informative Card">
+            <div class="authority">
+              <div class="img">
+                <img src="img/LieutenantGovernor_blue_bg.jpg" alt="Picture of Shree. Manoj Sinha" loading="lazy"
+                  tabindex="0" />
+                <div class="overlay-txt read-tag">
+                  <h3 tabindex="0">Shri Manoj Sinha</h3>
+                  <p tabindex="0">
+                    Lieutenant Governor, <br />Government of J&K
+                  </p>
+                </div>
+              </div>
+              <!-- 						<div class="text qoute">Our sustained effort is to minimize interface of a common citizen with government and continue reform process for better service delivery.</div>
+ -->
+            </div>
+          </div>
+
+          <div class="small-img">
+            <div class="big-img mb-1" tabindex="0" aria-label="Informative Card">
+              <div class="authority">
+                <div class="img">
+                  <img src="img/cheafSecretory_blue_bg.jpg" alt="Picture of Shree. Atal Dulloo, IAS" loading="lazy"
+                    tabindex="0" />
+                  <div class="overlay-txt read-tag">
+                    <h3 tabindex="0">Shri Atal Dulloo, IAS</h3>
+                    <p tabindex="0">
+                      Chief Secretary, <br />Government of J&K
+                    </p>
+                  </div>
+                </div>
+                <!-- 							<div class="text qoute">My priority is to listen to the public's grievances  and solve them. The second priority is to take the development project of Jammu and Kashmir forward and speedy.</div>
+ -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authorities Says section ends -->
+
+  <!-- Mobile app links section starts -->
+
+  <div class="mobileAppLinksSec" style="display: none">
+    <img class="img-fluid w-100" src="img/mobileAppBg.png" loading="lazy" />
+    <div class="container-fluid py-5 mobileAppSecWrap">
+      <div class="pb-5">
+        <div class="row justify-content-md-end">
+          <!-- <div class="col-8">  </div> -->
+          <div class="col-4">
+            <div class="downloadAppDiv ps-5">
+              <h3 tabindex="0">
+                Download <span>JK-SAMADHAN</span><br />
+                Mobile Application
+              </h3>
+              <div class="downloadAppLinksDiv">
+                <p tabindex="0">Download Our App</p>
+                <div class="downloadAppLinkWrap">
+                  <a href="javascript:void(0);" class="downloadA me-3">
+                    <img src="img/appleStoreImg.png" class="img-fluid" loading="lazy" />
+                  </a>
+                  <a href="javascript:void(0);" class="downloadA">
+                    <img src="img/androidStoreImg.png" class="img-fluid" loading="lazy" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <section class="mobile-application">
+    <div class="container">
+      <div class="row mob-group">
+        <div class="col-md-5">
+          <div class="application-des">
+            <h3>Visit our Mobile Application <img src="img/icons/arrow-icon.svg" alt=""></h3>
+            <div class="downloadAppLinksDiv">
+              <p tabindex="0">Download Our App</p>
+              <div class="downloadAppLinkWrap">
+                <a href="javascript:void(0)" class="downloadA me-3" title="applestore-img">
+                  <span class="sr-only">Download on the App Store</span>
+                  <img src="img/appleStoreImg.png" class="img-fluid" tabindex="0" alt="Image of App Store"
+                    loading="lazy" />
+                </a>
+                <a href="https://samadhan.jk.gov.in/prod_live/JKSP_4.0.apk" class="downloadA" title="playstore-img"
+                  aria-label="This Link Get on Google Play">
+                  <span class="sr-only">Get on Google Play</span>
+                  <img src="img/androidStoreImg.png" class="img-fluid" tabindex="0" alt="Image of Google Play Store"
+                    loading="lazy" />
+                </a>
+              </div>
+            </div>
+            <div style="clear: both;"></div>
+            <div id="sync2" class="owl-carousel owl-theme application-list">
+              <div class="item">
+                <h3>Splash Screen</h3>
+              </div>
+              <div class="item">
+                <h3>Login Module - JK Samadhan & JK Rabita</h3>
+              </div>
+              <div class="item">
+                <h3>Module to Lodge Grievance, Appeal & view all Grievance</h3>
+              </div>
+              <div class="item">
+                <h3>All submited Grievances</h3>
+              </div>
+              <div class="item">
+                <h3>Detailed view of submited Grievances</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-5 col-md-7 app-slider">
+          <div class="">
+            <div class="application-logo">
+              <img src="img/both-logo.png" alt="image">
+            </div>
+            <div id="sync1" class="owl-carousel owl-theme mob-img">
+              <div class="item">
+                <img src="img/mobile-1.png" alt="img">
+              </div>
+              <div class="item">
+                <img src="img/mobile-2.png" alt="img">
+              </div>
+              <div class="item">
+                <img src="img/mobile-3.png" alt="img">
+              </div>
+              <div class="item">
+                <img src="img/mobile-4.png" alt="img">
+              </div>
+              <div class="item">
+                <img src="img/mobile-5.png" alt="img">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <div class="mobileAppLinks click-content d-none">
+    <div class="top_left_bg">
+      <img class="img-fluid w-100" src="img/purple_semi_circle_bg.png" />
+    </div>
+    <div class="container">
+      <div class="row h-100">
+        <div class="wow fadeIn" data-wow-delay=".3s">
+          <div class="col-8 MobileAppTabsSec wow fadeIn d-flex align-items-center" data-wow-delay=".3s">
+            <div class="col-4 mobileAppSteps d-flex align-items-center">
+              <div class="mobileAppStepsWrap">
+                <div class="nav flex-column nav-pills me-1" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                  <button class="nav-link active" id="v-pills-mobile-step-1-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-mobile-step-1" type="button" role="tab" tabindex="0"
+                    aria-controls="v-pills-mobile-step-1" aria-selected="true">
+                    Splash Screen
+                  </button>
+                  <button class="nav-link" id="v-pills-mobile-step-2-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-mobile-step-2" type="button" role="tab" tabindex="0"
+                    aria-controls="v-pills-mobile-step-2" aria-selected="false">
+                    Login Module - JK Samadhan
+                  </button>
+                  <button class="nav-link" id="v-pills-mobile-step-3-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-mobile-step-3" type="button" role="tab" tabindex="0"
+                    aria-controls="v-pills-mobile-step-3" aria-selected="false">
+                    Module to Lodge Grievance, Appeal & view all Grievance
+                  </button>
+                  <button class="nav-link" id="v-pills-mobile-step-4-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-mobile-step-4" type="button" role="tab" tabindex="0"
+                    aria-controls="v-pills-mobile-step-4" aria-selected="false">
+                    All Submitted Grievances List
+                  </button>
+                  <button class="nav-link" id="v-pills-mobile-step-5-tab" data-bs-toggle="pill"
+                    data-bs-target="#v-pills-mobile-step-5" type="button" role="tab" tabindex="0"
+                    aria-controls="v-pills-mobile-step-5" aria-selected="false">
+                    Detailed view of Submitted Grievance
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-8 mobileAppCotent">
+              <div class="mobileAppCotentWrap">
+                <div class="tab-content" id="v-pills-tabContent">
+                  <div class="tab-pane show active" id="v-pills-mobile-step-1" role="tabpanel"
+                    aria-labelledby="v-pills-mobile-step-1-tab">
+                    <img src="img/app_mobile_1.jpg" class="img-fluid" alt="Image of Splash Screen" loading="lazy" />
+                  </div>
+                  <div class="tab-pane" id="v-pills-mobile-step-2" role="tabpanel"
+                    aria-labelledby="v-pills-mobile-step-2-tab">
+                    <img src="img/app_mobile_2.jpg" class="img-fluid" alt="Image of Login Module - JK Samadhan"
+                      loading="lazy" />
+                  </div>
+                  <div class="tab-pane" id="v-pills-mobile-step-3" role="tabpanel"
+                    aria-labelledby="v-pills-mobile-step-3-tab">
+                    <img src="img/app_mobile_3.jpg" class="img-fluid"
+                      alt="Image of Module to Lodge Grievance, Appeal & view all Grievance" loading="lazy" />
+                  </div>
+                  <div class="tab-pane" id="v-pills-mobile-step-4" role="tabpanel"
+                    aria-labelledby="v-pills-mobile-step-4-tab">
+                    <img src="img/app_mobile_4.jpg" class="img-fluid" alt="Image of All Submitted
+										Grievances List" loading="lazy" />
+                  </div>
+                  <div class="tab-pane" id="v-pills-mobile-step-5" role="tabpanel"
+                    aria-labelledby="v-pills-mobile-step-5-tab">
+                    <img src="img/app_mobile_5.jpg" class="img-fluid" alt="Image of Detailed view of
+										Submitted Grievance" loading="lazy" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-4 d-flex align-items-center downloadMobileAppDiv">
+            <div class="downloadAppDiv read-tag" tabindex="0">
+              <h3 tabindex="0">
+                <span>JK-SAMADHAN</span><br />
+                Mobile Application
+              </h3>
+              <div class="downloadAppLinksDiv">
+                <p tabindex="0">Download Our App</p>
+                <div class="downloadAppLinkWrap">
+                  <a href="javascript:void(0)" class="downloadA me-3" title="applestore-img">
+                    <span class="sr-only">Download on the App Store</span>
+                    <img src="img/appleStoreImg.png" class="img-fluid" tabindex="0" alt="Image of App Store"
+                      loading="lazy" />
+                  </a>
+                  <a href="https://samadhan.jk.gov.in/prod_live/JKSP_4.0.apk" class="downloadA" title="playstore-img"
+                    aria-label="This Link Get on Google Play">
+                    <span class="sr-only">Get on Google Play</span>
+                    <img src="img/androidStoreImg.png" class="img-fluid" tabindex="0" alt="Image of Google Play Store"
+                      loading="lazy" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom_right_bg">
+      <img class="img-fluid w-100" src="img/blue_wave_bg.png" loading="lazy" />
+    </div>
+  </div>
+
+  <!-- Mobile app links section end -->
+
+  <!-- About Start -->
+  <div class="container-fluid py-3 aboutBg click-content" id="aboutBg">
+    <div class="container">
+      <div class="aboutUs">
+        <div class="row g-2 align-items-center">
+          <div class="col-lg-6 col-md-6 col-sm-12 wow fadeIn" data-wow-delay=".3s">
+            <div class="h-100 position-relative">
+              <!-- <div class="top_right">
+                          <h3>99%</h3>
+                          <span> Cases Resolved </span>
+                        </div>
+                        <img src="img/about_img.png" class="img-fluid w-100 pe-4" alt="">
+                        <div class="bottom_left">
+                          <h3> 3,465</h3>
+                          <span> Cases Resolved </span>
+                        </div> -->
+              <div class="about-img">
+                <!--								<button type="button" class="btn btn-primary" data-bs-toggle="modal"-->
+                <!--									data-bs-target="#aboutVideoModal">-->
+
+                <!-- <img  class="img-fluid" src="img/video_thumbnail.png" alt="builder app video" />          -->
+                <img class="img-fluid" src="img/about-us.png" alt="about image" tabindex="0" loading="lazy" />
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-12 ps-5 wow fadeIn read-tag" tabindex="0" data-wow-delay=".5s">
+            <h1 class="mb-5" tabindex="0">About Us</h1>
+            <h4 class="mb-4">
+              <!-- <span>J</span>ammu <span>K</span>ashmir <span>U</span>nified <span>G</span>rievance <span>R</span>edressal & <span>M</span>onitoring <span>S</span>ystem -->
+              <img class="img-fluid" src="img/group-logo-updated.png" loading="lazy" alt="Logo of JK Samadhan"
+                tabindex="0" />
+            </h4>
+            <p tabindex="0">
+              Welcome to JK SAMADHAN-A Unified Grievance Redressal &
+              Monitoring System, empowering Citizens of Jammu and Kashmir to
+              register and track their grievances and subsequent redressal.
+            </p>
+
+            <!-- <div class="text-right"> <a href="" class="px-3 py-2 text-secondary">Read More</a></div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About End -->
+
+
+
+
+  <!--- Steps to follow new section starts -->
+
+  <div class="steps_to_follow click-content py-5">
+    <div class="container">
+      <div class="mx-auto commmon-title wow fadeIn" data-wow-delay=".3s">
+        <h1 class="read-tag d-flex align-items-ceneter" tabindex="0">Steps to Lodge the Grievance <img
+            src="img/icons/arrow-icon.svg" alt=""></h1>
+      </div>
+
+      <!-- <div class="row g-5 justify-content-center">
+    <div class="col-lg-12 col-xl-12 wow fadeIn" data-wow-delay=".3s">
+      <img src="img/steps_to_follow.png" class="img-fluid" alt="steps to follow img">
+    </div>
+  </div> -->
+
+      <div class="row g-5 justify-content-center">
+        <div class="col-lg-12 col-xl-12 wow fadeIn read-tag" tabindex="0" data-wow-delay=".3s">
+
+          <img src="img/wave-step.png" alt="image" class="img-fluid">
+
+          <!-- <img src="img/steps_to_follow.png" class="img-fluid" alt="steps to follow img"> -->
+          <div class="steps_main_div d-none">
+            <img src="img/step_bg.png" class="img-fluid" alt="steps to follow img" loading="lazy" />
+            <div class="visibleForMobile" tabindex="0">Step 1</div>
+            <span class="sr-only">Step 1</span>
+            <div class="step_div step_1">
+              <span tabindex="0">
+                Navigate to the registration button and create user login by
+                filling in basic details.
+              </span>
+            </div>
+            <div class="visibleForMobile">Step 2</div>
+            <span class="sr-only" tabindex="0">Step 2</span>
+            <div class="step_div step_2">
+              <span tabindex="0">
+                Login and proceed to register your grievance by selecting the
+                relevant category of grievance and click on submit to file the
+                grievance.
+              </span>
+            </div>
+            <div class="visibleForMobile">Step 3</div>
+            <span class="sr-only read-tag" tabindex="0">Step 3</span>
+            <div class="step_div step_3 read-tag" tabindex="0">
+              <span tabindex="0">
+                Track the status of the grievance in the user dashboard.
+              </span>
+            </div>
+            <div class="visibleForMobile">Step 4</div>
+            <span class="sr-only read-tag" tabindex="0">Step 4</span>
+            <div class="step_div step_4 read-tag" tabindex="0">
+              <span tabindex="0">
+                Appeal to the higher authority, if the resolution of the
+                grievance is not satisfactory.
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-12 col-xl-12 wow fadeIn" data-wow-delay=".3s">
+          <!-- <p> JKIGRAMS is not just a portal; it's a commitment to transparent, efficient, and citizen-centric governance. Your active participation and engagement are vital in making this initiative a success. Together, let's build a stronger and more responsive Jammu and Kashmir. Thank you for choosing JKIGRAMS.
+      </p> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Faqs Start -->
+  <div class="container-fluid faqs py-5 click-content d-none" id="faqDiv">
+    <div class="container pb-5">
+      <div class="mx-auto pb-5 wow fadeIn text-center" data-wow-delay=".3s">
+        <!-- <h1><span class="text-secondary">F</span>AQ'S</h1> -->
+        <span tabindex="0"> FAQ </span>
+        <h1 class="read-tag" tabindex="0">Frequently Asked Questions</h1>
+      </div>
+      <div class="row g-5 justify-content-center">
+        <div class="col-lg-12 col-xl-12 wow fadeIn" data-wow-delay=".3s">
+          <!-- Default Accordion -->
+          <div class="accordion accordion-flush" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                  What are the contact details of Department of Public
+                  Grievances, J&K?
+                  <span class="sr-only">press enter and after click tab to hear the details
+                  </span>
+                </button>
+              </h2>
+              <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                  <table cellpadding="5" class="table-bordered">
+                    <tbody>
+                      <tr class="read-tag" tabindex="0">
+                        <th>DIVISION</th>
+                        <th>JAMMU</th>
+                        <th>KASHMIR</th>
+                      </tr>
+                      <tr class="read-tag" tabindex="0">
+                        <td>
+                          <p>
+                            <strong>Office Address</strong>
+                          </p>
+                        </td>
+                        <td>
+                          <p>
+                            Department of Public Grievances Civil Secretariat,
+                            Jammu -180001
+                          </p>
+                        </td>
+                        <td>
+                          <p>
+                            Department of Public Grievances Church Lane,
+                            Sonwar, Srinagar -190001
+                          </p>
+                        </td>
+                      </tr>
+
+                      <tr class="read-tag" tabindex="0">
+                        <td>
+                          <p>
+                            <strong>Toll Free Call Centre</strong>
+                          </p>
+                        </td>
+                        <td>
+                          <p>1905</p>
+                        </td>
+                        <td>
+                          <p>1905</p>
+                        </td>
+                      </tr>
+                      <tr class="read-tag" tabindex="0">
+                        <td>
+                          <p>
+                            <strong>e-Mail</strong>
+                          </p>
+                        </td>
+                        <td colspan="2">
+                          <p>
+                            <a
+                              href="https://jkgrievance.in/AwazAAwam/ContactUs.aspx">jk-grievance[at]jk[dot]gov[dot]in</a>
+                          </p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  Where can the grievances be registered/sent?
+                  <span class="sr-only" tabindex="0">press enter and after click tab to hear the details
+                  </span>
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body read-tag" tabindex="0">
+                  Grievances can be registered with the concern department
+                  online through Web Portal (<a href="https://samadhan.jk.gov.in"
+                    target="_blank">https://samadhan.jk.gov.in</a>), Mobile application (Android and iOS) as well as by
+                  post
+                  or by hand/in person, from the public and through Toll Free
+                  no. 1905.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                  How do I lodge the grievance?
+                  <span class="sr-only" tabindex="0">press enter and after click tab to hear the details
+                  </span>
+                </button>
+              </h2>
+              <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body read-tag" tabindex="0">
+                  The grievances can be lodged online on Web Portal (<a href="https://samadhan.jk.gov.in"
+                    target="_blank">https://samadhan.jk.gov.in</a>), Mobile Application (Android and iOS) and In cases
+                  where
+                  internet facility is not available or even otherwise, the
+                  citizen I s free to send her/his grievance by Post. There is
+                  no prescribed format. However the application must clearly
+                  mention the Name, Complete Address and Contact No of the
+                  Applicant.The grievance may be written on any plain sheet of
+                  paper and addressed to Department of Public Grievances.
+                  <br />
+                  The grievance can also be filled through the Toll Free No.
+                  (1905).
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingFour">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                  What happens when I lodge the grievance?
+                  <span class="sr-only" tabindex="0">press enter and after click tab to hear the details
+                  </span>
+                </button>
+              </h2>
+              <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body read-tag" tabindex="0">
+                  The grievance is acknowledged online or by post. A unique
+                  registration number is given to each grievance ad it will
+                  directly forwarded to concern department.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingFive">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                  How do I track my grievance?
+                  <span class="sr-only" tabindex="0">press enter and after click tab to hear the details
+                  </span>
+                </button>
+              </h2>
+              <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body read-tag" tabindex="0">
+                  The grievance may be tracked on the Web Portal (<a href="https://samadhan.jk.gov.in"
+                    target="_blank">https://samadhan.jk.gov.in</a>) and click on Grievance > check status link.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingSix">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                  What happens to the grievances? How are the grievances dealt
+                  with?
+                  <span class="sr-only" tabindex="0">press enter and after click tab to hear the details
+                  </span>
+                </button>
+              </h2>
+              <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body read-tag" tabindex="0">
+                  The grievances are electronically forwarded to the concerned
+                  Department. Every Department has designated a Nodal
+                  Officer(s) for Redressal of grievances pertaining to that
+                  particular Department.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingSeven">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                  After Redressal, can the grievance be re-opened for further
+                  correspondence about it having been closed without details
+                  etc.?
+                </button>
+              </h2>
+              <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body read-tag" tabindex="0">
+                  Yes, In such situations, the citizen will have to lodge
+                  Appeal in reference to the closed grievance if the user is
+                  not satisfied with the resolution.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingEight">
+                <button class="accordion-button collapsed read-tag" tabindex="0" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+                  What are the types of grievances which are not taken up for
+                  Redressal by DoPG?
+                  <span class="sr-only" tabindex="0">press enter and after click tab to hear the details
+                  </span>
+                </button>
+              </h2>
+              <div id="collapseEight" class="accordion-collapse collapse" aria-labelledby="headingEight"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body read-tag" tabindex="0">
+                  <ol tabindex="0">
+                    <li tabindex="0">
+                      Subjudice cases or any matter concerning judgment given
+                      by any court.
+                    </li>
+                    <li tabindex="0">Personal and Family disputes.</li>
+                    <li tabindex="0">Service Matters.</li>
+                    <li tabindex="0">RTI Matters</li>
+                    <li tabindex="0">
+                      Anything that impacts security and territorial integrity
+                      of the country or friendly relations with other
+                      countries.
+                    </li>
+                    <li tabindex="0">Suggestions.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Default Accordion Example -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Faqs End -->
+  <!--	qr modal -->
+  <div class="modal fade" id="qrModal" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="qrModalLabel" tabindex="0">QR Code</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close Modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="img/analysis.png" class="img-fluid" alt="QR Code" tabindex="0" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticker -->
+  <div th:if="${ticker}" class="ticker-wrapper py-2">
+    <div class="ticker-text">
+      ⚠️ This is a DEVELOPMENT SERVER ⚠️ &nbsp; This is a DEVELOPMENT SERVER ⚠️ &nbsp; This is a DEVELOPMENT SERVER ⚠️
+    </div>
+  </div>
+
+ 
+  <!-- Footer Start -->
+  <div lang="en" th:insert="~{mainFooter :: mainFooter}"></div>
+
+
+  <script>
+    $(document).ready(function () {
+
+      var sync1 = $("#sync1");
+      var sync2 = $("#sync2");
+      var slidesPerPage = 5; //globaly define number of elements per page
+      var syncedSecondary = true;
+
+      sync1.owlCarousel({
+        items: 1,
+        slideSpeed: 2000,
+        nav: false,
+        autoplay: true,
+        dots: false,
+        loop: true,
+        responsiveRefreshRate: 200,
+      }).on('changed.owl.carousel', syncPosition);
+
+      sync2
+        .on('initialized.owl.carousel', function () {
+          sync2.find(".owl-item").eq(0).addClass("current");
+        })
+        .owlCarousel({
+          items: slidesPerPage,
+          dots: true,
+          nav: true,
+          smartSpeed: 200,
+          slideSpeed: 500,
+          slideBy: slidesPerPage, //alternatively you can slide by 1, this way the active slide will stick to the first item in the second carousel
+          responsiveRefreshRate: 100,
+          direction: 'vertical',
+        }).on('changed.owl.carousel', syncPosition2);
+
+      function syncPosition(el) {
+        //if you set loop to false, you have to restore this next line
+        //var current = el.item.index;
+
+        //if you disable loop you have to comment this block
+        var count = el.item.count - 1;
+        var current = Math.round(el.item.index - (el.item.count / 2) - .5);
+
+        if (current < 0) {
+          current = count;
+        }
+        if (current > count) {
+          current = 0;
+        }
+
+        //end block
+
+        sync2
+          .find(".owl-item")
+          .removeClass("current")
+          .eq(current)
+          .addClass("current");
+        var onscreen = sync2.find('.owl-item.active').length - 1;
+        var start = sync2.find('.owl-item.active').first().index();
+        var end = sync2.find('.owl-item.active').last().index();
+
+        if (current > end) {
+          sync2.data('owl.carousel').to(current, 100, true);
+        }
+        if (current < start) {
+          sync2.data('owl.carousel').to(current - onscreen, 100, true);
+        }
+      }
+
+      function syncPosition2(el) {
+        if (syncedSecondary) {
+          var number = el.item.index;
+          sync1.data('owl.carousel').to(number, 100, true);
+        }
+      }
+
+      sync2.on("click", ".owl-item", function (e) {
+        e.preventDefault();
+        var number = $(this).index();
+        sync1.data('owl.carousel').to(number, 300, true);
+      });
+    });
+
+
+
+    $('.banner-slider').owlCarousel({
+      loop: true,
+      responsiveClass: true,
+      items: 1,
+      nav: false,
+      dots: false,
+      autoplay: true,
+    })
+
+
+    const swiper = new Swiper('.announce-swiper', {
+      direction: 'vertical',
+      slidesPerView: 4, // Show 4 slides at a time
+      spaceBetween: 10,
+      loop: true,
+      autoHeight: true,
+      autoplay: {
+        delay: 500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      speed: 1500,
+    });
+
+    const button = document.querySelector('.back-to-top');
+
+
+    const scrollToTop = () => {
+      button.addEventListener("click", () => {
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        });
+        // console.log(event);
+      });
+    };
+
+    scrollToTop();
+
+
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html th:fragment="mainFooter" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Insert title here</title>
+</head>
+
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<style>
+		#caDiv .registr {
+			width: 420px !important;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container-fluid footer ftr wow fadeIn" data-wow-delay=".3s">
+		<input type="hidden" id="context_path" th:value="${globalContextPath}" />
+		<input type="hidden" id="sessionname" th:value="${sessionname}" /> <input type="hidden" id="sessionvalue"
+			class="sessionvalue" />
+		<div class="container">
+			<div class="row g-5">
+				<div class="col-lg-5 col-md-6">
+					<a href="/" class="footer_logo_a"> <!-- <h3 class="text-white fw-bold d-block">
+
+							<span class="text-secondary">JK-UNIFIED</span><br /> Jammu
+							Kashmir Unified Grievance Redressal & Monitoring System
+						</h3> --> <img class="img-fluid" src="img/both-logo.png" loading="lazy" />
+					</a>
+					<div class="visitor-count mb-2">
+						<div class="d-flex align-items-center" tabindex="0">
+							<i class="fas fa-edit me-2"></i> <span class="fs-6">Last
+								Updated on :</span>
+						</div>
+						<span class="fs-6" title="Last Update Date" tabindex="0" th:text="${buildDate}"></span>
+					</div>
+					<div class="visitor-count mb-2">
+						<div class="d-flex align-items-center" tabindex="0">
+							<i class="fas fa-wrench me-2"></i> <span class="fs-6">Build Version :</span>
+						</div>
+						<span class="fs-6" title="Last Update Date" tabindex="0" th:text="${buildVersion}"></span>
+					</div>
+					<div class="visitor-count">
+						<div class="d-flex align-items-center" tabindex="0">
+							<i class="fa fa-eye fa-lg me-2"></i> <span class="fs-6">Visitors
+								:</span>
+						</div>
+						<!-- <span class="fs-6" id="hideVisit" title="Visitor"  tabindex="0"
+							th:text="${visCount}"></span> -->
+						<span class="fs-6" id="hideVisit" title="Visitor" tabindex="0"
+							th:text="${visitorsCounts}"></span>
+					</div>
+
+					<!-- <h1 class="ftrJk mt-5">JK-IGRAMS</h1> -->
+					<!-- <p class="mt-4 text-light">Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta facere delectus qui placeat inventore consectetur repellendus optio debitis.</p> -->
+				</div>
+
+				<div class="col-lg-7 col-md-6" id="contactUs">
+					<div class="d-flex align-items-center gap-md-3 gap-1 flex-wrap">
+						<a href="#" class="h3 text-white ">Contact Us : </a> <a href="javascript:void(0);"
+							class="pb-2 text-light contact-title"> <i class="fas fs-5 fa-phone-alt text-white me-2"></i>
+							<span class="fs-5 text-white fs-4 ">Call-</span> <span class="text-white fs-4">1905</span>
+							<span class="fs-5 text-white">
+								For Filing Your Grievance.</span>
+						</a>
+					</div>
+					<div class="text-white mt-1 d-flex flex-column contact-link">
+						<div class="row gy-3">
+							<div class="col-md-6">
+								<h5 class="text-light" tabindex="0">
+									<u>Jammu</u>
+								</h5>
+								<p class="mb-1 text-light" tabindex="0">
+									<i class="fas fa-map-marker-alt me-2 text-white"></i>
+									Department of Public Grievances Civil Secretariat, Jammu
+									-180001
+								</p>
+								<!--									<p  class="mb-1 text-light"><i class="fas fa-phone-alt text-white me-2"></i>-->
+								<!--																			Tel - 0191 - 2560109, 2560265, 2560266-->
+								<!--																		</p>-->
+								<!--								<p class="mb-1 text-light"><i class="fas fa-fax text-white me-2"></i>-->
+								<!--										Fax - 0191-2566182(J)-->
+								<!--									</p> -->
+							</div>
+							<div class="col-md-6">
+								<h5 class="text-light" tabindex="0">
+									<u>Kashmir</u>
+								</h5>
+								<p class="mb-1 text-light" tabindex="0">
+									<i class="fas fa-map-marker-alt me-2 text-white"></i>
+									Department of Public Grievances Church Lane, Sonwar, Srinagar
+									-190001
+								</p>
+								<!--																	<p  class="mb-1 text-light"><i class="fas fa-phone-alt text-white me-2"></i>-->
+								<!--																											Tel - 0194-2502596, 2502910, 2483236-->
+								<!--																										</p>-->
+								<!--								<p class="mb-1 text-light"><i class="fas fa-fax text-white me-2"></i>-->
+								<!--																		Fax - 0191-2566182(J)-->
+								<!--																	</p> -->
+							</div>
+						</div>
+						<hr />
+						<a href="javascript:void(0);" class="text-light"><i class="far fa-envelope text-white me-2"></i>
+							jk-grievance[at]jk[dot]gov[dot]in</a>
+					</div>
+				</div>
+			</div>
+			<hr class="text-light" />
+			<div class="row read-tag" tabindex="0">
+				<div class="col-md-6 text-center text-md-start">
+
+					<span class="text-light">©2025, Website Developed by <a href="#"
+							class="text-white">BISAG-N.</a></span>
+
+				</div>
+				<div class="col-md-6 text-center text-md-end">
+					<span class="text-light" tabindex="0">© 2025 Content
+						Owned by Government of J&K</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Footer End -->
+
+	<!-- Back to Top -->
+	<a href="javascript:void(0);" class="back-to-top"><i class="fa fa-arrow-up text-white"></i></a>
+
+	<div class="modal" id="faqModal" tabindex="-1" aria-labelledby="faqModal" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-scrollable">
+			<div class="modal-content">
+				<button type="button" class="btn-close fs-3 ms-auto" data-bs-dismiss="modal"
+					aria-label="Close"></button>
+				<div class="modal-body">
+					<div class="container-fluid faqs py-5" id="faqDiv">
+						<div class="container pb-5">
+							<div class="mx-auto pb-5 wow fadeIn text-center" data-wow-delay=".3s">
+								<!-- <h1><span class="text-secondary">F</span>AQ'S</h1> -->
+								<span tabindex="0"> FAQ </span>
+								<h1 tabindex="0">
+									<span class="text-secondary">F</span>requently Asked Questions
+								</h1>
+							</div>
+							<div class="row g-5 justify-content-center">
+								<div class="col-lg-12 col-xl-12 wow fadeIn" data-wow-delay=".3s">
+									<!-- Default Accordion -->
+									<div class="accordion accordion-flush" id="accordionExample">
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingOne">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
+													aria-expanded="false" aria-controls="flush-collapseOne">
+													What are the contact details of Department of Public
+													Grievances, J&amp;K?</button>
+											</h2>
+											<div id="flush-collapseOne" class="accordion-collapse collapse"
+												aria-labelledby="flush-headingOne"
+												data-bs-parent="#accordionFlushExample">
+												<div class="accordion-body">
+													<table cellpadding="5" class="table-bordered">
+														<tbody>
+															<tr>
+																<th>DIVISION</th>
+																<th>JAMMU</th>
+																<th>KASHMIR</th>
+															</tr>
+															<tr>
+																<td>
+																	<p>
+																		<strong>Office Address</strong>
+																	</p>
+																</td>
+																<td>
+																	<p>Department of Public Grievances Civil
+																		Secretariat, Jammu -180001</p>
+																</td>
+																<td>
+																	<p>Department of Public Grievances Church Lane,
+																		Sonwar, Srinagar -190001</p>
+																</td>
+															</tr>
+															<!--															<tr>-->
+															<!--																<td>-->
+															<!--																	<p>-->
+															<!--																		<strong>Contact Nos</strong>-->
+															<!--																	</p>-->
+															<!--																</td>-->
+															<!--																<td>-->
+															<!--																	<p>0191 - 2560109, 2560265, 2560266</p>-->
+															<!--																</td>-->
+															<!--																<td>-->
+															<!--																	<p>0194-2502596, 2502910, 2483236</p>-->
+															<!--																</td>-->
+															<!--															</tr>-->
+															<!--															<tr>-->
+															<!--																<td>-->
+															<!--																	<p>-->
+															<!--																		<strong>Fax</strong>-->
+															<!--																	</p>-->
+															<!--																</td>-->
+															<!--																<td>-->
+															<!--																	<p>0191-2566182(J)</p>-->
+															<!--																</td>-->
+															<!--																<td>-->
+															<!--																	<p>0194-2501262</p>-->
+															<!--																</td>-->
+															<!--															</tr>-->
+															<tr>
+																<td>
+																	<p>
+																		<strong>Toll Free Call Centre</strong>
+																	</p>
+																</td>
+																<td>
+																	<p>1905</p>
+																</td>
+																<td>
+																	<p>1905</p>
+																</td>
+															</tr>
+															<tr>
+																<td>
+																	<p>
+																		<strong>e-Mail</strong>
+																	</p>
+																</td>
+																<td colspan="2">
+																	<p>
+																		<a
+																			href="https://jkgrievance.in/AwazAAwam/ContactUs.aspx">jk-grievance[at]jk[dot]gov[dot]in</a>
+																	</p>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingTwo">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+													aria-expanded="false" aria-controls="collapseTwo">
+													Where can the grievances be registered/sent?</button>
+											</h2>
+											<div id="collapseTwo" class="accordion-collapse collapse"
+												aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+												<div class="accordion-body" tabindex="0">
+													Grievances can be registered with the concern department
+													online through Web Portal (<a href="https://samadhan.jk.gov.in"
+														target="_blank">https://samadhan.jk.gov.in</a>),
+													Mobile application (Android and iOS) as well as by post or
+													by hand/in person, from the public and through Toll Free
+													no. 1905.
+												</div>
+											</div>
+										</div>
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingThree">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#collapseThree"
+													aria-expanded="false" aria-controls="collapseThree">
+													How do I lodge the grievance?</button>
+											</h2>
+											<div id="collapseThree" class="accordion-collapse collapse"
+												aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+												<div class="accordion-body" tabindex="0">
+													The grievances can be lodged online on Web Portal (<a
+														href="https://samadhan.jk.gov.in"
+														target="_blank">https://samadhan.jk.gov.in</a>),
+													Mobile Application (Android and iOS) and In cases where
+													internet facility is not available or even otherwise, the
+													citizen I s free to send her/his grievance by Post. There
+													is no prescribed format. However the application must
+													clearly mention the Name, Complete Address and Contact No
+													of the Applicant.The grievance may be written on any plain
+													sheet of paper and addressed to Department of Public
+													Grievances. <br /> The grievance can also be filled
+													through the Toll Free No. (1905).
+												</div>
+											</div>
+										</div>
+
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingFour">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#collapseFour"
+													aria-expanded="false" aria-controls="collapseFour">
+													What happens when I lodge the grievance?</button>
+											</h2>
+											<div id="collapseFour" class="accordion-collapse collapse"
+												aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+												<div class="accordion-body" tabindex="0">The grievance is
+													acknowledged online or by post. A unique registration
+													number is given to each grievance ad it will directly
+													forwarded to concern department.</div>
+											</div>
+										</div>
+
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingFive">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#collapseFive"
+													aria-expanded="false" aria-controls="collapseFive">
+													How do I track my grievance?</button>
+											</h2>
+											<div id="collapseFive" class="accordion-collapse collapse"
+												aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+												<div class="accordion-body" v>
+													The grievance may be tracked on the Web Portal (<a
+														href="https://samadhan.jk.gov.in"
+														target="_blank">https://samadhan.jk.gov.in</a>)
+													and click on Grievance > check status link.
+												</div>
+											</div>
+										</div>
+
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingSix">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#collapseSix"
+													aria-expanded="false" aria-controls="collapseSix">
+													What happens to the grievances? How are the grievances
+													dealt with?</button>
+											</h2>
+											<div id="collapseSix" class="accordion-collapse collapse"
+												aria-labelledby="headingSix" data-bs-parent="#accordionExample">
+												<div class="accordion-body" tabindex="0">The grievances are
+													electronically forwarded to the concerned Department. Every
+													Department has designated a Nodal Officer(s) for Redressal
+													of grievances pertaining to that particular Department.</div>
+											</div>
+										</div>
+
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingSeven">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#collapseSeven"
+													aria-expanded="false" aria-controls="collapseSeven">
+													After Redressal, can the grievance be re-opened for further
+													correspondence about it having been closed without details
+													etc.?</button>
+											</h2>
+											<div id="collapseSeven" class="accordion-collapse collapse"
+												aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
+												<div class="accordion-body" tabindex="0">Yes, In such situations,
+													the citizen will have to lodge Appeal in reference to the
+													closed grievance if the user is not satisfied with the
+													resolution.</div>
+											</div>
+										</div>
+
+										<div class="accordion-item">
+											<h2 class="accordion-header" id="headingEight">
+												<button class="accordion-button collapsed" type="button"
+													data-bs-toggle="collapse" data-bs-target="#collapseEight"
+													aria-expanded="false" aria-controls="collapseEight">
+													What are the types of grievances which are not taken up for
+													Redressal by DoPG?</button>
+											</h2>
+											<div id="collapseEight" class="accordion-collapse collapse"
+												aria-labelledby="headingEight" data-bs-parent="#accordionExample">
+												<div class="accordion-body" tabindex="0">
+													<ol>
+														<li>Subjudice cases or any matter concerning judgment
+															given by any court.</li>
+														<li>Personal and Family disputes.</li>
+														<li>Service Matters.</li>
+														<li>RTI Matters</li>
+														<li>Anything that impacts security and territorial
+															integrity of the country or friendly relations with other
+															countries.</li>
+														<li>Suggestions.</li>
+													</ol>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- End Default Accordion Example -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- FAQs Modal -->
+
+	<!-- Modal HTML -->
+	<div id="myModal" class="qr-modal modal fade">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="qr-wrapper">
+					<div class="qr-content">
+						<button class="close-btn" data-bs-dismiss="modal">
+							<i class="fas fa-times"></i>
+						</button>
+						<div class="qr-head">
+							<img src="img/samadhan_logo.png" alt="QR Code Image" tabindex="0"
+								style="max-width: 200px; margin-inline: auto; display: block" />
+							<h4 tabindex="0" style="text-align: center; color: var(- -blur-clr); margin-top: 1rem;">
+								Click To Download Mobile App</h4>
+						</div>
+						<div class="qr-block mx-auto d-flex align-items-ceneter justify-content-center gap-4">
+							<a href="https://apps.apple.com/in/app/jk-samadhan/id6477820822" targte="_blank"><img
+									src="img/appleStoreImg.png" tabindex="0" alt="aplstr-image" /></a>
+							<a href="https://play.google.com/store/apps/details?id=com.bisagn.jksamadhan&hl=en_IN"
+								targte="_blank"><img src="img/androidStoreImg.png" tabindex="0"
+									alt="gglstr-image" /></a>
+						</div>
+						<!-- 						<p class="text-center fw-bold">Also Available on Playstore</p> -->
+					</div>
+					<!--				<div class="mobile-screen">-->
+					<!--					<img src="img/plain-mobile-screen-1.png">-->
+					<!--					<img src="img/samadhan_logo.png" class="mobile-logo">-->
+					<!--				</div>-->
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- FAQs Modal -->
+
+	<!-- Modal HTML -->
+	<div id="myModal" class="qr-modal modal fade">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="qr-wrapper">
+					<div class="qr-content">
+						<button class="close-btn" data-bs-dismiss="modal">
+							<i class="fas fa-times"></i>
+						</button>
+						<div class="qr-head">
+							<img src="img/samadhan_logo.png" alt="JK Samadhan Logo" tabindex="0"
+								style="max-width: 200px; margin-inline: auto; display: block">
+							<h4 tabindex="0" style="text-align: center; color: var(- -blur-clr); margin-top: 1rem;">
+								Download
+								Mobile App</h4>
+						</div>
+						<div class="qr-block mx-auto">
+							<img src="img/jk-qr.png" alt="qr-image" tabindex="0">
+						</div>
+						<h5 class="text-center" tabindex="0" style="color: var(- -blur-clr);">Now
+							Available on Mobile Seva</h5>
+						<p tabindex="0" class="text-center">JK SAMADHAN-A Unified Grievance
+							Redressal & Monitoring System</p>
+
+					</div>
+					<!--				<div class="mobile-screen">-->
+					<!--					<img src="img/plain-mobile-screen-1.png">-->
+					<!--					<img src="img/samadhan_logo.png" class="mobile-logo">-->
+					<!--				</div>-->
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+	<!-- Auth Modals -->
+	<div th:replace="authModal :: authModal"></div>
+	<!-- Modal End -->
+
+
+	<!-- JavaScript Libraries -->
+	<script src="js/jquery.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
+
+
+
+
+	<script src="lib/wow/wow.min.js"></script>
+	<script src="lib/easing/easing.min.js"></script>
+	<script src="lib/waypoints/waypoints.min.js"></script>
+	<script src="lib/owlcarousel/owl.carousel.min.js"></script>
+	<script src="vendor/swiper/swiper.min.js"></script>
+	<script src="js/cryptoJS.js"></script>
+	<script src="js/code.js"></script>
+
+	<script src="js/csrfToken.js"></script>
+	<script src="js/aesUtil.js"></script>
+	<script src="js/forge.js"></script>
+	<script src="js/HybridEncryption.js"></script>
+	<script src="js/geographicData.js"></script>
+
+	<script src="js/index.js"></script>
+	<!-- Template Javascript -->
+	<script src="js/color_font.js"></script>
+	<script src="js/main.js"></script>
+	<script th:src="@{js/resourceViewer.js}"></script>
+
+	<script src="js/Stopinspect.js"></script>
+	<script th:src="@{js/website_translation_utility.js}"></script>
+</body>
+
+</html>

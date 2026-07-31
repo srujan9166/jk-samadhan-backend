@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<style>
+	#mainContainer {
+		padding: 10rem 8rem;
+		zoom: 1.2;
+	}
+
+	#mainContainer * {
+		font-family: serif;
+	}
+
+	#mainContainer .header-top {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+	#mainContainer .top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	#mainContainer .top p {
+		font-size: 1.125rem;
+	}
+
+	#mainContainer .header-line p,
+	#mainContainer .header-line a {
+		font-size: 1.5rem;
+	}
+
+	.header-line {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	.header-line p {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.para {
+		margin-top: 4rem;
+	}
+
+	.para p {
+		font-size: 2rem;
+		line-height: 3.5rem;
+	}
+</style>
+
+<body>
+
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li th:if="${userflag == 'DH User'}" class="breadcrumb-item active">Dealing Hand Grievance Form</li>
+					<li th:if="${userflag == 'RMC User'}" class="breadcrumb-item active">RMC Grievance Form</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+
+		<section class="section dashboard">
+			<div class="row">
+				<!-- <button class="collapsible card-title px-3 py-2 mb-2 text-dark" data-toggle="collapse" data-target="#collapseDiv">Citizen Grievance Form</button> -->
+				<!-- Sales Card -->
+				<!-- <div class="col-md-12 yrTab content collapse show" id="collapseDiv"> -->
+				<div class="col-md-12 yrTab">
+					<div class="card">
+						<div class="card-body ">
+							<h5 class="fw-bold text-center mb-0 ">Citizen Details</h5>
+							<hr>
+							<!-- 14 JAN 2024 - SKY - dealing hand form - start -->
+							<div class="row g-3 px-3">
+								<!-- <div class="col-md-12">
+										<label for="" class="form-label">Complaint Date & Time</label>
+											<input type="datetime-local" class="form-control">
+										</div> -->
+
+								<div class="col-md-6">
+									<label for="inputState" class="form-label">Mode Of Complaint / Reference</label>
+									<span style="color: red;">*</span>
+									<select name="" id="moComp" class="form-select">
+										<option value="0">Select</option>
+										<option value="In Person">In Person / By Hand</option>
+										<option value="By Post">By Post</option>
+										<option th:if="${userflag == 'DH User'}" value="By Call">By Call</option>
+										<option th:if="${userflag == 'DH User'}" value="Video Grievance">Video Grievance
+										</option>
+										<option th:if="${userflag == 'RMC User'}" value="By Email">By Email</option>
+									</select>
+								</div>
+
+								<div class="col-md-6 visually-hidden" id="pTrackingDiv">
+									<label for="" class="form-label">Post Tracking No.</label>
+									<span style="color: red;">*</span>
+									<input type="text" name="" id="" class="form-control pTrackingNo">
+									<span id='postTrack' style='color:red'></span>
+								</div>
+
+								<div th:if="${userflag == 'RMC User'}" class="col-md-6">
+									<label for="inputState" class="form-label">Grievance / Reference Received
+										from</label>
+									<span style="color: red;">*</span>
+									<select name="" id="grvRefrecFrom" class="form-select">
+										<option value="0">Select</option>
+										<option value="HLG Secretariat, Lok Bhavan">HLG Secretariat, Lok Bhavan</option>
+										<option value="Office of Chief Secretary">Office of Chief Secretary</option>
+										<option value="Central Registry Unit (CRU)">Central Registry Unit (CRU)</option>
+										<option value="General Administration Department (GAD)">General Administration
+											Department (GAD)</option>
+										<option value="Other">Other</option>
+									</select>
+								</div>
+
+								<div class="col-md-6">
+									<label th:if="${userflag == 'DH User'}" for="" class="form-label">Any previous file
+										number (if any)</label>
+									<label th:if="${userflag == 'RMC User'}" for="" class="form-label">Previous
+										LG-RMCGAD Tracking Number (if any)</label>
+									<input type="text" name="" id="" class="form-control prevFileNo">
+								</div>
+
+								<div th:if="${userflag == 'RMC User'}" class="col-md-6">
+									<label for="" class="form-label">Communication Number</label>
+									<input type="text" name="" id="" class="form-control commRmcNo">
+								</div>
+
+								<!-- <div class="col-md-6">
+									<label for="" class="form-label">Region</label>
+									<select id="inputRegion1" class="form-select">
+										<option value="0">Select</option>
+										<option th:each="c : ${regiontList}" th:value="${c.region}"
+											th:text="${c.region}"></option>
+									</select>
+								</div>
+								<div class="col-md-6">
+									<label for="" class="form-label">District</label>
+									<select id="inputDistrict" class="form-select" disabled="disabled">
+										<option value="0">Select</option>
+									</select>
+								</div> -->
+								<div class="col-md-6">
+									<label for="" class="form-label">Name</label>
+									<span style="color: red;">*</span>
+									<input type="text" name="" id="" class="form-control grvName">
+									<span id='gName' style='color:red'></span>
+								</div>
+								<div class="col-md-6">
+									<label for="" class="form-label">Gender</label>
+									<span style="color: red;">*</span>
+									<select name="" id="gender" class="form-select">
+										<option value="0">Select</option>
+										<option value="Male">Male</option>
+										<option value="Female">Female</option>
+										<option value="Transgender">Transgender</option>
+									</select>
+								</div>
+								<div class="col-md-6">
+									<label for="" class="form-label">Mobile No.</label>
+									<span style="color: red;">*</span>
+									<input type="text" name="" id="" class="form-control mobileNo" maxlength="10">
+									<span id='mNo' style='color:red'></span>
+								</div>
+								<div class="col-md-6">
+									<label for="" class="form-label">Email Id</label>
+									<input type="email" name="" id="" class="form-control emailId">
+									<span id='emailId' style='color:red'></span>
+								</div>
+								<div class="col-md-6">
+									<label for="" class="form-label">Address</label>
+									<span style="color: red;">*</span>
+									<input type="text" name="" id="" class="form-control grvAddress">
+								</div>
+								<div class="col-md-6">
+									<label for="" class="form-label">Pincode</label>
+									<input type="text" name="" id="" class="form-control grvPinCode" maxlength="6">
+									<span id='pnCode' style='color:red'></span>
+								</div>
+
+								<div class="col-md-12">
+									<h5 th:if="${userflag == 'DH User'}" class="fw-bold text-center mb-0 ">Grievance
+										Details</h5>
+									<h5 th:if="${userflag == 'RMC User'}" class="fw-bold text-center mb-0 ">Grievance
+										Pertains To</h5>
+									<hr>
+								</div>
+								<!-- For DH User -->
+								<div th:if="${userflag == 'DH User'}" class="row">
+									<div class="col-md-6">
+										<label for="" class="form-label">Department</label>
+										<span style="color: red;">*</span>
+										<select id="depName" class="form-select">
+											<option value="0">Select</option>
+											<option th:each="dln : ${deptListName}" th:value="${dln.department_name}"
+												th:text="${dln.department_name}"></option>
+										</select>
+									</div>
+									<div class="col-md-6">
+										<label for="" class="form-label">Main Category</label>
+										<span style="color: red;">*</span>
+										<select class="form-select" id="categ" aria-label="Category of Grievance"
+											disabled="disabled">
+											<option value="0">Select</option>
+										</select>
+									</div>
+									<div class="py-2 row m-0" id="addInfoDiv"></div>
+									<!-- 03 April 2024 sub categ and next level sub categ etc... - SKY -->
+									<div class="col-md-6">
+										<label for="" class="form-label">Sub Category</label>
+										<select class="form-select" id="subcateg" aria-label="Sub Category of Grievance"
+											disabled>
+											<option value="0">Select</option>
+										</select>
+									</div>
+									<div class="col-md-6">
+										<label for="" class="form-label">Next Level Sub Category 2</label>
+										<select class="form-select" id="subcateg2"
+											aria-label="Sub Category of Grievance" disabled>
+											<option value="0">Select</option>
+										</select>
+									</div>
+									<div class="col-md-6">
+										<label for="" class="form-label">Next Level Sub Category 3</label>
+										<select class="form-select" id="subcateg3"
+											aria-label="Sub Category of Grievance" disabled>
+											<option value="0">Select</option>
+										</select>
+									</div>
+									<div class="col-md-6">
+										<label for="" class="form-label">Next Level Sub Category 4</label>
+										<select class="form-select" id="subcateg4"
+											aria-label="Sub Category of Grievance" disabled>
+											<option value="0">Select</option>
+										</select>
+									</div>
+									<!-- 03 April 2024 sub categ and next level sub categ etc... - SKY -->
+
+								</div>
+								<!-- For RMC User -->
+								<div th:if="${userflag == 'RMC User'}" class="row">
+									<div class="yr-Rtable ">
+										<div class="table-responsive">
+											<table class="table" id="forwardDeptMap" style="width: 100%;"></table>
+										</div>
+									</div>
+								</div>
+
+
+
+
+								<div class="col-md-6">
+									<label for="" class="form-label">Upload File</label>
+									<input type="file" name="" id="stUploadPhoto1" class="stUploadPhoto form-control"
+										accept="application/pdf, image/png, image/jpeg, image/jpg">
+									<p class="small">JPEG,JPG,PNG,PDF only (2MB)</p>
+								</div>
+								<div class="col-md-12">
+									<label for="" class="form-label">Description</label>
+									<span style="color: red;">*</span>
+									<textarea class="form-control" rows="4" id="descrp"
+										placeholder="Description..."></textarea>
+									<span class="text-danger">Special characters are not allowed.</span>
+								</div>
+
+								<!-- Dealing Hand Submit Grievance Button -->
+								<div class="col-12">
+									<div class="row justify-content-center button-part">
+										<!-- <button type="button" class="btn btn-primary pHbtn">Preview Details</button> -->
+										<button th:if="${userflag == 'DH User'}" type="button"
+											class="btn btn-purple sm-2 col-2 text-white dHbtn">Submit
+											Grievance</button>
+										<button th:if="${userflag == 'RMC User'}" type="button"
+											class="btn btn-purple sm-2 col-2 text-white rmcBtn">Submit & Forward
+											Grievance</button>
+									</div>
+								</div>
+
+							</div>
+							<!-- 14 JAN 2024 - SKY - dealing hand form - end -->
+						</div>
+					</div>
+				</div>
+				<!-- End Left side columns -->
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+
+</body>
+
+</html>

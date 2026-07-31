@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI - MIS Reports</title>
+</head>
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+    <main id="main" style="margin-left: 0px !important;" class="main position-relative">
+        <div class="pagetitle mb-3">
+            <nav>
+                <ol class="breadcrumb">
+                    <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+                    <li class="breadcrumb-item active">AI - MIS REPORTS</li>
+                </ol>
+            </nav>
+        </div>
+
+        <section class="yrTab" id="divisionDiv">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Department / Category / Sub Cateogory / Status Filter -->
+                        <div id="deptFilterDiv" class="row">
+                            <!-- Department Filter -->
+                            <div class="col-md-3" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="departmentss"><i class="bi bi-briefcase"></i> Departments:</label>
+                                    <select class="form-select futuristic-select" id="departmentss">
+                                        <option value="0">Select</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Category Filter -->
+                            <div class="col-md-3" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="catGraph"><i class="bi bi-tags"></i> Category</label>
+                                    <select class="form-select futuristic-select" id="catGraph" disabled>
+                                        <option value="0">Select</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Sub Category Filter -->
+                            <div class="col-md-3" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="subCatGraph"><i class="bi bi-tags"></i> Sub Category</label>
+                                    <select class="form-select futuristic-select" id="subCatGraph" disabled>
+                                        <option value="0">Select</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-4" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="statusFilter"><i class="bi bi-check-circle"></i> Status</label>
+                                    <select class="form-select futuristic-select" id="statusFilter">
+                                        <option value="0">Select</option>
+                                        <option th:each="gStat : ${statuesData}" th:text="${gStat.status}"
+                                            th:value="${gStat.status}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Date Range / Window -->
+                        <div id="dateWindowFilterDiv" class="row">
+                            <!-- Date From Filter -->
+                            <div class="col-md-4" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="dateFrom"><i class="bi bi-calendar-date"></i> From/on</label>
+                                    <input type="date" id="dateFrom" class="form-control futuristic-input">
+                                </div>
+                            </div>
+
+                            <!-- Date To Filter -->
+                            <div class="col-md-4" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="dateTo"><i class="bi bi-calendar-date"></i> To</label>
+                                    <input type="date" class="form-control futuristic-input" id="dateTo" disabled>
+                                </div>
+                            </div>
+                            <!-- Window -->
+                            <div class="col-md-4" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="windowFilter"><i class="bi bi-exclamation-circle"></i> Window <span
+                                            class="text-danger">(Grievance Origin)</span></label>
+                                    <select class="form-select futuristic-select" id="windowFilter">
+                                        <option value="0">Select</option>
+                                        <option value="JKSAMADHAN">JKSAMADHAN</option>
+                                        <option value="RAABITA">RAABITA</option>
+                                        <option value="CPGRAM">CPGRAM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Geographical -->
+                        <div id="geoFilterDiv" class="row">
+
+                            <!-- Division Filter -->
+                            <div class="col-md-2" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="divisionFilter"><i class="bi bi-geo-alt"></i> Division</label>
+                                    <select class="form-select futuristic-select" id="divisionFilter">
+                                        <option value="0">Select</option>
+                                        <option value="1">JAMMU</option>
+                                        <option value="2">KASHMIR</option>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- District Filter -->
+                            <div class="col-md-2">
+                                <div th:if="${userType == 'ROLE_SuperAdmin'}" class="form-input-block mb-2">
+                                    <label for="districtFilter"><i class="bi bi-geo-alt"></i> District</label>
+                                    <select class="form-select futuristic-select" id="districtFilter" disabled>
+                                        <!-- <option th:each="option : ${districtData}" th:value="${option.district_name}"
+                                            th:text="${option.district_name}"
+                                            th:selected="${option.district_name == currentLoginUser.district}"></option> -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Administrative Division Filter -->
+                            <div class="col-md-2" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="adminDivisionFilter"><i class="bi bi-geo-alt"></i> Administrative
+                                        Division</label>
+                                    <select class="form-select futuristic-select" id="adminDivisionFilter" disabled>
+                                        <option value="0">Select</option>
+                                        <option value="Municipality">Municipality</option>
+                                        <option value="Block">Block</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <!-- Municipality / Block Filter -->
+                            <div class="col-md-2" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="municipality-block-Filter"><i class="bi bi-geo-alt"></i> Municipality /
+                                        Block</label>
+                                    <select class="form-select futuristic-select" id="municipality-block-Filter"
+                                        disabled>
+                                        <option value="0">Select</option>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Ward / Panchayat Filter -->
+                            <div class="col-md-2" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="ward-panchayat-Filter"><i class="bi bi-geo-alt"></i> Ward /
+                                        Panchayat</label>
+                                    <select class="form-select futuristic-select" id="ward-panchayat-Filter" disabled>
+                                        <option value="0">Select</option>
+                                        <option value="ward1">ward1</option>
+                                        <option value="ward2">ward2</option>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- AI / PSGA / Mode -->
+                        <div id="aiPsgaModeFilterDiv" class="row">
+
+                            <!-- AI Tracking -->
+                            <div class="col-md-3" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="aiTrackingFilter"><i class="bi bi-exclamation-circle"></i> AI Tracking
+                                        <span class="text-danger">(Privilege Assigned)</span></label>
+                                    <select class="form-select futuristic-select" id="aiTrackingFilter">
+                                        <option value="0">Select</option>
+                                        <option value="Urgent">Urgent (07 Days)</option>
+                                        <option value="Normal">Normal (28 Days)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- AI Classification -->
+                            <div class="col-md-3" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="aiClassificationFilter"><i class="bi bi-exclamation-circle"></i> AI
+                                        Classification <span class="text-danger">(Automated Grievance
+                                            Classification)</span></label>
+                                    <select class="form-select futuristic-select" id="aiClassificationFilter">
+                                        <option value="0">Select</option>
+                                        <option value="Priority">Priority</option>
+                                        <option value="Normal">Normal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- PSGA -->
+                            <div class="col-md-3" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="psgaFilter"><i class="bi bi-exclamation-circle"></i> PSGA <span
+                                            class="text-danger">(Public Service Guarantee Act)</span></label>
+                                    <select class="form-select futuristic-select" id="psgaFilter">
+                                        <option value="0">Select</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Mode -->
+                            <div class="col-md-3" th:if="${userType == 'ROLE_SuperAdmin'}">
+                                <div class="form-input-block mb-2">
+                                    <label for="modeFilter"><i class="bi bi-exclamation-circle"></i> Mode</label>
+                                    <select class="form-select futuristic-select" id="modeFilter">
+                                        <option value="0">Select</option>
+                                        <option value="Yes">Web</option>
+                                        <option value="No">App</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <button type="button" class="common-btn futuristic-btn" id="reset">Reset</button>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="section dashboard yrTab">
+
+            <div class="row">
+
+                <!-- Left side columns -->
+                <div class="col-lg-12 yrTab">
+                    <div class="card">
+                        <div class="card-body ">
+                            <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+                                <div th:if="${userType == 'ROLE_SuperAdmin' || userType == 'ROLE_Secretary' || userType == 'ROLE_DM'}"
+                                    class="search-part">
+                                    <h4>Filter</h4>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input data-whichWise" type="radio"
+                                            name="radio-whichWise" id="userwise-search" value="userwise" checked> <label
+                                            class="form-check-label" for="userwise-search"> User Wise </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input data-whichWise" type="radio"
+                                            name="radio-whichWise" id="deptwise-search" value="deptwise">
+                                        <label class="form-check-label" for="deptwise-search"> Department Wise </label>
+                                    </div>
+                                </div>
+
+                                <div class="heading-part">
+                                    <h5 class="fw-bold mb-0 whichWiseHeading" th:if="${reportType=='ageAnalysis'}">User
+                                        Wise Age Analysis</h5>
+                                    <h5 class="fw-bold mb-0 whichWiseHeading"
+                                        th:if="${reportType=='agePendingAnalysis'}">User Wise Pending Age Analysis</h5>
+
+                                    <input type="hidden" th:value="${reportType}" class="reportType">
+                                </div>
+
+
+                                <div class="button-part btn-wrapper ms-2">
+                                    <button class="btn btn-purple btnAA-customBtn" title="Download Excel"
+                                        value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+                                    <button class="btn btn-black btnAA-customBtn" title="Download PDF"
+                                        value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="yr-Rtable ">
+                                <table class="common-table table datatable table-bordered" id="ssCoTbl"
+                                    style="width: 100%;">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+
+    </main>
+    <div lang="en" th:include="footer :: footer2"></div>
+
+    <script th:src="@{/js/aiMisReports.js}"></script>
+
+
+</body>
+
+</html>

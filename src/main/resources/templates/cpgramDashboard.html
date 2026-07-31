@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+
+	<main id="main" class="main">
+
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+					<li class="breadcrumb-item active">CPGRAMS Dashboard</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<!-- Intra Department Dashboard  -->
+		<div class="tab-content" id="pills-tabContent">
+
+			<div class="tab-pane fade show  active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+				tabindex="0">
+
+				<section class="section dashboard dash1">
+					<div class="row">
+
+						<!-- Left side columns -->
+						<div class="col-lg-12">
+							<div class="row count-dash mb-0">
+								<!-- Left side columns -->
+								<div class="col-lg-12">
+
+									<div class="dbBox row">
+
+										<!-- Sales Card -->
+										<div class="card-box">
+											<div class="card info-card sales-card pb-0">
+												<div class="card-body ">
+													<p class="mb-0">Total</p>
+													<div class="d-flex justify-content-between align-items-center">
+
+														<div class="count">
+
+															<div class="other-count">
+
+
+																<h6 th:text="${cpgramTotalG}"></h6>
+
+															</div>
+
+
+
+														</div>
+														<img src="../img/icons/total-icon.png" alt="Icon Image"
+															class="img-fluid">
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+										<input type="hidden" th:value="${usrFlag}" id="usrFlg">
+
+										<div class="card-box">
+											<div class="card info-card sales-card pb-0">
+												<div class="card-body ">
+													<p class="mb-0">Pending with Department</p>
+													<div class="d-flex justify-content-between align-items-center">
+
+														<div class="count">
+															<h6 th:text="${cpgramPending}"></h6>
+
+														</div>
+														<img src="../img/icons/pending-icon.png" alt="Icon Image"
+															class="img-fluid">
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+
+										<div class="card-box">
+											<a href="#" data-value="'Final Disposed'" class="filterData">
+												<div class="card info-card sales-card pb-0">
+													<div class="card-body ">
+														<p class="mb-0">Final Disposed</p>
+
+														<div class="d-flex justify-content-between align-items-end">
+
+															<div class="count">
+
+																<div class="other-count">
+
+																	<div class="count count-total  border-bottom">
+																		<small>Total</small>
+																		<h6 th:text="${totalClosed}"></h6>
+																	</div>
+																	<div class="d-flex mt-1">
+																		<div class="count count-first">
+																			<small>Resolved</small>
+																			<h6 th:text="${cpgramFinalResolved}"></h6>
+																		</div>
+																		<div class="count count-second  border-start">
+																			<small>Rejected</small>
+																			<h6 th:text="${cpgramFinalRejected}"></h6>
+																		</div>
+																	</div>
+																</div>
+
+
+
+															</div>
+															<img src="../img/icons/total-icon.png" alt="Icon Image"
+																class="img-fluid">
+														</div>
+
+													</div>
+												</div>
+											</a>
+										</div>
+
+										<!-- <div class="card-box">
+											<div class="card info-card sales-card pb-0">
+												<div class="card-body ">
+													<p class="mb-0">Resolved</p>
+													<div class="d-flex justify-content-between align-items-center">
+
+														<div class="count">
+															<h6 th:text="${cpgramResolved}"></h6>
+
+														</div>
+														<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+															class="img-fluid">
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+
+
+										<div class="card-box">
+											<div class="card info-card sales-card pb-0">
+												<div class="card-body ">
+													<p class="mb-0">Rejected</p>
+													<div class="d-flex justify-content-between align-items-center">
+
+														<div class="count">
+															<h6 th:text="${cpgramRejected}"></h6>
+
+														</div>
+														<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+															class="img-fluid">
+													</div>
+
+												</div>
+											</div>
+										</div> -->
+
+
+										<div class="card-box">
+											<a href="#" data-value="'Recieved','Proposed Disposed'" class="filterData">
+												<div class="card info-card sales-card pb-0">
+													<div class="card-body ">
+														<p class="mb-0">Disposal Recieved</p>
+														<div class="d-flex justify-content-between align-items-center">
+
+															<div class="count">
+																<h6 th:text="${cpgramProposeDisp}"></h6>
+															</div>
+															<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+																class="img-fluid">
+														</div>
+
+													</div>
+												</div>
+											</a>
+										</div>
+
+										<div class="card-box" th:if="${userType=='ROLE_Department'}">
+											<div class="card info-card sales-card pb-0">
+												<div class="card-body ">
+													<p class="mb-0">Disposal Sent</p>
+
+													<div class="d-flex justify-content-between align-items-end">
+
+														<div class="count">
+
+															<div class="other-count">
+
+																<div class="count count-total  border-bottom">
+																	<small>Total</small>
+																	<h6 th:text="${totalDisposed}"></h6>
+																</div>
+																<div class="d-flex mt-1">
+																	<div class="count count-first">
+																		<small>Resolved</small>
+																		<h6 th:text="${cpgramResolved}"></h6>
+																	</div>
+																	<div class="count count-second  border-start">
+																		<small>Rejected</small>
+																		<h6 th:text="${cpgramRejected}"></h6>
+																	</div>
+																</div>
+															</div>
+
+
+
+														</div>
+														<img src="../img/icons/total-icon.png" alt="Icon Image"
+															class="img-fluid">
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+										<div class="card-box">
+											<a href="#" data-value="'Forwarded'" class="filterData">
+												<div class="card info-card sales-card pb-0">
+													<div class="card-body ">
+														<p class="mb-0">Forwarded</p>
+														<div class="d-flex justify-content-between align-items-end">
+
+															<div class="count">
+																<h6 th:text="${cpgramfwdData}"></h6>
+
+															</div>
+															<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+																class="img-fluid">
+														</div>
+
+													</div>
+												</div>
+											</a>
+										</div>
+
+										<div class="card-box">
+											<a href="#" data-value="'dnpToOffice'" class="filterData">
+												<div class="card info-card sales-card pb-0">
+													<div class="card-body ">
+														<p class="mb-0">Does Not Pertain</p>
+														<div class="d-flex justify-content-between align-items-end">
+
+															<div class="count">
+																<h6 th:text="${cpgramDNP}"></h6>
+
+															</div>
+															<img src="../img/icons/online.png" alt="Icon Image"
+																class="img-fluid">
+														</div>
+
+													</div>
+												</div>
+											</a>
+										</div>
+
+										<div class="card-box">
+											<a href="#" data-value="'Remark Added'" class="filterData">
+												<div class="card info-card sales-card pb-0">
+													<div class="card-body ">
+														<p class="mb-0">Remark Added</p>
+														<div class="d-flex justify-content-between align-items-end">
+
+															<div class="count">
+																<h6 id="remark" th:text="${cpgramRemark}"></h6>
+
+															</div>
+															<img src="../img/icons/flagged.png" alt="Icon Image"
+																class="img-fluid">
+														</div>
+
+													</div>
+												</div>
+											</a>
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+
+
+						</div>
+						<!-- End Left side columns -->
+					</div>
+
+					<!--  -->
+					<div class="row grivance-wrapper mt-4">
+
+						<!-- Total Grievances Table Div -->
+						<div class="tab-content">
+							<div class="tab-pane fade show active" id="myTabContent" role="tabpanel"
+								aria-labelledby="home-tab" tabindex="0">
+								<div class="col-lg-12 yrTab1">
+									<div class="card">
+										<div class="card-body ">
+											<!-- <h5 class="card-title px-3 py-2 text-dark"> Total Applications Table</h5> -->
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h4>Total Applications Table</h4>
+												</div>
+
+												<!-- Naitik Changes on CPGRAMS Downlaod buttons on 06/10/2025 -->
+
+												<div class="button-part btn-wrapper ms-2">
+													<button class="btn btn-purple btn-excel" title="Download Excel">
+														<i class="bi bi-filetype-xls"></i>
+													</button>
+
+													<button class="btn btn-black btn-pdf" title="Download PDF">
+														<i class="bi bi-filetype-pdf"></i>
+													</button>
+												</div>
+
+
+												<!-- Naitik Changes on CPGRAMS Download buttons end on 06/10/2025 -->
+											</div>
+
+
+
+											<div class="yr-Rtable" id="homeDiv">
+
+												<div class="yr-Rtable " id="homeDiv">
+													<table class="table table-bordered stripe" id="cpgramHome"
+														style="width: 100%;"></table>
+												</div>
+												<!-- <table class="table table-bordered stripe" id="all_tblHome" style="width: 100%;"></table> -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-pane fade" id="doesNot-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+								tabindex="0">
+								<div class="col-lg-12 yrTab1">
+									<div class="card">
+										<div class="card-body ">
+											<!-- <h5 class="card-title px-3 py-2 text-dark"> Total Applications Table</h5> -->
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h4>Doe Not Pertain Grievances Table</h4>
+												</div>
+												<div class="search-part">
+													<h4>Filter</h4>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-all-search" checked
+															th:value="home">
+														<label class="form-check-label" for="total-all-search"> All
+														</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-web-search" th:value="web">
+														<label class="form-check-label" for="total-web-search">
+															Web</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-app-search" th:value="mobile">
+														<label class="form-check-label" for="total-app-search">
+															Mobile</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-normal-search" th:value="Normal">
+														<label class="form-check-label" for="total-normal-search">
+															Normal </label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-pri-search" th:value="Priority">
+														<label class="form-check-label" for="total-pri-search">
+															Priority </label>
+													</div>
+												</div>
+												<div class="button-part btn-wrapper ms-2">
+													<button class="btn btn-purple" title="Download Excel"> <i
+															class="bi bi-filetype-xls"></i></button>
+													<button class="btn btn-black" title="Download PDF"> <i
+															class="bi bi-filetype-pdf"></i></button>
+												</div>
+											</div>
+
+
+
+											<div class="yr-Rtable">
+
+												<div class="yr-Rtable " id="homeDiv">
+													<table class="table table-bordered stripe"
+														id="all_tblDoesNotPertain" style="width: 100%;">
+													</table>
+												</div>
+												<!-- <table class="table table-bordered stripe" id="all_tblHome" style="width: 100%;"></table> -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-pane fade " id="fwd-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+								tabindex="0">
+								<div class="col-lg-12 yrTab1">
+									<div class="card">
+										<div class="card-body ">
+											<!-- <h5 class="card-title px-3 py-2 text-dark"> Total Applications Table</h5> -->
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h4>Doe Not Pertain Grievances Table</h4>
+												</div>
+												<div class="search-part">
+													<h4>Filter</h4>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-all-search" checked
+															th:value="home">
+														<label class="form-check-label" for="total-all-search"> All
+														</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-web-search" th:value="web">
+														<label class="form-check-label" for="total-web-search">
+															Web</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-app-search" th:value="mobile">
+														<label class="form-check-label" for="total-app-search">
+															Mobile</label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-normal-search" th:value="Normal">
+														<label class="form-check-label" for="total-normal-search">
+															Normal </label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-search" type="radio"
+															name="total-app" id="total-pri-search" th:value="Priority">
+														<label class="form-check-label" for="total-pri-search">
+															Priority </label>
+													</div>
+												</div>
+												<div class="button-part btn-wrapper ms-2">
+													<button class="btn btn-purple" title="Download Excel"> <i
+															class="bi bi-filetype-xls"></i></button>
+													<button class="btn btn-black" title="Download PDF"> <i
+															class="bi bi-filetype-pdf"></i></button>
+												</div>
+											</div>
+
+
+
+											<div class="yr-Rtable">
+												<table class="table table-bordered stripe" id="all_tblfwdGrivances"
+													style="width: 100%;">
+												</table>
+											</div>
+											<!-- <table class="table table-bordered stripe" id="all_tblHome" style="width: 100%;"></table> -->
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<!-- Does not Pertain Table Div -->
+
+					</div>
+					<!-- End Left side columns -->
+			</div>
+
+
+
+			<!-- Left side columns -->
+
+
+
+
+
+
+
+			<!-- End Left side columns -->
+
+			<!-- End Left side columns -->
+		</div>
+		</section>
+
+		</div>
+		</div>
+		<div class="modal fade" id="assignedUsersList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+
+						<table class="table table-bordered" id="assignedTable" style="width: 100%">
+
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer"></div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- End #main -->
+
+	<div lang="en" th:include="footer :: footer1"></div>
+	<script th:src="@{/js/CPGRAMdashboard.js}"></script>
+
+</body>
+
+</html>

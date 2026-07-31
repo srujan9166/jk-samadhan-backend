@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html th:fragment="mainHeader" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <!-- default header name is X-CSRF-TOKEN -->
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <meta name="abcd" th:content="${abcd}" />
+  <meta name="jklm" th:content="${jklm}" />
+  <meta name="mmnn" th:content="${mmnn}" />
+  <title>Home | JK Samadhan</title>
+
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="" name="keywords" />
+  <meta content="" name="description" />
+
+  <!-- Icon Font Stylesheet -->
+  <!--	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">-->
+  <link th:href="@{css/all.min.css}" rel="stylesheet" />
+  <!--	<link th:href="@{vendor/bootstrap-icons/bootstrap-icons.css}" rel="stylesheet">-->
+
+  <!-- Libraries Stylesheet -->
+  <link th:href="@{lib/animate/animate.min.css}" rel="stylesheet" />
+  <link th:href="@{lib/owlcarousel/assets/owl.carousel.min.css}" rel="stylesheet" />
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.0.0-beta.3/assets/owl.carousel.min.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.0.0-beta.3/assets/owl.theme.default.min.css"> -->
+
+  <link th:href="@{css/owl.carousel.min.css}" rel="stylesheet" />
+  <link th:href="@{css/owl.theme.default.min.css}" rel="stylesheet" />
+
+  <!-- Customized Bootstrap Stylesheet -->
+  <link th:href="@{vendor/swiper/swiper.min.css}" rel="stylesheet" />
+  <link th:href="@{css/bootstrap.min.css}" rel="stylesheet" />
+
+  <!-- Template Stylesheet -->
+  <link th:href="@{css/style.css}" rel="stylesheet" />
+
+  <link th:href="@{css/website_translation_utility.css}" rel="stylesheet" />
+
+  <!--	<script type="text/javascript" th:src="@{/js/bhashini-translate.js}"></script>-->
+
+  <!--	<script type="text/javascript" th:src="@{/js/bhashini-translate.js}"></script>-->
+  <link rel="preload" th:href="@{webfonts/fa-solid-900.woff2}" as="font" type="font/woff2" crossorigin="anonymous" />
+  <link rel="preload" th:href="@{webfonts/fa-regular-400.woff2}" as="font" type="font/woff2" crossorigin="anonymous" />
+</head>
+
+<body>
+  <div class="offcanvas-menu-overlay"></div>
+
+  <header class="header">
+    <div class="wrapper header-top-first">
+      <div class="container container-top">
+        <div class="d-flex justify-content-center align-items-center">
+          <!-- <a href="https://www.india.gov.in/" title="GOVERNMENT OF INDIA" target="_blank" class="govOfIndia_a">
+            <img src="img/Emblem.png"  alt="Emblem" class="img-fluid"> 
+            GOVERNMENT OF INDIA</a>  -->
+        </div>
+      </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <div class="header__top">
+      <div class="container">
+        <div class="container_head_1 text-center my-1">
+          <div class="row d-flex align-items-center w-100 mx-auto head-group">
+            <div class="col d-flex justify-content-start align-items-center ps-0">
+              <!-- <a href="#" target="_blank" class="logo-img"> <img src="img/JnKlogo.png" alt="JnK logo"> </a>
+                            <a href="#" target="_blank" class="logo-img"> <img src="img/samadhan_logo.png" alt="Samadhan logo"> </a> -->
+
+              <a class="logo-brand" title="JK Samadhan logo" role="Logo" rel="Logo">
+                <div class="block">
+                  <img src="img/Emblem.png" alt="">
+                </div>
+                <div class="block">
+                  <img src="img/samadhan-updated-logo.png" alt="">
+                </div>
+                <div class="block">
+                  <img src="img/raabita-logo.png" alt="">
+                </div>
+                <div class="block">
+                  <h5><b>J</b>ammu &amp; <b>K</b>ashmir <b>U</b>nified <b>G</b>rievance <br> <b>R</b>edressal &amp;
+                    <b>M</b>onitoring <b>S</b>ystem
+                  </h5>
+                </div>
+              </a>
+
+              <a class="logo-img d-none" title="JK Samadhan logo" role="Logo" rel="Logo">
+                <!-- <img
+                    src="img/group_logo.png"
+                    alt="JK Samadhan logo"
+                    class="JKlogo"
+                  /> -->
+                <img src="img/group-logo-updated.png" alt="JK Samadhan logo" class="JKlogo" />
+              </a>
+            </div>
+
+            <div class="col d-flex justify-content-end text-end pe-0">
+              <div class="w-100">
+                <!-- <button type="button" class="btn btn-custom1">
+                  JK-IGRAMS
+                  <div class="mountain_bg"></div>
+                </button>
+                <span class="small-txt"> Jammu & Kashmir | Grievance Redressal & Monitoring System </span> -->
+                <div class="clearfix custom-box">
+                  <div id="sizer" class="head_user">
+                    <!-- <a class="skip_content" href="#vision_sec_id"
+											title="Skip to main content"><strong>Skip to
+												main content</strong></a> -->
+                    <div class="lang-box me-2">
+                      <!--											<div class="custom-dropdown">-->
+                      <!--											  <button class="btn btn-secondary custom-dropdown-toggle" type="button" id="customDropdownMenuButton1">-->
+                      <!--											    Dropdown button-->
+                      <!--											  </button>-->
+                      <!--											  <ul class="custom-dropdown-menu" aria-labelledby="customDropdownMenuButton1">-->
+                      <!--											    <li><a class="custom-dropdown-item" href="#">Action</a></li>-->
+                      <!--											    <li><a class="custom-dropdown-item" href="#">Another action</a></li>-->
+                      <!--											    <li><a class="custom-dropdown-item" href="#">Something else here</a></li>-->
+                      <!--											  </ul>-->
+                      <!--											</div>-->
+
+                      <!-- <div class="dropdown clms-dd me-4">
+												<a class="nav-link dropdown-toggle custom-dropdown-toggle" href="#"  role="button"  aria-expanded="false"  >
+													User Manual
+												</a>
+												<ul class="pdfDropdown dropdown-menu">
+													<li data-value="SUPER_ADMIN.pdf"><a class="dropdown-item" href="#">Super Admin</a></li>
+													<li data-value="NODAL.pdf"><a class="dropdown-item" href="#">Department NODAL</a></li>
+													<li data-value="Dealing_Hand.pdf"><a class="dropdown-item" href="#">Dealing Hand - HLG RMC Office</a></li>
+												    <li data-value="District_Magistrate.pdf"><a class="dropdown-item" href="#">District Magistrate</a></li>
+													<li data-value="Citizen.pdf"><a class="dropdown-item" href="#">Citizen</a></li>
+												</ul>
+											</div> -->
+                      <div class="dropdown clms-dd">
+                        <a href="#" aria-label="This Button Opens A Dropdown"
+                          class="nav-link dropdown-toggle custom-dropdown-toggle ps-4" role="button"
+                          aria-expanded="false">
+                          <div class="video-play-button">
+                            <span></span>
+                          </div>
+                          LMS Videos
+                        </a>
+                        <ul class="dropdown-menu vidDropdown">
+                          <li data-value="loginVideo.mp4">
+                            <a href="#" aria-label="This Button Opens A Modal Box" class="dropdown-item"
+                              data-bs-toggle="modal" data-bs-target="#videoViewer">How to Login</a>
+                          </li>
+                          <li data-value="registerVideo.mp4">
+                            <a href="#" aria-label="This Button Opens A Modal Box" class="dropdown-item"
+                              data-bs-toggle="modal" data-bs-target="#videoViewer">How to Register</a>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div tabindex="0" aria-label="Language Selection" id="customBhas"
+                        class="lang-switcher-block nodtranslate"></div>
+                      <div class="user_accessibility">
+                        <a aria-label="This Button Opens A Dropdown for Accessibility Feature" href="javascript:void(0)"
+                          class="access_icon" title="text">
+                          <!-- <i class="fa fa-font" aria-hidden="true"></i> -->
+                          <i class="fa fa-wheelchair"></i>
+                        </a>
+                        <div class="access-type" id="chcp_font_size">
+                          <a href="javascript:void(0)" class="changer" title="Decrease Text" aria-label="Decrease Text"
+                            id="font-decrease"><sup>-</sup>A</a>
+                          <a href="javascript:void(0)" class="changer" aria-label="Default Text" id="font-original"
+                            title="Reset Text">A</a>
+                          <a href="javascript:void(0)" class="changer" aria-label="Increase Text" id="font-increase"
+                            title="Increase Text"><sup>+</sup>A</a>
+                          <div id="text_resize_clear"></div>
+                        </div>
+                      </div>
+
+                      <!-- <div class="screen-reader">
+                        <a href="/screenreader/" class="scr-reader" title="Screen Reader">
+                          <i class="fa fa-volume-up" aria-hidden="true"></i>
+                        </a>
+                      </div> -->
+                      <!-- 	<div class="site_share">
+												<a href="javascript:void(0)" class="share_icon"
+													title="Follow us"> <i class="fa fa-users"
+													aria-hidden="true"></i><i class="fa fa-user-plus"
+													aria-hidden="true"></i>
+												</a>
+												<div class="share-list">
+													<div class="social-area">
+														<a href="#" target="_blank" title="Twitter"> <i
+															class="fa fa-twitter"></i></a>
+													</div>
+													<div class="social-area">
+														<a href="#" target="_blank" title="Facebook"> <i
+															class="fa fa-facebook"></i></a>
+													</div>
+													<div class="social-area">
+                            <a href="#" target="_blank" title="Youtube">
+                            <i class="youtube-icon"> Youtube</i></a> 
+                          </div>
+													<div class="social-area">
+														<a href="#" target="_blank" title="Instagram"> <i
+															class="fa fa-instagram"></i></a>
+													</div>
+												</div>
+											</div> -->
+                    </div>
+                    <div class="theme-changer" id="toggleThemeButton">
+                      <label class="ui-switch" aria-label="Change Theme Toggle Button">
+                        <input type="checkbox" tabindex="0" />
+                        <div class="slider" tabindex="0">
+                          <div class="circle" tabindex="0"></div>
+                        </div>
+                      </label>
+                    </div>
+                    <button id="toggleSpeech" aria-label="Screen Reader Access">
+                      Screen Reader <i class="fas fa-power-off"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas__open" tabindex="0" title="Toggle Navbar">
+          <i class="fa fa-bars"></i>
+        </div>
+      </div>
+    </div>
+    <div class="header__nav">
+      <div class="container">
+        <div class="justify-content-between row">
+          <div class="widht-fit">
+            <nav class="header__menu" aria-label="Navigation Bar">
+              <ul class="read-tag">
+                <li class="active">
+                  <a class="read-tag" href="login" role="Navigation Link">Home</a>
+                </li>
+                <li>
+                  <a href="#aboutBg" class="read-tag" role="Navigation Link">About</a>
+                </li>
+                <li>
+                  <a href="#contactUs" class="read-tag" role="Navigation Link">Contact Us</a>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="head-menu read-tag" role="Navigation Link" aria-label="This Link Opens A Dropdown">
+                    Grievance <i class="fa fa-angle-down"> </i>
+                  </a>
+                  <ul>
+                    <li>
+                      <a href="publicGrievance" role="Navigation Link">
+                        Lodge Grievance</a>
+                    </li>
+                    <li>
+                      <a href="trackApp" target="_blank" role="Navigation Link">
+                        Check Status
+                      </a>
+                    </li>
+                    <li>
+                      <a href="publicGrievanceAppeal" role="Navigation Link">
+                        Lodge Appeal
+                      </a>
+                    </li>
+                    <!-- 										<li><a href="#"> How to file Grievance</a></li>
+ -->
+                    <!-- 	<li><a href="#"> Rate Grievance</a></li>    -->
+                  </ul>
+                </li>
+
+                <li class="dropdown">
+                  <a href="#" class="head-menu read-tag" role="Navigation Link" aria-label="This Link Opens A Dropdown">
+                    Help &amp; Support <i class="fa fa-angle-down"> </i>
+                  </a>
+                  <ul>
+                    <li>
+                      <a href="javascript:void(0)" class="opfaqz" role="Navigation Link">
+                        FAQ
+                      </a>
+                    </li>
+                    <!-- <li>
+                        <a href="suggestions" role="Navigation Link"
+                          >Suggestion</a
+                        >
+                      </li> -->
+                    <!-- <li><a href="terms_conditions" target="_blank"> Terms &amp; Conditions </a></li>
+                    <li><a href="sitemap" target="_blank"> Site Map </a></li>
+                    <li><a href="disclaimer" target="_blank"> Disclaimer </a></li>
+                    <li><a href="website_policies" target="_blank"> Website Policies </a></li>
+                    <li><a href="web_information_manager" target="_blank"> Web Information Manager </a></li> -->
+                    <!-- 										<li><a href="#"> Feedback </a></li>
+ -->
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="widht-fit">
+            <div class="header__social d-flex">
+              <a href="https://pgportal.gov.in/" target="_blank" aria-label="This Link Opens A New Window"
+                class="btn btn-maroon text-white read-tag">CPGRAMS</a>
+              <!-- <a
+                  href="#"
+                  aria-label="This Link Opens A Modal Box"
+                  class="btn btn-success text-white read-tag"
+                  >LG-Grievance (Department of Public Grievances)</a > -->
+
+              <a href="#" aria-label="This Link Opens A Modal Box" class="btn btn-secondary text-white read-tag"
+                data-bs-toggle="modal" data-bs-target="#formRegister">Registration</a>
+
+              <!-- <div class="dropdown clms-dd text-center menuWithDropdown d-none">
+                <a aria-label="This Link Opens A Dropdown" class="btn btn-primary dropdown-toggle read-tag" href="#"
+                  role="button">
+                  Login
+                </a>
+                <ul class="dropdown-menu logCls">
+                  <li>
+                    <a class="dropdown-item citiLog" href="#" aria-label="This Link Opens A Modal Box"
+                      data-bs-toggle="modal" data-bs-target="#formLogin" data-value="1">
+                      Citizen Login</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item adminisLog" href="#" aria-label="This Link Opens A Modal Box"
+                      data-bs-toggle="modal" data-bs-target="#formLogin" data-value="2">
+                      Administrative Login</a>
+                  </li>
+                </ul>
+              </div> -->
+
+
+              <!-- Naitik Changes on New login 16/12/2025-->
+
+
+              <div class="dropdown clms-dd text-center menuWithDropdown">
+                <a class="btn btn-primary dropdown-toggle read-tag" href="#" role="button"
+                  aria-label="This Link Opens A Dropdown">
+                  Login
+                </a>
+
+                <ul class="dropdown-menu newLoginDropdown">
+                  <li>
+                    <a class="dropdown-item newCitiLogin" href="#" data-bs-toggle="modal"
+                      data-bs-target="#newLoginModal" data-login="CITIZEN">
+                      Citizen Login
+                    </a>
+                  </li>
+
+                  <li>
+                    <a class="dropdown-item newAdminLogin" href="#" data-bs-toggle="modal"
+                      data-bs-target="#newLoginModal" data-login="ADMIN">
+                      Administrative Login
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+
+              <!--Naitik Changes on New Login End 16/12/2025- -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+
+
+  <div class="modal fade" id="videoViewer" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content yr-video-modal">
+        <button tabindex="0" type="button" class="yr-close" data-bs-dismiss="modal" aria-label="Close Modal">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-body">
+          <div class="embed-responsive embed-responsive-16by9">
+            <video id="resVid" width="100%" height="440" tabindex="0" controls>
+              <source id="videoSource" src="" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

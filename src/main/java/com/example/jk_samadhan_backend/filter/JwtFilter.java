@@ -1,6 +1,7 @@
 package com.example.jk_samadhan_backend.filter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,18 +33,24 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
-        String mobile = null;
+        String subject = null;
 
         try {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 token = authorizationHeader.substring(7);
-                mobile = jwtUtil.extractUsername(token);
+                subject = jwtUtil.extractUsername(token);
             }
 
-            if (mobile != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(mobile);
+            if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = null;
+                UUID uuid = jwtUtil.extractUuid(token);
+                if (uuid != null) {
+                    userDetails = customUserDetailsService.loadUserByUuid(uuid);
+                } else {
+                    userDetails = customUserDetailsService.loadUserByUsername(subject);
+                }
 
-                if (token != null && jwtUtil.validateToken(token, userDetails)) {
+                if (token != null && userDetails != null && jwtUtil.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

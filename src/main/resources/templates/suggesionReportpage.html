@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<style>
+    .left-panel {
+        border-right: 1px solid #ddd;
+        height: 100%;
+    }
+
+    .upper-part {
+        border-bottom: 1px solid #ccc;
+        /* Border between upper and scrollable part */
+        padding: 10px;
+        background-color: #f8f9fa;
+    }
+
+    .scrollable-part {
+        overflow-y: auto;
+    }
+
+    .small-label {
+        font-size: 0.875rem;
+        font-weight: bold;
+    }
+
+    .value {
+        word-break: break-word;
+        /* Allow long descriptions to break into new lines */
+    }
+
+    .row:nth-child(even) {
+        background-color: #f2f2f2;
+        /* Alternate row background color */
+    }
+
+    .created-div {
+        border: 1px solid #ccc;
+        /* Add border to divs */
+        padding: 10px;
+        /* Add padding inside divs */
+        margin: 5px 0;
+        /* Add margin between divs */
+        border-radius: 5px;
+        /* Rounded corners */
+        background-color: #f8f9fa;
+        /* Light background */
+    }
+
+    .remark,
+    .status {
+        font-weight: bold;
+        /* Bold for labels */
+        margin-bottom: 5px;
+        /* Space below remark */
+    }
+
+    .timestamp,
+    .updated-by {
+        display: inline-block;
+        /* Inline block for positioning */
+        font-size: 0.875rem;
+        /* Smaller font size */
+        color: #6c757d;
+        /* Gray color */
+    }
+
+    .updated-by {
+        float: right;
+        /* Align to the right */
+    }
+</style>
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+
+    <main id="main" class="main">
+
+
+
+        <div class="pagetitle mb-3">
+            <input type="hidden" id="usrVV" th:value="${usrDD}">
+            <nav>
+                <ol class="breadcrumb">
+                    <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+                    <li class="breadcrumb-item active">Search Module</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- End Page Title -->
+
+        <!--  Dashboard  -->
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show  active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+                tabindex="0">
+                <section class="section dashboard dash1">
+                    <div class="row grivance-wrapper">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel"
+                                aria-labelledby="home-tab" tabindex="0">
+                                <div class="col-lg-12 ">
+                                    <div class="card">
+
+                                        <div class="card-body ">
+                                            <div
+                                                class="table-header-section d-flex justify-content-between align-items-center mb-3">
+                                                <div class="heading-part">
+                                                    <h4 id="tblHeading"></h4>
+                                                </div>
+                                                <div class="button-part btn-wrapper ms-2">
+                                                    <button class="btn btn-purple btn-customBtn" title="Download Excel"
+                                                        value="buttons-excel"> <i
+                                                            class="bi bi-filetype-xls"></i></button>
+                                                    <button class="btn btn-black btn-customBtn" title="Download PDF"
+                                                        value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+                                                </div>
+                                            </div>
+                                            <div class="yr-Rtable" id="">
+                                                <table class="table table-bordered stripe" id="SuggesionDatatbl"
+                                                    style="width: 100%;"></table>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Left side columns -->
+                    </div>
+
+                    <!-- correspondences -->
+                   
+                    <!-- correspondences -->
+
+                </section>
+            </div>
+    </main>
+    <!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+    <script th:src="@{/js/superAdmin.js}"></script>
+
+
+</body>
+
+</html>

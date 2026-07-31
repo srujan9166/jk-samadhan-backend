@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+
+	<main id="main" class="main">
+
+	
+
+
+		<!-- End Page Title -->
+
+		<div class="tab-content" id="pills-tabContent">
+
+			<!-- HOME Dashboard  -->
+	 
+
+				<section class="section dashboard dash1 yrTab">
+<!-- 				<h5 class="text-center text-white yr-bg-secondary py-2">Summary Of Meetings</h5> -->
+					<!-- <h5 class="text-center text-white yr-bg-secondary py-2">HOME</h5> -->
+				
+ 
+
+				 
+						<!-- Total Grievances Table Div -->
+						
+							
+								
+								
+									<div class="card">
+								      <!-- <label for="meetingdate">Meeting Date:</label>
+                                      <input type="date" id="meetingdate" name="meetingdate"> -->
+										<div class="card-body ">
+											<h5 class="fw-bold">Summary Of Meetings</h5>
+											<hr>
+											<div class="yr-Rtable py-3" id="homeDiv">
+
+												<table class="table stripe datatable" id="meetingsummery"
+													style="width: 100%;"></table>
+												<!-- <table class="table table-bordered stripe" id="all_tblHome" style="width: 100%;"></table> -->
+											</div>
+										</div>
+									</div>
+								
+							
+					 
+				</section>
+
+
+			</div>
+
+        <!--  /////////////////////////////// -->
+
+	
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<div class="yr-loader" style="display:none;">
+		<div class="spinner-border text-info" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</div>
+
+
+
+
+</body>
+
+</html>

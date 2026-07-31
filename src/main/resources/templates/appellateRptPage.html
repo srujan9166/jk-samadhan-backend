@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+    <main id="main" style="margin-left: 0px !important;" class="main position-relative">
+        <div class="pagetitle mb-3">
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Appellate Report</li>
+                </ol>
+            </nav>
+        </div>
+
+        <section class="section dashboard">
+
+            <div class="row">
+                <div class="col-lg-12 yrTab">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+                                <div class="heading-part">
+                                    <h5 class="fw-bold mb-0 whichWiseHeading"> Appellate Report</h5>
+                                </div>
+                                <div class="button-part btn-wrapper ms-2">
+                                    <button class="btn btn-purple btnAR-customBtn" title="Download Excel"
+                                        value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+                                    <button class="btn btn-black btnAR-customBtn" title="Download PDF"
+                                        value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+                                </div>
+                            </div> -->
+
+                            <!-- start kajal 17 June 2025-->
+                            <div
+                                class="table-header-section d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="heading-part">
+                                        <h5 class="fw-bold mb-0 whichWiseHeading">Appellate Report</h5>
+                                    </div>
+
+                                    <div class="mb-0">
+                                        <label for="deptTypeFilter" class="form-label fw-bold mb-0 me-2">Department
+                                            Type:</label>
+                                        <select id="deptTypeFilter" class="form-select form-select-sm"
+                                            style="width: 140px;">
+                                            <option value="">-- Select --</option>
+                                            <option value="ADMIN">ADMIN</option>
+                                            <option value="OTHER">OTHER</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label for="fromDate" class="form-label fw-bold mb-0 me-2">From:</label>
+                                        <input type="date" id="fromDate" class="form-control form-control-sm"
+                                            style="width: 150px;">
+                                    </div>
+
+                                    <div class="mb-0">
+                                        <label for="toDate" class="form-label fw-bold mb-0 me-2">To:</label>
+                                        <input type="date" id="toDate" class="form-control form-control-sm"
+                                            style="width: 150px;">
+                                    </div>
+                                </div>
+
+                                <div class="button-part btn-wrapper">
+                                    <button class="btn btn-purple btnAR-customBtn" title="Download Excel"
+                                        value="buttons-excel">
+                                        <i class="bi bi-filetype-xls"></i>
+                                    </button>
+                                    <button class="btn btn-black btnAR-customBtn" title="Download PDF"
+                                        value="buttons-pdf">
+                                        <i class="bi bi-filetype-pdf"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- end Kajal 17 June 2025-->
+                            <hr>
+                            <div class="yr-Rtable ">
+                                <table class="table datatable table-bordered" id="apllRptTbl" style="width: 100%;">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+    </main>
+
+    <!-- Start Kajal 19 June 2025-->
+    <!--Model-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- <h5 class="modal-title">Appeal Details</h5> -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="yr-Rtable p-4">
+                        <table id="appealDetailTable" class="table table-bordered" style="width: 100%"></table>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- end Kajal 19 June 2025 -->
+
+    <div lang="en" th:include="footer :: footer2"></div>
+
+
+</body>
+
+</html>

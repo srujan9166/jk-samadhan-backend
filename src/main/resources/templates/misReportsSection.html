@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+    <meta charset="utf-8">
+</head>
+
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1>MIS Reports Section</h1>
+        </div>
+        <!-- End Page Title -->
+
+        <section class="section dashboard">
+
+            <div class="row">
+
+                <!-- Left side columns -->
+                <div class="col-lg-12 yrTab">
+                    <div class="card">
+                        <div class="card-body p-0 border border-3 rounded-3">
+                            <h5 class="card-title px-3 py-2 text-dark">MIS Reports Section</h5>
+                            <!-- cards for multiple reports -->
+                            <div class="container-fluid py-5">
+                                <div class="container">
+                                    <div class="row wings">
+                                        <div class="col-12 col-lg-3 col-sm-6 d-flex usrLis">
+                                            <div class="dash-count total-grievance-card d-flex justify-content-between">
+                                                <div class="dash-counts">
+                                                    <h5>User</h5>
+                                                    <h4>List</h4>
+                                                </div>
+                                                <div class="dash-imgs">
+                                                    <img th:src="@{/img/contact-list.png}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-6 col-12 d-flex dealHLis" th:if = "${userType == 'ROLE_SuperAdmin'}">
+                                            <div
+                                                class="dash-count grievance-disposed-card d-flex justify-content-between">
+                                                <div class="dash-counts">
+                                                    <h5>Dealing Hand</h5>
+                                                    <h4>List</h4>
+                                                </div>
+                                                <div class="dash-imgs">
+                                                    <img th:src="@{/img/handshake.png}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-6 col-12 d-flex ageLis">
+                                            <div
+                                                class="dash-count grievance-inprocess-card d-flex justify-content-between">
+                                                <div class="dash-counts">
+                                                    <h5>Age Analysis</h5>
+                                                    <h4>Report</h4>
+                                                </div>
+                                                <div class="dash-imgs">
+                                                    <img th:src="@{/img/analysis.png}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-6 col-12 d-flex usrWsLis">
+                                            <div
+                                                class="dash-count grievance-status-card d-flex justify-content-between">
+                                                <div class="dash-counts">
+                                                    <h5>User Wise Status</h5>
+                                                    <h4>Report</h4>
+                                                </div>
+                                                <div class="dash-imgs">
+                                                    <img th:src="@{/img/to-do-list.png}">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="container">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="card text-white bg-primary mb-3">
+                                            <div class="card-body">
+                                                <h5 class="card-title">User List</h5>
+                                                <p class="card-text">Some quick example text to build on the card title
+                                                    and make up the bulk of the card's content.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-white bg-secondary mb-3">
+                                            <div class="card-header text-center">Header</div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">Secondary card title</h5>
+                                                <p class="card-text">Some quick example text to build on the card title
+                                                    and make up the bulk of the card's content.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-white bg-success mb-3">
+                                            <div class="card-header text-center">Header</div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">Success card title</h5>
+                                                <p class="card-text">Some quick example text to build on the card title
+                                                    and make up the bulk of the card's content.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-white bg-success mb-3">
+                                            <div class="card-header text-center">Header</div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">Success card title</h5>
+                                                <p class="card-text">Some quick example text to build on the card title
+                                                    and make up the bulk of the card's content.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-white bg-success mb-3">
+                                            <div class="card-header text-center">Header</div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">Success card title</h5>
+                                                <p class="card-text">Some quick example text to build on the card title
+                                                    and make up the bulk of the card's content.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-white bg-success mb-3">
+                                            <div class="card-header text-center">Header</div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">Success card title</h5>
+                                                <p class="card-text">Some quick example text to build on the card title
+                                                    and make up the bulk of the card's content.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-white bg-success mb-3">
+                                            <div class="card-header text-center">Header</div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">Success card title</h5>
+                                                <p class="card-text">Some quick example text to build on the card title
+                                                    and make up the bulk of the card's content.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                            <!-- cards for multiple reports -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </section>
+
+    </main>
+    <!-- End #main -->
+
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+
+
+</body>
+
+</html>

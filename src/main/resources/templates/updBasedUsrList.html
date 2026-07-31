@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> 
+
+  <style>
+    .progress-bar {
+      transition: width 0.5s ease;
+    }
+    </style>
+</head>
+
+
+<body>
+  <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+  <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+  <main id="main" class="main">
+    <div class="pagetitle mb-3">
+      <nav>
+        <ol class="breadcrumb">
+          <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <!-- section - start -->
+    <section class="section profile yrTab">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-body pt-3">
+              <!-- Bordered Tabs -->
+              <h5 class="fw-bold">PROFILE SECTION</h5>
+              <input type="hidden" id="isNodalNo" th:value="${nodal}" />
+              <ul class="nav nav-tabs nav-tabs-bordered" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-transfer"
+                    aria-selected="true" role="tab">
+                    Transfer Account
+                  </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#update_user_details"
+                    aria-selected="true" role="tab">
+                    Update details
+                  </button>
+                </li>
+
+                <li th:if = "${userType == 'ROLE_Superssssss'}" class="nav-item" role="presentation">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#delete-account" aria-selected="true"
+                    role="tab">
+                    Delete Account
+                  </button>
+                </li>
+
+              </ul>
+              <div class="tab-content pt-2">
+                <!-- Profile Transfer Start -->
+                <div class="tab-pane fade pt-3 active show" id="profile-transfer" role="tabpanel">
+                  <div style="
+                        background: #cd8a0d1a;
+                        padding: 8px 12px;
+                        border-radius: 12px;
+                        margin-bottom: 20px;
+                      ">
+                    <h5 class="font-monospace text-danger">Note:</h5>
+                    <ul class="font-monospace text-danger mb-0">
+                      <li>
+                        All the applications with
+                        <span class="ddTls" th:text="${usrEmailId}"></span>
+                        will be transferred to the Transferee account.
+                      </li>
+                      <li>
+                        This action is irreversible, therefore before
+                        proceeding further make sure you really want this.
+                      </li>
+                      <li>
+                        <span th:text="${usrEmailId}"></span> account will be
+                        disabled and will automatically be logged out once the
+                        "Transfer Account" button is clicked.
+                      </li>
+                      <li>
+                        Transferee User will be created as per
+                        <span th:text="${usrEmailId}"></span> details except,
+                        Transferee User will be having new email and password.
+                      </li>
+                    </ul>
+                  </div>
+
+                  <h5 class="fw-bold">Current User Details</h5>
+                  <hr />
+
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <div class="form-input-block">
+                        <label for="currentEmailId" class="col-md-4 col-lg-3 col-form-label">
+                          Email Id <span class="text-danger">*</span></label>
+                        <input name="email" th:value="${extUsrEmail}" type="email" class="form-control"
+                          id="currentEmailId" disabled />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-input-block">
+                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">
+                          Password <span class="text-danger">*</span></label>
+                        <input placeholder="Verify your password" name="password" type="password" class="form-control"
+                          id="currentPassword2" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button class="verfiyCurrrentPwd common-btn mb-3" name="verfiyCurrrentPwd" type="button">
+                    Verify
+                  </button>
+
+                  <div class="tDetailsDiv d-none">
+                    <h5 class="fw-bold">Transferee User Details</h5>
+                    <hr />
+
+                    <div class="row mb-3 gy-3">
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="transfereeFname" class="col-form-label">First Name
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="First Name" name="text" type="text" class="form-control input-f"
+                            id="transfereeFname" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="transfereeMname" class="col-form-label">Middle Name</label>
+                          <input placeholder="Middle Name" name="text" type="text" class="form-control input-f"
+                            id="transfereeMname" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="transfereeLname" class="col-form-label">Last Name
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Last Name" name="text" type="text" class="form-control input-f"
+                            id="transfereeLname" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="transfereeEmailId" class="col-form-label">Email Id
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="eg: transfereeEmail@gmail.com" name="email" type="email"
+                            class="form-control" id="transfereeEmailId" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="transfereeMobileNo" class="col-form-label">Mobile Number
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Mobile Number" name="text" type="text" maxlength="10" class="form-control"
+                            id="transfereeMobileNo" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="transfereePassword" class="col-form-label">Password
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Password" name="password" type="password" class="form-control"
+                            id="transfereePassword" />
+                          <span id="errMsg1" class="text-danger"></span>
+                        </div>
+                      </div>
+
+
+                      <!-- Transfer Logic Updating - 29 August 2024 - SKY -->
+                      <div class="col-md-4" th:each="ud:${updatDetails}">
+                        <div class="form-input-block">
+                          <label for="userMobileNo" class="col-form-label">Department
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Department" name="text" th:value="${ud.department}" type="text"
+                            maxlength="10" class="form-control" id="usrDepartment" disabled />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="dept" class="col-form-label">Office
+                            <span class="text-danger">*</span>
+                          </label>
+                          <select id="usrOffice" class="form-select" th:disabled="${nodal == 'yes'}">
+                            <option value="0">Select Office</option>
+                            <option th:if="${nodal == 'yes'}" th:each="ud : ${updatDetails}"
+                              th:value="${ud.office_name}" th:text="${ud.office_name}" selected> </option>
+                            <option th:if="${nodal == 'no'}" th:each="onl : ${officeNameList}"
+                              th:value="${onl.office_name}" th:text="${onl.office_name}"></option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="dept" class="col-form-label">Designation
+                            <span class="text-danger">*</span>
+                          </label>
+                          <select id="usrDesignation" class="form-select" th:disabled="${nodal == 'no'}">
+                            <option value="0">Select Designation</option>
+                            <!-- Loop through designations -->
+                            <option th:if="${nodal == 'yes'}" th:each="c : ${desiglist}" th:value="${c.designation}"
+                              th:text="${c.designation}">
+                            <option th:if="${nodal == 'no'}" th:each=" designation : ${desiglist}"
+                              th:data-office="${designation.office_name}" th:value="${designation.designation}"
+                              th:text="${designation.designation}" style="display: none;">
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <!-- Transfer Logic Updating - 29 August 2024 - SKY -->
+
+
+
+                    </div>
+
+
+
+                    <div class="text-center">
+                      <button type="submit" class="common-btn profileTransferBtn">
+                        Transfer Account
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Profile Transfer End -->
+
+
+                <div class="tab-pane fade pt-3" id="update_user_details" role="tabpanel">
+                  <!-- Change Password Form -->
+
+                  <div class="tDetailsDiv" th:each="ud:${updatDetails}">
+                    <h5 class="fw-bold">Update User Details</h5>
+                    <hr />
+
+                    <div class="row mb-3 gy-3">
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userFirstName" class="col-form-label">First Name
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="First Name" name="text" type="text" th:value="${ud.first_name}"
+                            class="form-control input-f" id="userFirstName" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userMidname" class="col-form-label">Middle Name</label>
+                          <input placeholder="Middle Name" name="text" type="text" th:value="${ud.middle_name}"
+                            class="form-control input-f" id="userMidname" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userLastName" class="col-form-label">Last Name
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Last Name" name="text" type="text" th:value="${ud.last_name}"
+                            class="form-control input-f" id="userLastName" />
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <label for="userEmail" class="col-form-label">Email Id
+                              <span class="text-danger">*</span>
+                            </label>
+                            <!-- Toggle Switch on the right -->
+                            <div class="form-check form-switch">
+                              <input class="form-check-input" type="checkbox" id="toggleEmail" />
+                              <label class="form-check-label" for="toggleEmail">Update Email?</label>
+                            </div>
+                          </div>
+                          <input placeholder="eg: transfereeEmail@gmail.com" name="email" th:value="${ud.username}"
+                            type="email" class="form-control" id="userEmail" disabled />
+                          <input placeholder="eg: abcd@gmail.com" name="email" type="email" class="form-control d-none"
+                            id="newEmail" />
+                        </div>
+                      </div>
+
+
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userMobileNo" class="col-form-label">Mobile Number
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Mobile Number" name="text" th:value="${ud.mobile}" type="text"
+                            maxlength="10" class="form-control" id="userMobileNo" />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="transfereePassword" class="col-form-label">Password
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Password" name="password" type="password" class="form-control"
+                            id="usrpwd" />
+                          <span id="errMsg1" class="text-danger"></span>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userMobileNo" class="col-form-label">Department
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Department" name="text" th:value="${ud.department}" type="text"
+                            maxlength="10" class="form-control" id="userdept" disabled />
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userMobileNo" class="col-form-label">Office <span
+                              class="text-danger">*</span></label>
+                          <input placeholder="Office" name="text" th:value="${ud.office_name}" type="text"
+                            maxlength="10" class="form-control" id="useroffice" disabled />
+                        </div>
+                      </div>
+
+                      <!-- <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userMobileNo" class="col-form-label">Designation
+                            <span class="text-danger">*</span></label>
+                          <input placeholder="Designation" name="text" th:value="${ud.designation}" type="text"
+                            maxlength="10" class="form-control" id="userdesignation" disabled />
+                        </div>
+                      </div>
+                    </div> -->
+                    <div class="col-md-4">
+                        <div class="form-input-block">
+                          <label for="userdesignation" class="col-form-label">Designation
+                            <span class="text-danger">*</span></label>
+                          <select id="userdesignation" class="form-select">
+                            <option value="0" disabled selected>Select Designation</option>
+                            <option th:if="${nodal == 'yes'}" th:each="c : ${desiglist}"
+                              th:value="${c.designation}" th:text="${c.designation}"
+                              th:selected="${c.designation == ud.designation}">
+                            </option>
+                            <option th:if="${nodal == 'no'}" th:each="designation : ${desiglist}"
+                              th:data-office="${designation.office_name}"
+                              th:value="${designation.designation}" th:text="${designation.designation}"
+                              th:selected="${designation.designation == ud.designation}"
+                              style="display: none;">
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                    <div class="text-center">
+                      <button class="common-btn" id="updateUsrDtl">
+                        Update Detail
+                      </button>
+                    </div>
+                  </div>
+                  <!-- End Change Password Form -->
+                </div>
+
+                <!-- Profile Delete - start - 15 Sept 2024 -->
+                <div th:if = "${userType == 'ROLE_Superssssss'}" class="tab-pane fade pt-3" id="delete-account" role="tabpanel">
+                  <div style="
+                        background: #cd8a0d1a;
+                        padding: 8px 12px;
+                        border-radius: 12px;
+                        margin-bottom: 20px;
+                      ">
+                    <h5 class="font-monospace text-danger">Note:</h5>
+                    <ul class="font-monospace text-danger mb-0">
+                      <li><strong>Eligibility for Deletion:</strong> <span class="ddTls" th:text="${usrEmailId}"></span>
+                        account will only be deleted if there are no
+                        pending or assigned grievances. This prevents the deletion of account that is currently
+                        involved in active processes.</li>
+
+                      <li><strong>Account Status Check:</strong> Before proceeding with deletion, you must click the
+                        "Check" button. This action will verify whether the account is associated with any unresolved
+                        grievances.</li>
+
+                      <li><strong>Confirmation for Deletion:</strong> If the account is free of any pending or assigned
+                        grievances, a confirmation message will appear, allowing you to proceed with account
+                        deletion. <br>
+                        <strong>This action is irreversible,</strong> so make sure you really want to delete <span
+                          class="ddTls" th:text="${usrEmailId}"></span>
+                        account before proceeding further.
+                      </li>
+
+                      <li><strong>Block on Deletion:</strong> If there are pending or assigned grievances, the
+                        deletion process will be blocked, and a notification will inform you of the issue. The <span
+                          class="ddTls" th:text="${usrEmailId}"></span>
+                        must resolve or reassign those applications before attempting deletion again.</li>
+
+                      <li><strong>Permanence of Deletion:</strong> Once the "Delete Account" button is clicked, the
+                        account will be permanently deleted, and the <span class="ddTls" th:text="${usrEmailId}"></span>
+                        will be automatically logged out.</li>
+                    </ul>
+                  </div>
+
+                  <h5 class="fw-bold">Click on "Check" button.</h5>
+                  <hr />
+
+                  <div class="mt-4">
+                    <div class="row mb-3">
+                      <div class="col-md-8 d-flex align-items-center">
+                        <!-- Form Floating -->
+                        <div class="form-floating flex-grow-1 me-2">
+                          <input name="email" th:value="${usrEmailId}" type="email" class="form-control" id="emailForDeletion" disabled
+                            placeholder="Email Id" />
+                          <label for="emailForDeletion">Email Id <span class="text-danger">*</span></label>
+                        </div>
+                  
+                        <!-- Check Button -->
+                        <button class="checkEmailAvailability common-btn" name="checkEmailAvailability" type="button">
+                          Check
+                        </button>
+                        <div class="renderBtn ms-2">
+                          <!-- Dynamic buttons will be inserted here -->
+                        </div>
+                      </div>
+                  
+                      <!-- Progress Bar -->
+                      <div class="col-md-8 mt-3">
+                        <div class="progress" style="display: none;">
+                          <div id="progressBar" class="progress-bar bg-warning" role="progressbar" style="width: 0%;" aria-valuenow="0"
+                            aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                      </div>
+                  
+                      <!-- Status Message -->
+                      <div class="col-md-12 mt-2">
+                        Status : <span id="statusMessage" style="display: none;"></span>
+                      </div>
+                      <!-- Reason Message -->
+                      <div class="col-md-12">
+                        Reason : <span id="reasonMessage" style="display: none;"></span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                    </div>
+                  </div>
+
+                 
+                </div>
+                <!-- Profile Delete - end - 15 Sept 2024 -->
+
+
+              </div>
+              <!-- End Bordered Tabs -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- section - end -->
+  </main>
+  <!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <div lang="en" th:include="footer :: footer1"></div>
+  <script th:src="@{/js/userManagement.js}"></script>
+</body>
+
+</html>

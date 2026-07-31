@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Department Mapping</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard yrTab">
+			<!--  -->
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12">
+					<div class="card mb-4">
+						<div class="card-body">
+							<h5 class="fw-bold">Create New Department</h5>
+							<hr>
+							<div class="row">
+								<div class="col-md-4">
+									<input type="hidden" id="sessionname" name="sessionname"
+										th:value="${sessionname}"></input>
+									<input type="hidden" class="sessionvalue" id="sessionvalue"
+										name="sessionvalue"></input>
+									<!-- 										<div class="form-floating mb-3"> -->
+									<!-- 											<select class="form-select" id="addDivision" aria-label="deptType"> -->
+									<!-- 												<option value="0">Select</option> -->
+									<!-- 												<option value="ADMIN">Admin Department</option> -->
+									<!-- 												<option value="OTHER">Other Department</option> -->
+									<!-- 											</select> <label for="deptType">Department Type</label> -->
+									<!-- 											</div> -->
+									<!-- <select class="form-select" id="addDivision"
+
+												aria-label="divison">
+												<option value="0">Select</option>
+												<option th:each="dept : ${division}"
+													th:value="${dept.region}"
+													th:text="${dept.region}"></option>
+											</select> <label for="divison">Divison Name</label> -->
+
+									<div class="form-input-block mb-2">
+										<label for="deptType"> Type of Department <span
+												class="text-danger">*</span></label>
+										<select class="form-select" id="addDivision" aria-label="deptType">
+											<option value="0">Select</option>
+											<option value="ADMIN">Admin Department</option>
+											<option value="OTHER">Other Department</option>
+											<!-- DoPG Department Type 05/11/2024 - SKY -->
+											<option value="DoPG">DoPG Department</option>
+										</select>
+									</div>
+
+								</div>
+
+								<div class="col-md-4">
+									<div class="form-input-block mb-2">
+
+										<label for="departName">Department Name <span
+												class="text-danger">*</span></label>
+										<select class="form-select" id="addDept" aria-label="departName" disabled>
+											<option value="0">Select</option>
+											<option value="add">Add new Department</option>
+											<!-- <option th:each="dept : ${depts}"
+													th:value="${dept.department_name}"
+													th:text="${dept.department_name}"></option> -->
+										</select>
+									</div>
+								</div>
+								<div class="col-md-4" style="display: none" id="addDeptT">
+									<div class="form-input-block">
+										<label for="floatingZip">Department name <span class="text-danger">*</span>
+										</label>
+										<input type="text" placeholder="Department" id="addDeptV" maxlength="100"
+											class="form-control input-f" style="">
+									</div>
+								</div>
+
+							</div>
+
+							<div class="row" id="deptoffcdiv" style="display: none">
+								<div class="col-md-4">
+									<div class="form-input-block">
+										<label for="floatingZip">Office name of Nodal <span
+												class="text-danger">*</span></label>
+										<input type="text" placeholder="Office name" id="addofficename" maxlength="70"
+											class="form-control input-f" style="">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-input-block">
+										<label for="floatingZip">Designation of Department Nodal <span
+												class="text-danger">*</span></label>
+										<input type="text" placeholder="Designation" id="addDesignation" maxlength="70"
+											class="form-control input-f" style="">
+									</div>
+								</div>
+							</div>
+
+
+
+
+							<!-- <div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-floating mb-3">
+											<select class="form-select" id="addDept"
+												aria-label="departName">
+												<option value="0">Select</option>
+												<option value="add">Add new Department</option>
+												<option th:each="dept : ${depts}"
+													th:value="${dept.department_name}"
+													th:text="${dept.department_name}"></option>
+											</select> <label for="departName">Department Name</label>
+										</div>
+									</div>
+									<div class="col-md-6" style="display: none" id="addDeptT">
+										<div class="form-floating">
+											<input type="text" placeholder="Department" id="addDeptV"
+												class="input-field form-control"> <label
+												for="floatingZip">Department name </label>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-floating mb-3">
+											<select class="form-select" id="categ"
+												aria-label="Category of Grievance" disabled>
+												<option value="0">Select</option>
+												<option value="add">Add new category</option>
+												<option th:each="cat : ${cat}"
+													th:value="${cat.category_name}"
+													th:text="${cat.category_name}"></option>
+											</select> <label for="categ">Category of Grievance</label>
+										</div>
+									</div>
+									<div class="col-md-6" style="display: none" id="categT">
+										<div class="form-floating">
+											<input type="text" class="form-control"
+												placeholder="Category" id="categV"> <label
+												for="floatingZip">Category </label>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-floating mb-3">
+											<select class="form-select" id="subcateg"
+												aria-label="Sub Category of Grivance" disabled>
+												<option value="0">Select</option>
+												<option value="add">Add new sub-category</option>
+											</select> <label for="subCatGri">Sub Category of Grievance</label>
+										</div>
+									</div>
+									<div class="col-md-6" style="display: none" id="subcategT">
+										<div class="form-floating">
+											<input type="text" class="form-control" placeholder="Sub-Category" id="subcategV"> <label for="floatingZip">Sub Category </label>
+										</div>
+									</div>
+								</div>
+								
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-floating mb-3">
+											<select class="form-select" id="subcateg2"
+												aria-label="Sub Category of Grivance" disabled>
+												<option value="0">Select</option>
+												<option value="add">Add next level of category</option>
+											</select> <label for="subCatGri2"> Next level of category</label>
+										</div>
+									</div>
+									<div class="col-md-6" style="display: none" id="subcategT2">
+										<div class="form-floating">
+											<input type="text" class="form-control" placeholder="Sub-Category" id="subcategV2"> <label for="floatingZip">Next level of category </label>
+										</div>
+									</div>
+								</div>
+								
+								
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-floating mb-3">
+											<select class="form-select" id="subcateg3"
+												aria-label="Sub Category of Grivance" disabled>
+												<option value="0">Select</option>
+												<option value="add">Add next level of category</option>
+											</select> <label for="subCatGri3"> Next level of category</label>
+										</div>
+									</div>
+									<div class="col-md-6" style="display: none" id="subcategT3">
+										<div class="form-floating">
+											<input type="text" class="form-control" placeholder="Sub-Category" id="subcategV3"> <label for="floatingZip">Next level of category </label>
+										</div>
+									</div>
+								</div>
+
+
+                                <div class="row">
+									<div class="col-md-6">
+										<div class="form-floating mb-3">
+											<select class="form-select" id="subcateg4"
+												aria-label="Sub Category of Grivance" disabled>
+												<option value="0">Select</option>
+												<option value="add">Add next level of category</option>
+											</select> <label for="subCatGri4"> Next level of category</label>
+										</div>
+									</div>
+									<div class="col-md-6" style="display: none" id="subcategT4">
+										<div class="form-floating">
+											<input type="text" class="form-control" placeholder="Sub-Category" id="subcategV4"> <label for="floatingZip">Next level of category </label>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-6">
+									<div class="text-center">
+										<button type="submit" class="btn btn-primary" id = "submitDept">Create</button>
+										<button type="reset" class="btn btn-secondary" id = "resetDept">Reset</button>
+									</div>
+								</div>
+
+							</div> -->
+							<div class="col-md-12">
+								<div class="btn-block justify-content-start mt-4">
+									<button type="submit" class="common-btn" id="submitDept">Create</button>
+									<button type="reset" class="common-btn btn-black" id="resetDept">Reset</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+
+
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12">
+					<div class="card mb-4">
+
+						<div class="card-body">
+							<div class="d-flex align-items-start justify-content-between">
+								<div>
+									<h5 class="fw-bold">Departments/Users Created</h5>
+									<!-- Filter Dropdown below heading -->
+									<div class="d-flex align-items-center gap-2 mt-2">
+										<label class="fw-semibold text-muted mb-0"
+											style="font-size: 15px; white-space: nowrap;">Type of Department :</label>
+										<select class="form-select form-select-sm" id="filterDeptType"
+											style="width: 180px;">
+											<option value="">All</option>
+											<option value="ADMIN">Admin Department</option>
+											<option value="OTHER">Other Department</option>
+											<option value="DoPG">DoPG Department</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="button-part btn-wrapper ms-2 mt-1">
+									<button class="btn btn-purple btn-depTable-customBtn" title="Download Excel"
+										value="buttons-excel"><i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black btn-depTable-customBtn" title="Download PDF"
+										value="buttons-pdf"><i class="bi bi-filetype-pdf"></i></button>
+								</div>
+							</div>
+
+							<hr>
+							<div class="yr-Rtable">
+								<table class="common-table table datatable" id="depTable2">
+									<thead>
+										<tr>
+											<th>S.No</th>
+											<th>Department</th>
+											<!-- <th>Division</th> -->
+											<th>Type of Department</th>
+											<!-- <th>Next Level1 Category</th>
+											<th>Next Level2 Category</th>
+											<th>Next Level3 Category</th>
+											<th>Next Level4 Category</th> -->
+											<th>Created On</th>
+											<th>Created By</th>
+											<th class="noExport">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="t,stat : ${deptlist}">
+											<!-- <th scope="row" th:text="${stat.index+1}"></th> -->
+											<!-- // S.No. will be in a sequence when we selcted any page. changes by Utkarsh 09/03/2026 -->
+											<th scope="row"></th>
+											<!-- end of changes by Utkarsh 09/03/2026 -->
+											<td th:text="${t.department_name}"></td>
+											<!-- <td th:text="${t.division}"></td> -->
+											<td th:text="${t.department_type}"></td>
+											<!-- <td th:text="${t.sub_category_name}"></td>
+											<td th:text="${t.sub_category_level2_name}"></td>
+											<td th:text="${t.sub_category_level3_name}"></td>
+											<td th:text="${t.sub_category_level4_name}"></td> -->
+											<td th:text="${#dates.format(t.created_date, 'dd-MM-yyyy HH:mm:ss')}"></td>
+											<td th:text="${t.created_by_name}"></td>
+											<td><button class="btn btn-success" th:value="${t.department_name}"
+													id="editDep">Edit</button></td>
+
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+
+
+		</section>
+
+
+	</main>
+	<!-- End #main -->
+	<div class="modal fade" id="changeDepModal" tabindex="-1" role="dialog" aria-labelledby="changeDepModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>Edit Department Name</h3>
+
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form>
+
+						<div class="form-group">
+							<label for="exampleInputEmail1">New Department Name</label> <input type="text"
+								class="form-control input-field" id="newDepName" aria-describedby="emailHelp"
+								maxlength="100">
+							<input type="hidden" id="oldDep">
+						</div>
+						<button type="button" class="btn btn-primary my-2" id="changeDepName">Submit</button>
+					</form>
+				</div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div>
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+
+	<script th:inline="javascript">
+		var sessionvalueUrl = /*[[${sessionvalueUrl}]]*/;
+		var csrfToken = /*[[${_csrf.token}]]*/;
+		var sessionname = [[${ sessionname }]];
+	</script>
+</body>
+
+</html>

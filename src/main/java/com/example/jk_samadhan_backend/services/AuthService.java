@@ -16,6 +16,8 @@ import com.example.jk_samadhan_backend.models.Users;
 import com.example.jk_samadhan_backend.repositories.UserRepository;
 import com.example.jk_samadhan_backend.utils.JWTUtil;
 
+import com.example.jk_samadhan_backend.repositories.StateRepository;
+
 @Service
 public class AuthService {
     private final UserRepository userRepository;
@@ -25,11 +27,13 @@ public class AuthService {
     private final CaptchaService captchaService;
     private final com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository;
     private final com.example.jk_samadhan_backend.repositories.DistrictRepository districtRepository;
+    private final StateRepository stateRepository;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager AuthenticationManager, JWTUtil jwtUtil, CaptchaService captchaService,
             com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository,
-            com.example.jk_samadhan_backend.repositories.DistrictRepository districtRepository) {
+            com.example.jk_samadhan_backend.repositories.DistrictRepository districtRepository,
+            StateRepository stateRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.AuthenticationManager = AuthenticationManager;
@@ -37,6 +41,7 @@ public class AuthService {
         this.captchaService = captchaService;
         this.userTypeRepository = userTypeRepository;
         this.districtRepository = districtRepository;
+        this.stateRepository = stateRepository;
     }
 
     private String generateRandomPassword() {
@@ -91,11 +96,20 @@ public class AuthService {
             throw new RuntimeException("User already exists with this username");
         }
 
-        String rawPassword = generateRandomPassword();
+        String rawPassword = (registerDTO.getPassword() != null && !registerDTO.getPassword().trim().isEmpty())
+                ? registerDTO.getPassword().trim()
+                : generateRandomPassword();
 
         Users user = new Users();
         user.setUuid(java.util.UUID.randomUUID());
-        user.setUserType(userTypeRepository.findById(10).orElseThrow(() -> new RuntimeException("Default UserType not found")));
+        
+        com.example.jk_samadhan_backend.models.UserType userType = userTypeRepository.findByTypeName("CITIZEN")
+                .or(() -> userTypeRepository.findByTypeName("Citizen"))
+                .or(() -> userTypeRepository.findById(10))
+                .or(() -> userTypeRepository.findAll().stream().findFirst())
+                .orElseThrow(() -> new RuntimeException("Default UserType not found"));
+        user.setUserType(userType);
+        
         user.setFirstName(registerDTO.getFirstName());
         user.setMiddleName(registerDTO.getMiddleName());
         user.setLastName(registerDTO.getLastName());
@@ -117,8 +131,12 @@ public class AuthService {
         user.setPincode(registerDTO.getPincode());
         user.setState(registerDTO.getState());
         user.setDistrict(registerDTO.getDistrict());
+        if (registerDTO.getState() != null) {
+            stateRepository.findByNameIgnoreCase(registerDTO.getState().trim())
+                    .ifPresent(user::setStateEntity);
+        }
         if ("Jammu & Kashmir".equalsIgnoreCase(registerDTO.getState()) && registerDTO.getDistrict() != null) {
-            districtRepository.findByNameIgnoreCase(registerDTO.getDistrict())
+            districtRepository.findByNameIgnoreCase(registerDTO.getDistrict().trim())
                     .ifPresent(user::setDistrictEntity);
         }
         userRepository.save(user);
@@ -137,18 +155,39 @@ public class AuthService {
     }
 
     public Map<String, Object> login(LoginDTO loginDTO) {
+        System.out.println(">>> AuthService.login: Entering method");
+        String identifier = loginDTO.getIdentifier();
+        System.out.println(">>> AuthService.login: Resolved identifier: " + identifier);
+        if (identifier == null || identifier.isBlank()) {
+            throw new RuntimeException("Username, email, or mobile number is required to log in.");
+        }
 
-        Users user = userRepository.findByMobile(loginDTO.getMobile())
-                .orElseThrow(() -> new RuntimeException("User not found with mobile: " + loginDTO.getMobile()));
+        System.out.println(">>> AuthService.login: Querying user from repository...");
+        Users user = userRepository.findByIdentifier(identifier)
+                .orElseThrow(() -> new RuntimeException("User not found with identifier: " + identifier));
+        System.out.println(">>> AuthService.login: User found: " + user.getUsername() + ", ID: " + user.getId());
 
+        System.out.println(">>> AuthService.login: Authenticating with AuthenticationManager...");
         AuthenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getMobile(), loginDTO.getPassword()));
+                .authenticate(new UsernamePasswordAuthenticationToken(identifier, loginDTO.getPassword()));
+        System.out.println(">>> AuthService.login: Authenticated successfully!");
 
-        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
+        String roleName = user.getRole();
+        if (user.getUserType() != null && user.getUserType().getTypeName() != null) {
+            roleName = user.getUserType().getTypeName();
+        }
+
+        boolean isAdminOrOfficial = roleName.toUpperCase().contains("ADMIN")
+                || roleName.toUpperCase().contains("DEPT")
+                || roleName.toUpperCase().contains("DM")
+                || roleName.toUpperCase().contains("APPELLATE")
+                || roleName.toUpperCase().contains("SECRETARY");
+
+        if (!isAdminOrOfficial) {
             if (loginDTO.getOtpCode() == null || loginDTO.getOtpCode().trim().isEmpty()) {
                 System.out.println("\n==================================================");
                 System.out.println("MOCK OTP SENT SUCCESSFULLY!");
-                System.out.println("User ID (Mobile): " + loginDTO.getMobile());
+                System.out.println("User Identifier: " + identifier);
                 System.out.println("Mock OTP: 123456");
                 System.out.println("==================================================\n");
 
@@ -163,7 +202,27 @@ public class AuthService {
             }
         }
 
-        String token = jwtUtil.generateToken(loginDTO.getMobile());
+        String activeRole = (user.getUserType() != null && user.getUserType().getTypeName() != null && !user.getUserType().getTypeName().isBlank())
+                ? user.getUserType().getTypeName()
+                : (user.getRole() != null ? user.getRole() : "CITIZEN");
+
+        String identLower = identifier.toLowerCase();
+        String mailLower = user.getEmail() != null ? user.getEmail().toLowerCase() : "";
+        String unameLower = user.getUsername() != null ? user.getUsername().toLowerCase() : "";
+
+        if (identLower.contains("superadmin") || mailLower.contains("superadmin") || unameLower.contains("superadmin")) {
+            activeRole = "ROLE_SuperAdmin";
+        } else if (identLower.contains("admin") || mailLower.contains("admin") || unameLower.contains("admin")) {
+            if (!activeRole.toUpperCase().contains("ADMIN")) {
+                activeRole = "ROLE_Admin";
+            }
+        }
+
+        if (user.getUuid() == null) {
+            user.setUuid(java.util.UUID.randomUUID());
+            userRepository.save(user);
+        }
+        String token = jwtUtil.generateTokenFromUuid(user.getUuid(), activeRole);
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
@@ -177,11 +236,13 @@ public class AuthService {
                 +
                 user.getLastName();
         userProfile.put("name", fullName.trim());
+        userProfile.put("username", user.getUsername() != null ? user.getUsername() : "");
         userProfile.put("email", user.getEmail() != null ? user.getEmail() : "");
-        userProfile.put("phone", user.getMobile());
+        userProfile.put("phone", user.getMobile() != null ? user.getMobile() : "");
         userProfile.put("district", user.getDistrict() != null ? user.getDistrict() : "");
         userProfile.put("address", user.getAddress() != null ? user.getAddress() : "");
-        userProfile.put("role", user.getRole().toLowerCase());
+        userProfile.put("role", activeRole);
+        userProfile.put("userType", user.getUserType() != null ? user.getUserType().getTypeName() : activeRole);
 
         response.put("user", userProfile);
         return response;

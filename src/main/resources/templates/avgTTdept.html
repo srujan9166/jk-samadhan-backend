@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<!-- <div lang="en" th:include="left_sidebar :: returnToDashboard"></div> -->
+
+	<main id="main" style="margin-left: 0px !important;" class="main position-relative">
+		<div class="pagetitle mb-3">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Average Days Taken By Department</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+
+
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12 yrTab">
+					<div class="card">
+
+
+
+						<div class="card-body">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+								<div class="heading-part">
+									<h5 class="fw-bold mb-0 whichWiseHeading">Departmentwise Average TT Report</h5>
+								</div>
+								<div class="button-part btn-wrapper ms-2">
+									<button class="btn btn-purple btnAvgT-customBtn" title="Download Excel"
+										value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black btnAvgT-customBtn" title="Download PDF"
+										value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+								</div>
+							</div>
+							<hr>
+							<div class="form-input-block mb-2">
+								<label for="filterDept">Department <span class="text-danger">*</span></label>
+								<select class="form-select w-auto" id="filterDept" aria-label="filterDept">
+									<option value="0">Select Department</option>
+									<option th:each="dept : ${department}" th:value="${dept.values}"
+										th:text="${dept.values}"></option>
+								</select>
+							</div>
+							<div class="yr-Rtable ">
+								<table class="table datatable table-bordered" id="avgttTbl" style="width: 100%;">
+								</table>
+							</div>
+
+							<hr>
+
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+								<div class="heading-part">
+									<h5 class="fw-bold mb-0 whichWiseHeading">Districtwise Average TT Report</h5>
+								</div>
+								<div class="button-part btn-wrapper ms-2">
+									<button class="btn btn-purple btnAvgTT-customBtn" title="Download Excel"
+										value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black btnAvgTT-customBtn" title="Download PDF"
+										value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+								</div>
+							</div>
+
+							<div class="form-input-block mb-2">
+								<label for="filterDist">District <span class="text-danger">*</span></label>
+
+								<select th:if="${DM == 'NO'}" class="form-select w-auto" id="filterDist"
+									aria-label="filterDist">
+									<option value="0">Select District</option>
+									<option th:each="dist : ${district}" th:value="${dist.values}"
+										th:text="${dist.values}"></option>
+								</select>
+
+								<select th:if="${DM == 'YES'}" class="form-select w-auto" id="filterDist"
+									aria-label="filterDist" disabled>
+									<option th:each="dist : ${district}" th:value="${dist.values}"
+										th:text="${dist.values}"></option>
+								</select>
+
+							</div>
+
+
+							<hr>
+							<!-- <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h5 class="fw-bold mb-0 whichWiseHeading">Officer wise Average TT Report</h5>
+								</div>
+								<div class="button-part btn-wrapper ms-2">
+									<button class="btn btn-purple btnAvgTT-customBtn" title="Download Excel"
+										value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black btnAvgTT-customBtn" title="Download PDF"
+										value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+								</div>
+							</div>
+							<div class="form-input-block mb-2">
+								<label for="filterDist">Officer <span class="text-danger">*</span></label>
+
+								<select th:if="${DM == 'NO'}" class="form-select w-auto" id="filterDist"
+									aria-label="filterDist">
+									<option value="0">Select Officer</option>
+									<option th:each="dist : ${district}" th:value="${dist.values}"
+										th:text="${dist.values}"></option>
+								</select>
+
+								<select th:if="${DM == 'YES'}" class="form-select w-auto" id="filterDist"
+									aria-label="filterDist" disabled>
+									<option th:each="dist : ${district}" th:value="${dist.values}"
+										th:text="${dist.values}"></option>
+								</select>
+
+							</div> -->
+
+							<div class="yr-Rtable ">
+								<table class="table datatable table-bordered" id="avgttTbl1" style="width: 100%;">
+								</table>
+							</div>
+
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+
+
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer2"></div>
+
+</body>
+
+</html>

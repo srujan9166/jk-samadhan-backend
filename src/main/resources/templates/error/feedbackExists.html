@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Already Received</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            color: #d9534f;
+        }
+
+        p {
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+
+
+    <div class="container">
+        <h1>Feedback Already Received for <span th:text="${uniqueID}"></span></h1>
+        <button class="cBb">Go Back</button>
+
+        <script th:src="@{/js/jquery.min.js}"></script>
+        <script th:src="@{/js/errorBtn.js}"></script>
+    </div>
+</body>
+
+</html>

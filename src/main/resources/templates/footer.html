@@ -1,0 +1,222 @@
+<!-- ======= Footer 1 ======= -->
+<div th:fragment="footer1">
+	<footer id="footer" class="footer">
+
+		<div class="copyright">© Copyright Ministry of Electronics and
+			Information Technology. All Rights Reserved</div>
+	</footer>
+
+	<div id="loader">
+		<svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+			<circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+			<circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+			<circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 440" stroke-linecap="round"></circle>
+			<circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 440" stroke-linecap="round"></circle>
+		</svg>
+	</div>
+
+	<form id="submitgrievancedata" th:action="@{viewApp}" method="post">
+		<input type="hidden" name="gIdaction" id="gIdaction">
+		<input type="hidden" name="token" th:value="${_csrf.token}">
+	</form>
+
+	<!-- End Footer -->
+	        <input type="hidden" id="sessionname" th:value="${sessionname}"/>
+			<input type="hidden" id="sessionvalue" class="sessionvalue"/>
+			<input type="hidden" id="context_path" th:value="${globalContextPath}"></input>
+
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+			class="bi bi-arrow-up-short"></i></a>
+
+
+
+
+	<!-- Vendor JS Files -->
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<!-- select2 -->
+	<script th:src="@{/js/select2.min.js}"></script>
+	<!-- <script th:src="@{/js/csrfToken.js}"></script> -->
+	<script th:src="@{/js/aesUtil.js}"></script>
+	<script th:src="@{/js/forge.js}"></script>
+	<script th:src="@{/js/HybridEncryption.js}"></script>
+	<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/js/dataTables.buttons.min.js}"></script>
+	<script th:src="@{/js/button.print.min.js}"></script>
+	<script th:src="@{/js/buttons.colVis.min.js}"></script>
+	<script th:src="@{/js/jszip.min.js}"></script>
+	<script th:src="@{/js/buttons.html5.min.js}"></script>
+	<script th:src="@{/js/pdfmake.min.js}"></script>
+	<script th:src="@{/js/vfs_fonts.js}"></script>
+
+	<script th:src="@{/vendor/apexcharts/apexcharts.min.js}"></script>
+	<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/vendor/chart.js/chart.umd.js}"></script>
+	<script th:src="@{/vendor/echarts/echarts.min.js}"></script>
+	<script th:src="@{/vendor/quill/quill.min.js}"></script>
+	<script th:src="@{/vendor/tinymce/tinymce.min.js}"></script>
+	<script th:src="@{/vendor/php-email-form/validate.js}"></script>
+	<script th:src="@{/js/csrfToken.js}"></script>
+	<script th:src="@{/js/cryptoJS.js}"></script>
+	<script th:src="@{/js/code.js}"></script>
+	<script th:src="@{/js/clearForwardHistory.js}"></script>
+	<script th:src="@{/js/jspdf.js}"></script>
+	<script th:src="@{/js/html2canvas.js}"></script>
+	<script th:src="@{/js/html2pdf.bundle.min.js}"></script>
+
+	<script th:src="@{/js/resourceViewer.js}"></script>
+
+	<script th:src="@{/js/website_translation_utility.js}"></script>
+
+	<script
+		th:if="${userType == 'ROLE_Admin' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramDashboard') && !globalUri.contains('/newDeptNodal') && !globalUri.contains('/forwardAplication') && !globalUri.contains('/cpgramProcessGrievance')}"
+		th:src="@{/js/admin.js}"></script>
+	<script
+		th:if="${userType == 'ROLE_Individual' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/userProfile')}" 
+		th:src="@{/js/userDashboard.js}"></script>
+	<script
+		th:if="${userType == 'ROLE_Department' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramDashboard') && !globalUri.contains('/cpgramProcessGrievance')  && !globalUri.contains('/forwardAplication')}"
+		th:src="@{/js/departmentDasboard.js}"></script>
+	<script
+		th:if="${userType == 'ROLE_SuperAdmin' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramProcessGrievance') && !globalUri.contains('/forwardAplication')}"
+		th:src="@{/js/superAdmin.js}"></script>
+		<script
+		th:if="${userType == 'ROLE_Secretary' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramProcessGrievance')  && !globalUri.contains('/userProfile')}"
+		th:src="@{/js/superAdmin.js}"></script>
+	<script th:if="${userType == 'ROLE_DM' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance') }"
+		th:src="@{/js/DMdashboard.js}"></script>
+
+	<script
+		th:if="${userType == 'ROLE_DealingHand' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/grievanceDatail')}"
+		th:src="@{/js/dealingHand.js}"></script>
+		
+		<script
+		th:if="${userType == 'LGMeetings' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramProcessGrievance') && !globalUri.contains('/userProfile')}"
+		th:src="@{/js/superAdmin.js}"></script>
+
+	<!-- Template Main JS File -->
+	<script th:src="@{/js/main.js}"></script>
+	<script th:src="@{/js/sweetalert2.js}"></script>
+	<script th:src="@{/js/errorBtn.js}"></script>
+	<!-- <script th:src="@{/js/appealDashboard.js}"></script> -->
+	<!-- <script th:src="@{/js/appealDashboardMIS.js}"></script> -->
+
+
+	<!-- 	<script th:src="@{/js/gootransFun.js}"></script> -->
+	<!--    <script th:src="@{/js/googleTranlation.js}"></script> -->
+	<!-- 	<script th:src="@{/js/googletran.js}"></script> -->
+
+</div>
+
+
+
+<!-- FOOTER 2 for those pages which are opening in next tab and not having any back button. -->
+<div th:fragment="footer2">
+	<footer id="footer" style="margin-left: 0px !important;" class="footer">
+		<label for="version" id="bversion"
+			class="nav-item mx-3 align-items-center d-flex font-monospace version-tag"></label>
+		<div class="copyright">© Copyright Ministry of Electronics and
+			Information Technology. All Rights Reserved</div>
+	</footer>
+
+	<div id="loader">
+		<svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+			<circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+			<circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+			<circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 440" stroke-linecap="round"></circle>
+			<circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20"
+				stroke-dasharray="0 440" stroke-linecap="round"></circle>
+		</svg>
+	</div>
+
+	<form id="submitgrievancedata" th:action="@{viewApp}" method="post">
+		<input type="hidden" name="gIdaction" id="gIdaction">
+		<input type="hidden" name="token" th:value="${_csrf.token}">
+	</form>
+
+	<!-- End Footer -->
+	        <input type="hidden" id="sessionname" th:value="${sessionname}"/>
+			<input type="hidden" id="sessionvalue" class="sessionvalue"/>
+			<input type="hidden" id="context_path" th:value="${globalContextPath}"></input>
+
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+			class="bi bi-arrow-up-short"></i></a>
+
+
+
+
+	<!-- Vendor JS Files -->
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<!-- select2 -->
+	<script th:src="@{/js/select2.min.js}"></script>
+	<!-- <script th:src="@{/js/csrfToken.js}"></script> -->
+	<script th:src="@{/js/aesUtil.js}"></script>
+	<script th:src="@{/js/forge.js}"></script>
+	<script th:src="@{/js/HybridEncryption.js}"></script>
+	<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/js/dataTables.buttons.min.js}"></script>
+	<script th:src="@{/js/button.print.min.js}"></script>
+	<script th:src="@{/js/buttons.colVis.min.js}"></script>
+	<script th:src="@{/js/jszip.min.js}"></script>
+	<script th:src="@{/js/buttons.html5.min.js}"></script>
+	<script th:src="@{/js/pdfmake.min.js}"></script>
+	<script th:src="@{/js/vfs_fonts.js}"></script>
+
+	<script th:src="@{/vendor/apexcharts/apexcharts.min.js}"></script>
+	<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/vendor/chart.js/chart.umd.js}"></script>
+	<script th:src="@{/vendor/echarts/echarts.min.js}"></script>
+	<script th:src="@{/vendor/quill/quill.min.js}"></script>
+	<script th:src="@{/vendor/tinymce/tinymce.min.js}"></script>
+	<script th:src="@{/vendor/php-email-form/validate.js}"></script>
+	<script th:src="@{/js/csrfToken.js}"></script>
+	<script th:src="@{/js/cryptoJS.js}"></script>
+	<script th:src="@{/js/code.js}"></script>
+	<script th:src="@{/js/clearForwardHistory.js}"></script>
+	<script th:src="@{/js/jspdf.js}"></script>
+	<script th:src="@{/js/html2canvas.js}"></script>
+	<script th:src="@{/js/html2pdf.bundle.min.js}"></script>
+
+	<script th:src="@{/js/resourceViewer.js}"></script>
+
+	<script th:src="@{/js/website_translation_utility.js}"></script>
+
+	<script
+		th:if="${userType == 'ROLE_Admin' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramDashboard') && !globalUri.contains('/newDeptNodal')}"
+		th:src="@{/js/admin.js}"></script>
+	<script
+		th:if="${userType == 'ROLE_Individual' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/userProfile')}" 
+		th:src="@{/js/userDashboard.js}"></script>
+	<script
+		th:if="${userType == 'ROLE_Department' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramDashboard') && !globalUri.contains('/cpgramProcessGrievance')}"
+		th:src="@{/js/departmentDasboard.js}"></script>
+	<script
+		th:if="${userType == 'ROLE_SuperAdmin' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramProcessGrievance')}"
+		th:src="@{/js/superAdmin.js}"></script>
+		<script
+		th:if="${userType == 'ROLE_Secretary' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramProcessGrievance')  && !globalUri.contains('/userProfile')}"
+		th:src="@{/js/superAdmin.js}"></script>
+	<script th:if="${userType == 'ROLE_DM' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance') }"
+		th:src="@{/js/DMdashboard.js}"></script>
+
+	<script
+		th:if="${userType == 'ROLE_DealingHand' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && globalUri.contains('/grievanceDatail')}"
+		th:src="@{/js/dealingHand.js}"></script>
+		
+		<script
+		th:if="${userType == 'LGMeetings' && !globalUri.contains('/processGrievance') && !globalUri.contains('/jkiProcessGrievance')  && !globalUri.contains('/cpgramProcessGrievance') && !globalUri.contains('/userProfile')}"
+		th:src="@{/js/superAdmin.js}"></script>
+
+	<!-- Template Main JS File -->
+	<script th:src="@{/js/main.js}"></script>
+	<script th:src="@{/js/sweetalert2.js}"></script>
+	<script th:src="@{/js/errorBtn.js}"></script>
+	<!-- <script th:src="@{/js/appealDashboard.js}"></script> -->
+
+</div>

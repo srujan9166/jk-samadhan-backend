@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+	<main id="main" class="main">
+
+	
+
+
+		<!-- End Page Title -->
+ 
+
+			<!-- HOME Dashboard  -->
+			 
+
+				<section class="section dashboard dash1 yrTab"> 
+				 
+
+		 
+
+					<!--  -->
+					
+						<!-- Left side columns -->
+ 
+						<!-- Total Grievances Table Div -->
+						
+							
+								
+								
+									<div class="card">
+								      
+										<div class="card-body ">
+										<h5 class="fw-bold">Setup Meetings</h5>
+										<hr>
+											<div class="row">
+												<div class="col-md-4">
+													<div class="form-input-block">											
+														<label for="meetingdate">Meeting Date:</label>
+			                                      		<input type="date" id="meetingdate" class="form-control" name="meetingdate">
+													</div>
+												</div>
+											</div>
+											
+											
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3"
+												style="margin-top: 20px">
+												<!-- <div class="heading-part">
+													<h4>Total Applications Table</h4>
+												</div> -->
+												<div class="search-part">
+													<h4>Filter</h4>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-lgm" type="radio"
+															name="total-lgm" id="total-ljmsamadhan-search"
+															th:value="lgmsamadhan"> <label class="form-check-label"
+															for="total-ljmsamadhan-search"> JKSamadhan </label>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input data-lgm" type="radio"
+															name="total-lgm" id="total-ljmsamadhan-search" th:value="lgmigram">
+														<label class="form-check-label" for="total-ljmigram-search">
+															JKIgram</label>
+													</div>
+												</div>
+											</div>
+											
+											
+											<div class="yr-Rtable py-3" id="homeDiv">
+
+												<table class="table stripe datatable" id="lgmulakatdata"
+													style="width: 100%;"></table>
+												<!-- <table class="table table-bordered stripe" id="all_tblHome" style="width: 100%;"></table> -->
+											<button class='common-btn forlgm' title='Action' type='button'>Submit</button>
+											</div>
+										</div>
+									</div>
+								
+							
+					 
+				</section>
+
+ 
+
+        <!--  /////////////////////////////// -->
+
+	
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<div class="yr-loader" style="display:none;">
+		<div class="spinner-border text-info" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</div>
+
+
+
+
+</body>
+
+</html>

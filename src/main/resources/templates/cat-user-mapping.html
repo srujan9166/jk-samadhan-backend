@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+<title>NODAL ADMIN - User Mapping</title>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Forward Grievance</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+
+			<ul style="color:red">
+				<li th:if="${userType=='ROLE_Admin' || userType=='ROLE_Department'}">You can assign the process to one subordinate, giving them the authority to handle it. If you want to involve multiple subordinate, you can give them the authority to add remarks.</li>
+				<li th:if="${userType=='ROLE_Admin' || userType=='ROLE_Department'}">If the grievance does not pertain to your department, please mark it as "Does Not Pertain" instead of forwarding it.</li>
+				<li th:if="${userType=='ROLE_Admin'}">If the grievance is forwarded to another department, it will be considered as pertaining to both departments and will be finalized by the primary department..</li>
+			</ul>
+
+			<div class="row">
+				<div class="col-md-6 mt-3">
+					<div class="form-input-block">
+						<label for="floatingZip">Grievance Id </label>
+						<input type="text" class="form-control" placeholder="" id="griId" name="grievanceId"
+							th:value="${grievanceID}" readonly> <input type="hidden" id="auth" th:value="${auth}">
+					</div>
+				</div>
+				<input type="hidden" th:value="${userType}" id="ussTp">
+				<input type="hidden" th:value="${forwardType}" id="fwdType">
+
+				<div class="col-md-6 mt-3" id="depDivss">
+					<div class="form-input-block">
+						<label for="floatingZip">Department Type</label>
+						<select class="form-select" id="inDep" aria-label="Department Type">
+							<option value="0">Select</option>
+							<option value="Inter">Inter Department</option>
+							<option value="Intra">Intra Department</option>
+						</select>
+					</div>
+				</div>
+
+
+				<!-- Left side columns -->
+
+				<div class="col-lg-12 yrTab mt-4" style="display: none">
+					<div class="card">
+						<div id="cUsers" class="card-body visibility-hidden">
+							
+							<div
+																			class="table-header-section d-flex justify-content-between align-items-center mb-3">
+																			<div class="heading-part">
+																				<h5 class="fw-bold">Forward Application To</h5>
+																			</div>
+																			<div class="search-part" th:if="${userType=='ROLE_Department'}">
+																											<h4>Filter</h4>
+																											<div class="form-check form-check-inline">
+																												<input class="form-check-input user-search" type="radio"
+																													name="total-app" id="total-all-search" checked th:value="department">
+																												<label class="form-check-label" for="total-all-search"> Departmental User </label>
+																											</div>
+																										
+																											<div class="form-check form-check-inline">
+																												<input class="form-check-input user-search" type="radio"
+																													name="total-app" id="total-app-search" th:value="attach">
+																												<label class="form-check-label" for="total-app-search">
+																													Attached User</label>
+																											</div>
+																											
+																										</div>
+							</div>
+							<hr>
+							
+							<div class="yr-Rtable ">
+								<div class="table-responsive">
+								<table class="table table-bordered" id="userMap" style="width: 100%;">
+									<thead>
+										<tr>
+											<th>S. No.</th>
+											<th>Name And Designation</th>
+											<th>Department</th>
+											<th>Office</th>
+											<th>User Level</th>
+											<th>Email Id</th>
+											<th>Authority</th>
+											<!-- <th>Action</th> -->
+											<th>Remark</th>
+											<th>Pertain to DM</th>
+											<th>Priority</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+
+								</table>
+								</div>
+							</div>
+							<div class="col-12 button-part">
+								<div class="d-flex justify-content-center gap-2">
+									<button class="btn btn-purple assignUsers" id="assignUsers" th:if="${fnStatus!='Recieved'}" value="Forward">Forward</button>
+									<button class="btn btn-purple assignUsers" id="sendBack" value="Send Back" th:if="${fnStatus=='Recieved'}">Send Back</button>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!-- <div class="col-md-12 mt-3">
+						<div class="button-part">
+							<button type="button" class="common-btn" id="assignUsers">Forward</button>
+						</div>
+					</div> -->
+				</div>
+				<!-- End Left side columns -->
+
+			</div>
+
+		</section>
+
+	</main>
+
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<script th:src="@{/js/cat-user-mapping.js}"></script>
+
+
+</body>
+
+</html>

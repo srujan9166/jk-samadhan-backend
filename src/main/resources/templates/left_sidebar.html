@@ -1,0 +1,825 @@
+<!-- ======= Sidebar ======= -->
+<div th:fragment="left_sidebar">
+	<aside id="sidebar" class="sidebar">
+
+		<ul class="sidebar-nav" id="sidebar-nav">
+
+			<!-- USER (ROLE_Individual) DASHBOARD SIDE BAR START -->
+			<div th:if="${userType == 'ROLE_Individual'}">
+				<li class="nav-item"><a class="nav-link active" href="#"> <span class="icon_span"> <i
+								class="bi bi-grid"></span></i> <span>User
+							Dashboard</span>
+					</a></li>
+
+				<li class="nav-item"><a class="nav-link collapsed" href="lodgeGrievance"> <span class="icon_span"><i
+								class="bi bi-journal-text"></i> </span><span>Lodge Grievance</span>
+					</a></li>
+
+				<!-- Raabta Li - start -->
+				<!-- <li class="nav-item">
+						<a class="nav-link collapsed" id="lodgeRaabtaLink">
+							<span class="icon_span">
+								<i class="bi bi-journal-bookmark-fill"></i>
+							</span>
+							<span>Lodge Raabta</span>
+							<span
+								style="background-color: #ffcc00; color: rgb(0, 0, 0); font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 1rem; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+								<i class="bi bi-star-fill" style="margin-right: 0.3rem; font-size: 1rem;"></i> New
+							</span>
+						</a>
+					</li> -->
+				<!-- Raabta Li - end -->
+
+
+				<li class="nav-item"><a class="nav-link collapsed" href="lodgeAppeal"> <span class="icon_span"><i
+								class="bi bi-flag"></i> </span><span>Lodge Appeal</span>
+					</a></li>
+			</div>
+			<!-- USER (ROLE_Individual) DASHBOARD SIDE BAR END -->
+
+			<!-- NODAL (ROLE_Admin) DASHBOARD SIDE BAR START -->
+			<div th:if="${userType == 'ROLE_Admin'}">
+
+				<li class="nav-item"><a class="nav-link nav-head" href="#">
+						<span class="icon_span"> <i class="bi bi-grid"></i>
+						</span> <span>Dashboard</span>
+					</a></li>
+
+				<!-- <li class="nav-item"><a class="nav-link collapsed" href="flaggedGrievances">
+						<span class="icon_span"> <i class="bi bi-flag"></i> </span> <span>Appeal Recieved
+							<span th:text="${appealReceviedCount}"
+								class="badge bg-warning text-black p-2 position-absolute rounded-pill spinner-grow translate-middle-y">
+							</span>	
+						</span>
+					</a></li> -->
+
+				<!-- Department Mapping & User Creation drop-down - start -->
+
+				<li th:if="${usrFlag != 'depSecretary'}" class="nav-item"><a class="nav-link nav-head collapsed"
+						data-bs-target="#mapping-nav" data-bs-toggle="collapse" href="#">
+						<span class="icon_span"> <i class="bi-columns"></i></span><span>User
+							&amp; Category Creation</span><i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="mapping-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+						<li th:if="${userLevel == 0}" class="nav-item"><a class="nav-link collapsed" href="deptMapping">
+								<i class="bi bi-journal-text"></i> <span>Create Department
+									Category</span>
+							</a></li>
+
+						<li class="nav-item"><a class="nav-link collapsed" href="newDeptNodal"> <i
+									class="bi bi-person-check"></i><span>Create
+									Offices &amp; Designation</span>
+
+
+							</a></li>
+						<li class="nav-item"><a class="nav-link collapsed" href="userMapping"> <i
+									class="bi bi-person-check"></i><span>Create
+									Department Users</span>
+							</a></li>
+					</ul>
+				</li>
+				<!-- Department Mapping & User Creation li drop-down - end -->
+
+				<!-- MIS Dashboard li drop-down - start -->
+				<li class="nav-item"><a class="nav-link nav-head collapsed" data-bs-target="#mis-nav"
+						data-bs-toggle="collapse" href="#"> <span>MIS
+							Dashboard</span><i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="mis-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+						<li class="nav-item"><a class="nav-link " th:href="@{/analytics}" target="_blank"><i
+									class="bi bi-grid"></i>
+								<span>Analytical Dasboard</span> </a></li>
+
+						<!-- <li><a class="nav-link collapsed" th:href="@{/advancedSearch/search}"> <i
+									class="bi bi-search"></i><span>Advance Search</span>
+							</a></li> -->
+						<!-- <li>
+							<a class="nav-link collapsed" href="misReportSection">
+								<i class="bi bi-journal-text"></i> <span>MIS Reports</span>
+							</a>
+						</li> -->
+					</ul> <!--   <li class="nav-item"><a class="nav-link collapsed" href="cpgramFwdGri">
+						<span class="icon_span"> <i class="bi bi-flag"></i> </span> <span>Forwaded CPGRAM Grievances</span>
+					</a></li> -->
+				</li>
+
+				<!-- MIS Reports li drop-down - start -->
+				<li class="nav-item"><a class="nav-link nav-head collapsed" data-bs-target="#misReports-nav"
+						data-bs-toggle="collapse" href="#">
+						<span>MIS Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="misReports-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+						<li th:if="${role!='ROLE_DM'}"><a class="nav-link collapsed"
+								th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/getUserList' : 'getUserList'}"
+								target="_blank"> <i class="bi bi-person-check"></i>
+								<span>Department User List</span>
+							</a></li>
+
+						<li><a class="nav-link collapsed"
+								th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/agePage' : 'agePage'}"
+								target="_blank">
+								<i class="bi bi-person-check"></i>
+								<span>Age
+									Analysis Report</span>
+							</a></li>
+						<li><a class="nav-link collapsed"
+								th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/uWRpt' : 'uWRpt'}"
+								target="_blank"> <i class="bi bi-person-check"></i>
+								<span>Status Wise Report</span>
+							</a></li>
+						<li><a class="nav-link collapsed"
+								th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/conPenrpt' : 'conPenrpt'}"
+								target="_blank"> <i class="bi bi-person-check"></i>
+								<span>Pendency Report</span>
+							</a></li>
+						<li><a class="nav-link collapsed"
+								th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/agePendingPage' : 'agePendingPage'}"
+								target="_blank"> <i class="bi bi-person-check"></i>
+								<span>Age Wise Pendency Report</span>
+							</a></li>
+						<li th:if="${role!='ROLE_DM'}"><a class="nav-link collapsed"
+								th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/distWiseRpt' : 'distWiseRpt'}"
+								target="_blank"> <i class="bi bi-person-check"></i>
+								<span>District Wise Report</span>
+							</a></li>
+					</ul>
+				</li>
+
+
+				<li class="nav-item active-list"><a class="nav-link nav-head" th:href="@{/analytics/appealDashboard}"
+						target="_blank"> <span class="icon_span"> <i class="bi-dash-square"></i></span><span>Appeal
+							Dashboard</span>
+					</a>
+				</li>
+
+				<li class="nav-item"><a class="nav-link nav-head" href="flaggedGrievances">
+						<span class="icon_span"></span>
+						Appeal Recieved
+						<span class="mx-2 translate-middle-y badge bg-danger end-100 rounded-pill"
+							th:text="${appealReceviedCount}"></span>
+
+					</a></li>
+
+				<li class="nav-item" th:if="${role!='ROLE_DM' && role!='ROLE_Department' && role!='ROLE_DealingHand' }">
+					<a class="nav-link collapsed"
+						th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/treeDashboard' : 'treeDashboard'}"
+						target="_blank"><span class="icon_span"> <i class="bi bi-journal-text"></i></span> <span>Tree
+							Dashboard</span> </a>
+				</li>
+
+
+				<li class="nav-item" th:if="${role!='ROLE_DM' && role!='ROLE_DealingHand' && role!='ROLE_Admin'}"><a
+						class="nav-link collapsed" th:href="@{/advancedSearch/search}" target="_blank">
+						<i class="bi bi-search"></i> <span>Advance Query Builder</span>
+					</a></li>
+
+				<li class="nav-item"><a class="nav-link collapsed"
+						th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/feedbackAnalysis' : 'feedbackAnalysis'}"
+						target="_blank">
+						<i class="bi bi-clipboard2-data"></i> <span>Feedback Analysis</span>
+					</a></li>
+
+				<!-- Naitik changes for new feedback analysis 06/01/2026 -->
+
+
+				<li class="nav-item"><a class="nav-link collapsed"
+						th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/NewfeedbackAnalysis' : 'NewfeedbackAnalysis'}"
+						target="_blank">
+						<i class="bi bi-clipboard2-data"></i> <span>New Feedback Analysis</span>
+					</a></li>
+
+				<!-- Naitik changes End for new feedback analysis 06/01/2026 -->
+
+				<!-- <li class="nav-item"><a class="nav-link nav-head" href="efile">
+						<span class="icon_span"> <i class="bi bi-search"></i>
+						</span> <span>Search Module</span>
+					</a></li> -->
+				<!-- MIS Reports li drop-down - end -->
+
+			</div>
+			<!-- NODAL (ROLE_Admin) DASHBOARD SIDE BAR END -->
+
+			<!-- DEPARTMENT USER (ROLE_Department) DASHBOARD SIDE BAR START -->
+			<div th:if="${userType == 'ROLE_Department'}">
+
+				<li class="nav-item"><a class="nav-link nav-head" href="#"><span class="icon_span"> <i
+								class="bi bi-grid"></i></span> <span>Department
+							Dashboard</span> </a></li>
+
+				<!--  <li th:if="${lev == 'show'}" class="nav-item"><a class="nav-link collapsed" href="userMappingDept"> <span
+							class="icon_span"><i class="bi bi-journal-text"></i></span> <span> User-Mapping</span>
+					</a></li>
+					-->
+				<!-- 	<li class="nav-item"><a class="nav-link collapsed" href="flaggedGrievances">
+						<span class="icon_span"> <i class="bi bi-flag"></i> </span> <span>Appeal Recieved
+							<span th:text="${appealReceviedCount}"
+								class="badge bg-warning text-black p-2 position-absolute rounded-pill spinner-grow translate-middle-y">
+							</span>
+						</span>
+					</a></li> -->
+
+
+				<li class="nav-item"><a class="nav-link nav-head collapsed" href="userMapping"> <span
+							class="icon_span"><i class="bi bi-person-check"></i></span> <span>Department User
+							Creation</span>
+					</a></li>
+
+				<li class="nav-item"><a class="nav-link nav-head collapsed" href="attachUser"> <span
+							class="icon_span"><i class="bi bi-person-check"></i></span> <span>Attach User</span>
+					</a></li>
+
+				<!-- <li class="nav-item active-list"><a class="nav-link nav-head" href="dataMonitor" target="_blank"> <span
+							class="icon_span"> <i class="bi-dash-square"></i></span><span>Analytical Dashboard</span>
+					</a>
+				</li> -->
+
+			</div>
+			<!-- DEPARTMENT USER (ROLE_Department) DASHBOARD SIDE BAR END -->
+
+			<!-- SUPER ADMIN (ROLE_SuperAdmin) DASHBOARD SIDE BAR START -->
+			<div th:if="${userType == 'ROLE_SuperAdmin'}">
+
+				<li class="nav-item"><a class="nav-link nav-head" th:href="@{/}" id='superDashboard'> <span
+							class="icon_span">
+							<i class="bi bi-grid"></i>
+						</span> <span>Super Admin Dashboard</span>
+					</a></li>
+
+				<!-- <li class="nav-item"><a class="nav-link collapsed" href="flaggedGrievances">
+						<span class="icon_span"> <i class="bi bi-flag"></i> </span> <span>Appeal Recieved
+							<span th:text="${appealReceviedCount}"
+								class="badge bg-warning text-black p-2 position-absolute rounded-pill spinner-grow translate-middle-y">
+							</span>
+						</span>
+					</a></li> -->
+
+
+				<!-- Department Mapping & User Creation drop-down - start -->
+				<li th:if="${usrFlag == 'SA'}" class="nav-item"><a class="nav-link nav-head"
+						data-bs-target="#mapping-nav" data-bs-toggle="collapse" href="#">
+						<span class="icon_span"> <i class="bi-columns"></i></span><span>Mapping
+							& User Creation</span><i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="mapping-nav" class="nav-content collapse show">
+						<li><a class="nav-link collapsed" href="deptMapping"> <i class="bi bi-journal-text"></i>
+								<span>Department Mapping</span>
+							</a></li>
+						<li><a class="nav-link collapsed" href="userMapping"> <i class="bi bi-person-check"></i>
+								<span>Create Department
+									Nodal</span>
+							</a></li>
+						<li><a class="nav-link collapsed" href="createUsers"> <i class="bi-person-plus"></i>
+								<span>Create users</span>
+							</a></li>
+						<!-- <li><a class="nav-link collapsed" href="newDept"> <i
+								class="bi bi-person-check"></i><span>Create Department</span>
+						</a></li> -->
+					</ul>
+				</li>
+				<!-- Department Mapping & User Creation li drop-down - end -->
+
+				<!-- MIS Dashboard li drop-down - start -->
+
+				<li class="nav-item active-list"><a class="nav-link nav-head" th:href="@{/analytics}" target="_blank">
+						<span class="icon_span"> <i class="bi-dash-square"></i></span><span>Analytical Dashboard</span>
+					</a>
+				</li>
+
+				<li class="nav-item active-list"><a class="nav-link nav-head" th:href="@{/analytics/appealDashboard}"
+						target="_blank"> <span class="icon_span"> <i class="bi-dash-square"></i></span><span>Appeal
+							Dashboard</span>
+					</a>
+				</li>
+				<!-- MIS Dashboard li drop-down - end -->
+
+
+
+
+				<!-- Keyword Based Search Module - start -->
+				<!-- <li class="nav-item"><a class="nav-link nav-head" href="efile">
+						<span class="icon_span"> <i class="bi bi-search"></i>
+						</span> <span>Search Module</span>
+					</a></li>
+
+				<li class="nav-item"><a class="nav-link nav-head" href="suggesionReport">
+						<span class="icon_span"> <i class="bi bi-person-check"></i>
+						</span> <span>Suggestion Report</span>
+					</a></li> -->
+				<!-- Keyword Based Search Module - end -->
+				<!-- Report Module - start -->
+				<!-- <li class="nav-item">
+					<a class="nav-link nav-head" href="rptGen"> <span class="icon_span"> <i
+								class="bi bi-card-checklist"></i> </span>
+						<span>Report Module</span>
+					</a>
+				</li> -->
+				<!-- Report Module - end -->
+
+			</div>
+			<!-- SUPER ADMIN (ROLE_SuperAdmin) DASHBOARD SIDE BAR END -->
+
+			<!-- LG Meeting DASHBOARD SIDE BAR Start -->
+			<div th:if="${userType == 'LGMeetings'}">
+				<li class="nav-item"><a class="nav-link nav-head collapsed " href="home"> <span class="icon_span"><i
+								class="bi bi-arrow-left-circle-fill"></i></span> <span>Back</span>
+
+					</a></li>
+				<li class="nav-item"><a class="nav-link collapsed" href="SetupMeetings"> <i
+							class="bi bi-journal-text"></i> <span>Setup
+							Meetings</span>
+					</a></li>
+				<li class="nav-item"><a class="nav-link collapsed" href="LGGrivanceList"> <i
+							class="bi bi-person-check"></i> <span>HLG
+							Mulaqaat Grievances</span>
+					</a></li>
+				<li class="nav-item"><a class="nav-link collapsed" href="meetingSummery"> <i class="bi-person-plus"></i>
+						<span>Summary
+							Of Meetings </span>
+					</a></li>
+				</li>
+			</div>
+			<!-- LG Meeting DASHBOARD SIDE BAR end -->
+
+
+			<!-- Secretary (ROLE_Secretary) DASHBOARD SIDE BAR START -->
+			<div th:if="${userType == 'ROLE_Secretary'}">
+
+				<li class="nav-item"><a class="nav-link nav-head" href="#" id='secretaryDashboard'> <span
+							class="icon_span"> <i class="bi bi-grid"></i>
+						</span> <span>Secretary Dashboard</span>
+					</a></li>
+
+				<!-- MIS Dashboard li drop-down - start -->
+				<li class="nav-item"><a class="nav-link nav-head collapsed" data-bs-target="#mis-nav"
+						data-bs-toggle="collapse" href="#"> <span class="icon_span"> <i
+								class="bi-dash-square"></i></span><span>MIS
+							Dashboard</span><i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="mis-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+						<li><a class="nav-link collapsed" href="dataMonitor"> <i class="bi bi-grid"></i>
+								<span>Analytical Dasboard</span>
+							</a></li>
+						<li><a class="nav-link collapsed" th:href="@{/advancedSearch/search}"> <i
+									class="bi bi-search"></i> <span>Advance Query Builder</span>
+							</a></li>
+
+						<li><a class="nav-link collapsed" href="feedbackAnalysis">
+								<i class="bi bi-search"></i> <span>Feedback Analysis</span>
+							</a></li>
+
+					</ul>
+				</li>
+				<!-- MIS Dashboard li drop-down - end -->
+
+
+				<!-- MIS Reports li drop-down - start -->
+				<li class="nav-item"><a class="nav-link nav-head collapsed" data-bs-target="#misReports-nav"
+						data-bs-toggle="collapse" href="#">
+						<span class="icon_span"> <i class="bi-dash-square"></i></span><span>MIS
+							Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="misReports-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+
+						<li><a class="nav-link collapsed" href="agePage"> <i class="bi bi-person-check"></i> <span>Age
+									Analysis Report</span>
+							</a></li>
+						<li><a class="nav-link collapsed" href="uWRpt"> <i class="bi bi-person-check"></i> <span>User
+									Wise Status
+									Report</span>
+							</a></li>
+						<li><a class="nav-link collapsed" href="conPenrpt"> <i class="bi bi-person-check"></i>
+								<span>Pendency Report</span>
+							</a></li>
+					</ul>
+				</li>
+				<!-- MIS Reports li drop-down - end -->
+
+				<!-- Keyword Based Search Module - start -->
+				<!-- <li class="nav-item"><a class="nav-link nav-head" href="efile">
+						<span class="icon_span"> <i class="bi bi-search"></i>
+						</span> <span>Search Module</span>
+					</a></li> -->
+				<!-- Keyword Based Search Module - end -->
+
+			</div>
+			<!-- Secretary (ROLE_Secretary) DASHBOARD SIDE BAR END -->
+
+
+			<!-- DM DASHBOARD (ROLE_DM) DASHBOARD SIDE BAR START -->
+			<div th:if="${userType == 'ROLE_DM'}">
+				<li class="nav-item"><a class="nav-link nav-head" href="#" id='superDashboard'> <span class="icon_span">
+							<i class="bi bi-grid"></span></i> <span>DM Dashboard</span>
+					</a></li>
+
+				<li class="nav-item"><a class="nav-link nav-head" th:href="@{/analytics}"> <span class="icon_span"><i
+								class="bi bi-grid"></span></i> <span>Analytical Dasboard</span>
+					</a></li>
+
+				<li class="nav-item" th:if="${role=='ROLE_DM'}"><a class="nav-link collapsed"
+						th:href="@{${role == 'ROLE_DM'} ? '/analytics/feedbackAnalysis' : 'feedbackAnalysis'}"
+						target="_blank">
+						<i class="bi bi-clipboard2-data"></i> <span>Feedback Analysis</span>
+					</a></li>
+
+				<!-- Naitik changes for new feedback analysis 30/12/2025 -->
+				<li class="nav-item" th:if="${role=='ROLE_DM'}"><a class="nav-link collapsed"
+						th:href="@{${role == 'ROLE_DM'} ? '/analytics/NewfeedbackAnalysis' : 'NewfeedbackAnalysis'}"
+						target="_blank">
+						<i class="bi bi-clipboard2-data"></i> <span>New Feedback Analysis</span>
+					</a></li>
+
+				<!-- Naitik changes for new feedback analysis 30/12/2025 end -->
+
+				<!-- <li class="nav-item"><a class="nav-link nav-head" href="deptSummary"> <span class="icon_span"><i
+								class="bi bi-grid"></span></i> <span>Department Summary Report</span>
+					</a></li> -->
+
+			</div>
+			<!-- DM DASHBOARD (ROLE_DM) DASHBOARD SIDE BAR END -->
+
+			<!-- DealingHand DASHBOARD (ROLE_DealingHand) DASHBOARD SIDE BAR START -->
+			<div th:if="${userType == 'ROLE_DealingHand'}">
+				<li class="nav-item"><a class="nav-link nav-head" href="#">
+						<span class="icon_span"> <i class="bi bi-grid"></span></i> <span
+							th:if="${userflag == 'DealingHand Head'}">DealingHand
+							Dashboard</span>
+						<span th:if="${userflag == 'Raabita Head'}">Raabita Head
+							Dashboard</span><span th:if="${userflag == 'RMC Head'}">RMC Head
+							Dashboard</span> <span th:if="${userflag == 'DH User'}">DH User
+							Dashboard</span> <span th:if="${userflag == 'RMC User'}">RMC User
+							Dashboard</span>
+						<span th:if="${userflag == 'Raabita User'}">Raabita User
+							Dashboard</span>
+					</a></li>
+
+				<li th:if="${userflag == 'DH User' || userflag == 'RMC User' || userflag == 'Raabita User'}"
+					class="nav-item"><a class="nav-link " href="dHForm"> <span class="icon_span"><i
+								class="bi bi-file-check"></span></i>
+						<span th:if="${userflag != 'Raabita User'}">Lodge Grievances</span>
+						<span th:if="${userflag == 'Raabita User'}">Lodge Raabita</span>
+					</a></li>
+				<li class="nav-item"><a class="nav-link collapsed" href="lodgeAppeal" th:if="${userflag == 'DH User'}">
+						<span class="icon_span"><i class="bi bi-flag"></i> </span><span>Lodge Appeal</span>
+					</a></li>
+
+
+
+
+				<li th:if="${userflag == 'RMC Head' ||  userflag == 'DealingHand Head' || userflag == 'Raabita Head'}"
+					class="nav-item"><a class="nav-link " href="createUsersRMCandDH"> <span class="icon_span"><i
+								class="bi bi-file-check"></span></i> <span
+							th:if="${userflag == 'DealingHand Head'}">Create
+							DealingHand Users</span> <span th:if="${userflag == 'RMC Head'}">Create
+							RMC Users</span>
+						<span th:if="${userflag == 'Raabita Head'}">Create
+							Raabita Users</span>
+					</a></li>
+
+
+				<li th:if="${userflag == 'RMC Head' || userflag == 'DealingHand Head' || userflag == 'Raabita Head'}"
+					class="nav-item"><a class="nav-link " href="getUserList">
+						<span class="icon_span"><i class="bi bi-person-check"></span></i>
+						<span>User List</span>
+					</a></li>
+
+				<li class="nav-item"><a class="nav-link collapsed" href="#" id="checStatus"
+						th:if="${userflag == 'DH User' || userflag == 'DealingHand Head' || userflag == 'RMC Head' || userflag == 'RMC User' || userflag == 'Raabita Head' || userflag == 'Raabita User'}">
+						<span class="icon_span"><i class="bi bi-flag"></i> </span><span>Grievance Status</span>
+					</a></li>
+
+				<!-- Data Monitor For Raabita User -->
+				<li th:if="${userflag == 'Raabita Head'}" class="nav-item active-list"><a class="nav-link nav-head"
+						th:href="@{/analytics}" target="_blank"> <span class="icon_span"> <i
+								class="bi-dash-square"></i></span><span>Analytical Dashboard</span>
+					</a>
+				</li>
+
+
+			</div>
+			<!-- DealingHand DASHBOARD (ROLE_DealingHand) DASHBOARD SIDE BAR END -->
+
+		</ul>
+		<label for="version" id="bversion"
+			class="nav-item mx-3 align-items-center d-flex font-monospace version-tag"></label>
+	</aside>
+
+</div>
+<!-- End Sidebar-->
+
+
+<!-- Data Monitoring Sidebar  Start-->
+<div th:fragment="dataMonitorSideBar">
+
+	<aside id="sidebar" class="sidebar">
+		<ul class="sidebar-nav" id="sidebar-nav">
+			<!-- <li class="nav-item"><a class="nav-link nav-head collapsed cBb">
+					<span class="icon_span"><i class="bi bi-arrow-left-circle-fill"></i></span> <span
+						style="cursor: pointer;">Back</span>
+				</a></li> -->
+
+			<li class="nav-item"><a class="nav-link enabled" id="monitorDesk"><span class="icon_span"> <i
+							class="bi bi-grid"></i></span> <span>Monitoring Desk</span> </a></li>
+
+			<!-- MIS Reports li drop-down - start -->
+			<li th:if="${role!='ROLE_DealingHand' && role!='ROLE_Admin'}" class="nav-item"><a class="nav-link nav-head"
+					data-bs-target="#misReports-nav" data-bs-toggle="collapse" href="#">
+					<span class="icon_span"> <i class="bi-dash-square"></i></span><span>MIS
+						Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+				</a>
+				<ul id="misReports-nav" class="nav-content collapse show">
+					<li th:if="${role!='ROLE_Admin' && role!='ROLE_Department' && role!='ROLE_DealingHand'}"><a
+							class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/getCitizenList' : '/analytics/getCitizenList'}"
+							target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Citizen Registration List</span>
+						</a></li>
+					<li th:if="${role!='ROLE_DM' && role!='ROLE_Admin'}"><a class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/getUserList' : 'getUserList'}"
+							target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Department User List</span>
+						</a></li>
+					<li th:if="${role=='ROLE_SuperAdmin'}"><a class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/dhlPage' : '/superAdmin/dhlPage'}"
+							target="_blank">
+							<i class="bi bi-person-check"></i>
+							<span>Dealing Hand Grievances</span>
+						</a></li>
+					<li th:if="${role!='ROLE_Admin'}"><a class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/agePage' : '/analytics/agePage'}"
+							target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Age
+								Analysis Report</span>
+						</a></li>
+					<li th:if="${role!='ROLE_Admin'}"><a class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/uWRpt' : '/analytics/uWRpt'}"
+							target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Status Wise Report</span>
+						</a></li>
+
+					<li th:if="${role!='ROLE_Admin'}"><a class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/conPenrpt' : '/analytics/conPenrpt'}"
+							target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Pendency Report</span>
+						</a></li>
+					<li th:if="${role!='ROLE_Admin'}"><a class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/agePendingPage' : '/analytics/agePendingPage'}"
+							target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Age Wise Pendency Report</span>
+						</a></li>
+					<li th:if="${role!='ROLE_DM' && role!='ROLE_Admin'}"><a class="nav-link collapsed"
+							th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/distWiseRpt' : 'distWiseRpt'}"
+							target="_blank"> <i class="bi bi-person-check"></i>
+							<span>District Wise Report</span>
+						</a></li>
+					<li th:if="${role=='ROLE_SuperAdmin' || role=='ROLE_DM'}"><a class="nav-link collapsed"
+							th:href="@{/analytics/avgttByDept}" target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Average Time Taken Report</span>
+						</a></li>
+
+					<li th:if="${role=='ROLE_SuperAdmin'}"><a class="nav-link collapsed"
+							th:href="@{/analytics/appellateRpt}" target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Appellate Report</span>
+						</a></li>
+
+					<li th:if="${role=='ROLE_SuperAdmin'}"><a class="nav-link collapsed"
+							th:href="@{analytics/newAnnouncement}" target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Announcement/Notification List</span>
+						</a></li>
+
+					<li th:if="${role=='ROLE_SuperAdmin'}"><a class="nav-link collapsed"
+							th:href="@{analytics/appealMisReport}" target="_blank"> <i class="bi bi-person-check"></i>
+							<span>Appeal Report</span>
+						</a></li>
+
+				</ul>
+			</li>
+			<!-- MIS Reports li drop-down - end -->
+
+
+			<!-- SKY 24 MARCH 2025 li drop-down - start -->
+			<!-- <li th:if="${oSKY=='Yes'}" class="nav-item"><a class="nav-link nav-head" data-bs-target="#aiReports-nav"
+								data-bs-toggle="collapse" href="#">
+								<span class="icon_span"> <i class="bi-dash-square"></i></span><span>AI Reports</span><i
+									class="bi bi-chevron-down ms-auto"></i>
+							</a>
+							<ul id="aiReports-nav" class="nav-content collapse show">
+								<li>
+									<a class="nav-link collapsed" th:href="@{/analytics/aiMisReports2/{dataValue}(dataValue=${'report1'})}" target="_blank">
+										<i class="bi bi-person-check"></i>
+										<span>Age Analysis Report</span>
+									</a>
+								</li>
+								
+							</ul>
+						</li> -->
+
+			<!-- SKY 24 MARCH 2025 li drop-down - end -->
+
+
+			<li class="nav-item"
+				th:if="${role!='ROLE_DM' && role!='ROLE_Department' && role!='ROLE_DealingHand' && role!='ROLE_Admin' }">
+				<a class="nav-link collapsed"
+					th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/treeDashboard' : 'treeDashboard'}"
+					target="_blank"><span class="icon_span"> <i class="bi bi-journal-text"></i></span> <span>Tree
+						Dashboard</span> </a>
+			</li>
+
+			<li class="nav-item" th:if="${role!='ROLE_DM' && role!='ROLE_DealingHand' && role!='ROLE_Admin'}"><a
+					class="nav-link collapsed" th:href="@{/advancedSearch/search}" target="_blank">
+					<i class="bi bi-search"></i> <span>Advance Query Builder</span>
+				</a></li>
+
+			<li class="nav-item" th:if="${role=='ROLE_SuperAdmin'}"><a class="nav-link collapsed"
+					th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/feedbackAnalysis' : 'feedbackAnalysis'}"
+					target="_blank">
+					<i class="bi bi-clipboard2-data"></i> <span>Feedback Analysis</span>
+				</a></li>
+
+			<!-- Naitik changes for new feedback analysis 30/12/2025 -->
+			<li class="nav-item" th:if="${role=='ROLE_SuperAdmin'}"><a class="nav-link collapsed"
+					th:href="@{${role == 'ROLE_SuperAdmin'} ? '/analytics/NewfeedbackAnalysis' : 'NewfeedbackAnalysis'}"
+					target="_blank">
+					<i class="bi bi-clipboard2-data"></i> <span>New Feedback Analysis</span>
+				</a></li>
+
+			<!-- Naitik changes for new feedback analysis 30/12/2025 end -->
+
+
+			<!-- <li th:if="${role=='ROLE_SuperAdmin'}" class="nav-item"><a
+					class="nav-link collapsed" th:href="${role == 'ROLE_SuperAdmin'} ? '/analytics/heatmapview' : 'heatmapview'" target="_blank"><span class="icon_span"> <i
+							class="bi bi -globe-americas"></i>
+					</span><span>Heat map</span> </a></li> -->
+
+			<li th:if="${role=='ROLE_SuperAdmin'}" class="nav-item">
+				<a class="nav-link collapsed" th:href="@{/superAdmin/GrievanceWiseInfoOnMap}" target="_blank">
+					<span class="icon_span"> <i class="bi bi-map"></i></span>
+					<span>Heatmap</span>
+				</a>
+			</li>
+		</ul>
+	</aside>
+</div>
+<!-- Data Monitoring Sidebar End -->
+
+
+<!-- Return to dashboard li (universal) -->
+<div th:fragment="returnToDashboard">
+	<aside id="sidebar" class="sidebar">
+		<ul class="sidebar-nav" id="sidebar-nav">
+			<li th:if="${!globalContextPath.contains('heatmapview')}" class="nav-item"><a
+					class="nav-link nav-head collapsed cBb">
+					<span class="icon_span"><i class="bi bi-arrow-left-circle-fill"></i></span> <span
+						style="cursor: pointer;">Back</span>
+				</a></li>
+
+			<li th:if="${flagRpt}" class="nav-item rpt1"><a class="nav-link collapsed " href="#"> <span
+						class="icon_span"><i class="bi bi-gear-fill"></i></span> <span>Report Format</span>
+				</a></li>
+			<li th:if="${flagRpt}" class="nav-item rpt2"><a class="nav-link collapsed " href="#"> <span
+						class="icon_span"><i class="bi bi-trello"></i></span> <span>Generate Report</span>
+				</a></li>
+
+			<!-- <li class="nav-item"><a class="nav-link collapsed " href="SetupMeetings">
+					<span class="icon_span"><i class="bi bi-arrow-left-circle-fill"></i></span> <span>Return to LG
+						Girevance
+						Dashboard</span>
+				</a></li> -->
+
+
+			<li th:if="${flag}" class="nav-item">
+
+
+
+				<div class="accordion custom-accordion">
+
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapsesearch">
+								Filter</button>
+						</h2>
+						<div id="collapsesearch" class="accordion-collapse collapse show"
+							data-bs-parent="#accordiondash">
+							<div class="accordion-body px-1">
+								<div class="date-filter row">
+									<div class="col-sm-6">
+										<div class="custom-input-wrapper mb-2">
+											<label class="text-center" for="dateFrom">From</label> <input type="date"
+												id="dateFrom" class="form-control">
+										</div>
+									</div>
+									<div class="col-sm-6">
+										<div class="custom-input-wrapper mb-2">
+											<label class="text-center" for="dateTo">To</label> <input type="date"
+												class="form-control" id="dateTo">
+										</div>
+									</div>
+								</div>
+								<div class="accordion-item">
+									<h2 class="accordion-header">
+										<button class="accordion-button" type="button" data-bs-toggle="collapse"
+											data-bs-target="#collapsefirst">
+											List of Departments</button>
+									</h2>
+									<div id="collapsefirst" class="accordion-collapse collapse show"
+										data-bs-parent="#accordiondash">
+										<div class="accordion-body">
+											<!-- <input class="form-control search-input" placeholder="Search Departments"> -->
+											<ul class="custom-list">
+												<li th:each="dln : ${deptListName}" th:value="${dln.department_name}">
+													<input class="form-check-input" name="listofdepart"
+														th:value="${dln.department_name}" type="checkbox">
+													<p th:text="${dln.department_name}"></p>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div style="display: none;" id="category" class="accordion-item">
+									<h2 class="accordion-header">
+										<button class="accordion-button collapsed" type="button"
+											data-bs-toggle="collapse" data-bs-target="#collapsesec">
+											Category</button>
+									</h2>
+									<div id="collapsesec" class="accordion-collapse collapse"
+										data-bs-parent="#accordiondash">
+										<div class="accordion-body">
+											<!-- <input class="form-control search-input" placeholder="Search Category"> -->
+											<ul id="categoryli" class="custom-list">
+												<li><input class="form-check-input" type="checkbox">
+													<p>No Data</p>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="btn-block d-flex align-items-center justify-content-center">
+									<button id="Filter" class="common-btn">Filter</button>
+									<button type="button" class="common-btn btn-black" id="reset">Reset</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapselayer">
+								Layers</button>
+						</h2>
+						<div id="collapselayer" class="accordion-collapse collapse" data-bs-parent="#accordiondash">
+							<div class="accordion-body">
+								<!-- <input class="form-control search-input" placeholder="Search Departments"> -->
+								<div id="layer-panel">
+									<input type="checkbox" id="layer1-checkbox" checked>
+									<label for="layer1-checkbox">Grievance Location</label>
+									<br>
+									<input type="checkbox" id="layer2-checkbox">
+									<label for="layer2-checkbox">District Heatmap</label>
+									<!-- <br>
+									<input type="checkbox" id="layer3-checkbox" >
+									<label for="layer3-checkbox">District Pertain</label> -->
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+
+
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapsehdmap">
+								Imagery</button>
+						</h2>
+						<div id="collapsehdmap" class="accordion-collapse collapse" data-bs-parent="#accordiondash">
+							<div class="accordion-body">
+
+								<ul class="custom-list">
+									<li>
+										<div class="hd-map">
+											<img th:src="@{/img/map-img.png}" alt="map image">
+
+											<p class="d-flex align-items-center gap-2"><input type="checkbox"
+													id="myCheckbox" onclick="checkStatus()" /> High Resolution Image</p>
+
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+
+
+
+			</li>
+
+		</ul>
+	</aside>
+</div>
+<!-- Return to dashboard li (universal) -->

@@ -1,0 +1,2694 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+	<link rel="stylesheet" href="../js/chart/apexcharts.css">
+	</link>
+	<script src="../js/chart/apexcharts.js"></script>
+
+
+
+</head>
+<title>DATA MONITOR - Dashboard</title>
+
+<style>
+	.card-box {
+		width: calc(20% - 1rem);
+		min-width: unset;
+	}
+
+	@media only screen and (max-width: 1600px) and (min-width: 1200px) {
+		.card-box {
+			width: calc(20% - 1rem) !important;
+			min-width: unset;
+		}
+
+		.card-box .count+img {
+			min-width: 3vw;
+			max-width: 45px;
+		}
+
+		.card-box .card-body {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.card-box .card-body p {
+			flex-grow: 1;
+		}
+	}
+</style>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: dataMonitorSideBar"></div>
+
+
+	<main id="main" class="main">
+		<input id="usrR" th:value="${role}" type="hidden">
+		<div class="pagetitle">
+
+
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active"><span>Analytical
+							Dashboard</span> </li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<!-- Filter Section -->
+		<section class="yrTab" id="divisionDiv">
+			<div class="card mb-4">
+				<div class="card-body">
+					<div class="row">
+						<!-- Department / Category / Sub Cateogory / Status Filter -->
+						<div id="deptFilterDiv" class="row">
+							<!-- Department Filter -->
+							<div class="col-md-3">
+								<div class="form-input-block mb-2">
+									<label for="departmentss"><i class="bi bi-briefcase"></i> Departments:</label>
+									<select class="form-select futuristic-select" id="departmentss">
+										<option value="0">Select</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Category Filter -->
+							<div class="col-md-3">
+								<div class="form-input-block mb-2">
+									<label for="catGraph"><i class="bi bi-tags"></i> Category</label>
+									<select class="form-select futuristic-select" id="catGraph" disabled>
+										<option value="0">Select</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Sub Category Filter -->
+							<div class="col-md-3"
+								th:if="${role == 'ROLE_DealingHand' || role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="subCatGraph"><i class="bi bi-tags"></i> Sub Category</label>
+									<select class="form-select futuristic-select" id="subCatGraph" disabled>
+										<option value="0">Select</option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<!-- Over All Status / Sub Status / Window -->
+						<div id="statusWindowFilterDiv" class="row">
+							<!--Overall Status -->
+							<div class="col-md-4"
+								th:if="${role == 'ROLE_DealingHand' || role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="overallStatusFilter"><i class="bi bi-check-circle"></i> Overall
+										Status</label>
+									<select class="form-select futuristic-select" id="overallStatusFilter">
+										<option value="0">Select</option>
+										<option value="Open">Open</option>
+										<option value="Closed">Closed</option>
+										<!-- <option th:each="gStat : ${grvStatus}" th:text="${gStat.status}"
+										th:value="${gStat.status}"></option> -->
+									</select>
+								</div>
+							</div>
+
+							<!--Sub Status -->
+							<div class="col-md-4"
+								th:if="${role == 'ROLE_DealingHand' || role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="statusFilter"><i class="bi bi-check-circle"></i> Sub Status</label>
+									<select class="form-select futuristic-select" id="statusFilter" disabled>
+										<option value="0">Select</option>
+										<option th:each="gStat : ${grvStatus}" th:text="${gStat.status}"
+											th:value="${gStat.status}"></option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Window -->
+							<div class="col-md-4"
+								th:if="${role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="windowFilter"><i class="bi bi-exclamation-circle"></i> Window <span
+											class="text-danger">(Grievance Origin)</span></label>
+									<select class="form-select futuristic-select" id="windowFilter">
+										<option value="0">Select</option>
+										<option value="JKSAMADHAN">JKSAMADHAN</option>
+										<option value="RAABITA">RAABITA</option>
+										<option value="CPGRAM">CPGRAM</option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<!-- Date Range / Window -->
+						<div id="dateWindowFilterDiv" class="row">
+							<!-- Date From Filter -->
+							<div class="col-md-3">
+								<div class="form-input-block mb-2">
+									<label for="dateFrom"><i class="bi bi-calendar-date"></i> From/on</label>
+									<input type="date" id="dateFrom" class="form-control futuristic-input">
+								</div>
+							</div>
+
+							<!-- Date To Filter -->
+							<div class="col-md-3">
+								<div class="form-input-block mb-2">
+									<label for="dateTo"><i class="bi bi-calendar-date"></i> To</label>
+									<input type="date" class="form-control futuristic-input" id="dateTo" disabled>
+								</div>
+							</div>
+
+							<!-- Operand Filter -->
+							<div class="col-md-3">
+								<div class="form-input-block mb-2">
+									<label for="operandFilter"><i class="bi bi-calendar-date"></i> Operand Input <span
+											class="text-danger">(In Days)</span></label>
+									<input type="number" class="form-control futuristic-input" id="operandFilter">
+								</div>
+							</div>
+
+							<!-- Operator Filter -->
+							<div class="col-md-3"
+								th:if="${role == 'ROLE_DealingHand' || role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="operatorFilter"><i class="bi bi-exclamation-circle"></i> Operator <span
+											class="text-danger">(<,>)</span></label>
+									<select class="form-select futuristic-select" id="operatorFilter">
+										<option value="0">Select</option>
+										<option value="<">More than</option>
+										<option value=">=">Less than Equal To</option>
+									</select>
+								</div>
+							</div>
+
+						</div>
+						<!-- Geographical -->
+						<div id="geoFilterDiv" class="row">
+
+							<!-- Administrative Type Filter Apart from DealingHands -->
+							<div class="col-md-2" th:if="${role != 'ROLE_DealingHand' && role != 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="adminTypeFilter"><i class="bi bi-geo-alt"></i> Administrative
+										Type</label>
+									<select class="form-select futuristic-select" id="adminTypeFilter">
+										<option value="0">Select</option>
+										<option value="3">UT</option>
+										<option value="1">Division</option>
+										<option value="2">District</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Division Filter -->
+							<div class="col-md-2 d-none" id="divisionFilterDiv">
+								<div th:unless="${currentLoginUser.user_type == 'ROLE_DM'}"
+									class="form-input-block mb-2">
+									<label for="divisionFilter"><i class="bi bi-geo-alt"></i> Division</label>
+									<select class="form-select futuristic-select" id="divisionFilter">
+										<option value="0">Select</option>
+										<option value="1">JAMMU</option>
+										<option value="2">KASHMIR</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- District Filter -->
+							<div class="col-md-2"
+								th:classappend="${currentLoginUser.user_type == 'ROLE_DM'} ? '' : ' d-none'"
+								id="districtFilterDiv">
+								<div th:unless="${currentLoginUser.user_type == 'ROLE_DM'}"
+									class="form-input-block mb-2">
+									<label for="districtFilter"><i class="bi bi-geo-alt"></i> District</label>
+									<select class="form-select futuristic-select" id="districtFilter">
+										<option value="0">Select</option>
+										<option th:each="disD : ${districtData}" th:text="${disD.district_name}"
+											th:value="${disD.district_name}"></option>
+									</select>
+								</div>
+
+								<div th:if="${currentLoginUser.user_type == 'ROLE_DM'}" class="form-input-block mb-2">
+									<label for="districtFilter"><i class="bi bi-geo-alt"></i> District</label>
+									<select class="form-select futuristic-select" id="districtFilter" disabled>
+										<option th:each="option : ${districtData}" th:value="${option.district_name}"
+											th:text="${option.district_name}"
+											th:selected="${option.district_name == currentLoginUser.district}"></option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Administrative Division Filter DealingHand -->
+							<div class="col-md-2" th:if="${role == 'ROLE_DealingHand'}">
+								<div class="form-input-block mb-2">
+									<label for="adminDivisionFilter"><i class="bi bi-geo-alt"></i> Administrative
+										Unit</label>
+									<select class="form-select futuristic-select" id="adminDivisionFilter">
+										<option value="0">Select</option>
+										<option value="Municipality">Municipality</option>
+										<option value="Block">Block</option>
+									</select>
+								</div>
+							</div>
+
+
+							<!-- Municipality / Block Filter -->
+							<div class="col-md-2" th:if="${role == 'ROLE_DealingHand'}">
+								<div class="form-input-block mb-2">
+									<label for="municipality-block-Filter"><i class="bi bi-geo-alt"></i> Municipality /
+										Block</label>
+									<select class="form-select futuristic-select" id="municipality-block-Filter">
+
+										<option value="0">Select</option>
+										</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Ward / Panchayat Filter -->
+							<div class="col-md-2" th:if="${role == 'ROLE_DealingHand'}">
+								<div class="form-input-block mb-2">
+									<label for="ward-panchayat-Filter"><i class="bi bi-geo-alt"></i> Ward /
+										Panchayat</label>
+									<select class="form-select futuristic-select" id="ward-panchayat-Filter">
+										<option value="0">Select</option>
+										<option value="ward1">ward1</option>
+										<option value="ward2">ward2</option>
+										</option>
+									</select>
+								</div>
+							</div>
+
+						</div>
+						<!-- AI / PSGA / Mode -->
+						<div id="aiPsgaModeFilterDiv" class="row">
+
+							<!-- AI Tracking -->
+							<div class="col-md-3"
+								th:if="${role == 'ROLE_DealingHand' || role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="aiTrackingFilter"><i class="bi bi-exclamation-circle"></i> AI Tracking
+										<span class="text-danger">(Privilege Assigned)</span></label>
+									<select class="form-select futuristic-select" id="aiTrackingFilter">
+										<option value="0">Select</option>
+										<option value="Urgent">Urgent (07 Days)</option>
+										<option value="Normal">Normal (28 Days)</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- AI Classification -->
+							<div class="col-md-3"
+								th:if="${role == 'ROLE_DealingHand' || role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="aiClassificationFilter"><i class="bi bi-exclamation-circle"></i> AI
+										Classification <span class="text-danger">(Automated Grievance
+											Classification)</span></label>
+									<select class="form-select futuristic-select" id="aiClassificationFilter">
+										<option value="0">Select</option>
+										<option value="Priority">Priority</option>
+										<option value="Normal">Normal</option>
+										<option value="Repeated">Repeated</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Authority Assigned -->
+							<!-- <div class="col-md-3"  th:if="${role == 'ROLE_SuperAdmin'}">
+								<div class="form-input-block mb-2">
+									<label for="authorityAssignedFilter"><i class="bi bi-exclamation-circle"></i> Authority Assigned <span class="text-danger">(By Department/s)</span></label>
+									<select class="form-select futuristic-select" id="authorityAssignedFilter">
+										<option value="0">Select</option>
+										<option value="Process">Process</option>
+										<option value="Remark">Remark</option>
+									</select>
+								</div>
+							</div> -->
+
+							<!-- PSGA -->
+							<div class="col-md-3" th:if="${role == 'ROLE_DealingHand'}">
+								<div class="form-input-block mb-2">
+									<label for="psgaFilter"><i class="bi bi-exclamation-circle"></i> PSGA <span
+											class="text-danger">(Public Service Guarantee Act)</span></label>
+									<select class="form-select futuristic-select" id="psgaFilter">
+										<option value="0">Select</option>
+										<option value="Yes">Yes</option>
+										<option value="No">No</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Mode -->
+							<div class="col-md-3"
+								th:if="${role == 'ROLE_DealingHand' || role == 'ROLE_SuperAdmin' || role == 'ROLE_Admin' || role == 'ROLE_DM'}">
+								<div class="form-input-block mb-2">
+									<label for="modeFilter"><i class="bi bi-exclamation-circle"></i> Mode</label>
+									<select class="form-select futuristic-select" id="modeFilter">
+										<option value="0">Select</option>
+										<option value="web">Web</option>
+										<option value="mobile">Mobile</option>
+									</select>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<button type="button" class="common-btn futuristic-btn" id="reset">Reset</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="section dashboard mb-4" id="countAppDiv">
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12">
+
+					<div class="row count-dash mb-0">
+						<!-- Left side columns -->
+						<div class="col-lg-12">
+
+							<div class="dbBox row">
+
+								<!-- Sales Card -->
+								<div class="card-box">
+									<a href="#" data-value="Total" class="filterData">
+										<div class="card info-card sales-card pb-0">
+											<div class="card-body ">
+												<p class="mb-0">Total Grievance Received</p>
+												<div class="d-flex justify-content-between align-items-center">
+													<div class="count">
+														<h6 id='totalGri' th:text="${tCount}"></h6>
+													</div>
+													<img src="../img/icons/total-icon.png" alt="Icon Image"
+														class="img-fluid">
+												</div>
+
+											</div>
+										</div>
+									</a>
+
+								</div>
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Closed Grievance</p>
+
+											<div class="d-flex justify-content-between align-items-end">
+
+												<div class="count">
+
+													<div class="other-count">
+
+														<div class="count count-total  border-bottom">
+															<small>Total</small>
+															<h6 id='toGr' th:text="${tClosedCount}"></h6>
+														</div>
+														<div class="d-flex mt-1">
+															<div class="count count-first">
+																<small>Resolved</small>
+																<h6 id='resolved' th:text="${resCount}"></h6>
+															</div>
+															<div class="count count-second  border-start">
+																<small class="text-danger">Rejected</small>
+																<h6 id='rejected' th:text="${rejCount}"></h6>
+															</div>
+														</div>
+													</div>
+												</div>
+												<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Grievances Open</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 id='open' th:text="${tOpenCount}"></h6>
+
+												</div>
+												<img src="../img/icons/online.png" alt="Icon Image" class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Appealed Grievances</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 id='flagged' th:text="${aplCount}"></h6>
+
+												</div>
+												<img src="../img/icons/rejected-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+								<div class="card-box">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Disposal percentage</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 id="disPer" th:text="${dCount}"></h6>
+												</div>
+												<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Left side columns -->
+					</div>
+				</div>
+				<!-- End Left side columns -->
+			</div>
+		</section>
+		<!--  -->
+
+		<!-- Datatable Section  -->
+		<section id="datGraphDiv" class=" yrTab">
+			<div class="grivance-wrapper">
+
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+						tabindex="0">
+
+
+						<!-- <button type='button' class="report">Graph</button>
+																									<button type='button' class="report">Report</button> -->
+						<div class="card-body px-4">
+
+							<!-- <div id="chartdiv"></div> -->
+							<div class="graph-table-tab-div">
+								<div class="tab-content pt-2">
+									<div class="yr-Rtable" style="max-height:500px">
+										<div class="button-part btn-wrapper mb-2 float-end">
+											<button class="btn btn-purple btn-customBtn" title="Download Excel"
+												value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+											<button class="btn btn-black btn-customBtn" title="Download PDF"
+												value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+										</div>
+										<div class="clearfix"></div>
+										<table id="YRreport223" class="table" cellspacing="0" width="100%">
+
+										</table>
+									</div>
+								</div>
+
+							</div>
+
+							<!-- <div id="reportDiv" style="display:none">
+																										<table class="table datatable" id="YRreport223"></table>
+																										</div> -->
+						</div>
+
+
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</section>
+
+		<!-- Yash Charts Section -->
+
+		<section id="yash-sx" class="yrTab">
+			<!-- Yash Charts -->
+			<div id="newCharts">
+
+				<section class="yrTab mt-3" id="cmonthly_id">
+					<div class="grivance-wrapper">
+
+						<div class="card-body px-4">
+
+							<div class="graph-table-tab-div">
+
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+									<div class="heading-part">
+										<h5 class="fw-bold mb-0">Monthly Citizen Registration (Total : <span
+												id="total_cmonthly1"></span>)</h5>
+									</div>
+
+
+									<ul class="nav custom-nav-tabs nav-tabs justify-content-end m-0" role="tablist">
+										<li><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-table2"
+												aria-selected="true" role="tab">
+												<i class="bx bx-table"></i>
+											</button></li>
+										<li class="nav-item" role="presentation"><button class="nav-link active"
+												data-bs-toggle="tab" data-bs-target="#tab-table1" aria-selected="false"
+												role="tab" tabindex="-1">
+												<i class="bx bx-bar-chart-alt-2"></i>
+											</button></li>
+
+									</ul>
+								</div>
+
+								<hr class="mb-1">
+
+								<div class="tab-content pt-2">
+									<div class="tab-pane active show" id="tab-table1" role="tabpanel">
+										<div id="chart_cmonthly"> </div>
+									</div>
+									<div class="tab-pane " id="tab-table2" role="tabpanel">
+										<div class="button-part btn-wrapper justify-content-end mb-2">
+											<button class="btn btn-purple btn-mcr-customBtn" title="Download Excel"
+												value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+											<button class="btn btn-black btn-mcr-customBtn" title="Download PDF"
+												value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+										</div>
+
+
+										<div class="yr-Rtable">
+											<table class="table stripe datatable table-bordered" id="mcr_table"
+												style="width: 100%;"></table>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+
+
+					</div>
+
+				</section>
+
+
+
+
+
+
+
+
+
+
+				<section class="yrTab mt-3">
+					<div class="grivance-wrapper">
+
+						<div class="card-body px-4">
+
+							<div class="graph-table-tab-div">
+
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+									<div class="heading-part">
+										<h5 class="fw-bold mb-0">Monthly Grievance (Total : <span
+												id="total_monthly_grvs">0</span>)</h5>
+									</div>
+
+
+									<ul class="nav custom-nav-tabs nav-tabs justify-content-end m-0" role="tablist">
+										<li><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-table21"
+												aria-selected="true" role="tab">
+												<i class="bx bx-table"></i>
+											</button></li>
+										<li class="nav-item" role="presentation"><button class="nav-link active"
+												data-bs-toggle="tab" data-bs-target="#tab-table11" aria-selected="false"
+												role="tab" tabindex="-1">
+												<i class="bx bx-bar-chart-alt-2"></i>
+											</button></li>
+
+									</ul>
+								</div>
+
+								<hr class="mb-1">
+
+								<div class="tab-content pt-2">
+									<div class="tab-pane active show" id="tab-table11" role="tabpanel">
+										<div id="chart_monthly"> </div>
+									</div>
+									<div class="tab-pane " id="tab-table21" role="tabpanel">
+										<div class="button-part btn-wrapper justify-content-end mb-2">
+											<button class="btn btn-purple btn-mg-customBtn" title="Download Excel"
+												value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+											<button class="btn btn-black btn-mg-customBtn" title="Download PDF"
+												value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+										</div>
+
+
+										<div class="yr-Rtable">
+											<table class="table stripe datatable table-bordered" id="mg_table"
+												style="width: 100%;"></table>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+
+
+					</div>
+
+				</section>
+
+
+
+
+
+
+				<section class="yrTab mt-3" id="H1_id">
+					<div class="grivance-wrapper">
+
+						<div class="card-body px-4">
+
+							<div class="graph-table-tab-div">
+
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+									<div class="heading-part">
+										<h5 class="fw-bold mb-0">Departmental Grievance (Total : <span
+												id="dept_grvs">0</span>)</h5>
+									</div>
+
+
+
+									<ul class="nav custom-nav-tabs nav-tabs justify-content-end m-0" role="tablist">
+										<li><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-table24"
+												aria-selected="true" role="tab">
+												<i class="bx bx-table"></i>
+											</button></li>
+										<li><button class="nav-link active" data-bs-toggle="tab"
+												data-bs-target="#tab-piehchart1" aria-selected="true" role="tab">
+												<i class="bx bx-pie-chart-alt-2"></i>
+											</button></li>
+
+										<li class="nav-item" role="presentation"><button class="nav-link "
+												data-bs-toggle="tab" data-bs-target="#tab-table14" aria-selected="false"
+												role="tab" tabindex="-1">
+												<i class="bx bx-bar-chart-alt-2"></i>
+											</button></li>
+
+									</ul>
+								</div>
+
+								<hr class="mb-1">
+
+								<div class="tab-content pt-2">
+									<div class="tab-pane active show" id="tab-piehchart1" role="tabpanel">
+										<div id="chart_H2"> </div>
+									</div>
+									<div class="tab-pane " id="tab-table14" role="tabpanel">
+										<div id="chart_H1"> </div>
+									</div>
+									<div class="tab-pane " id="tab-table24" role="tabpanel">
+										<div class="button-part btn-wrapper justify-content-end mb-2">
+											<button class="btn btn-purple btn-dg-customBtn" title="Download Excel"
+												value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+											<button class="btn btn-black btn-dg-customBtn" title="Download PDF"
+												value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+										</div>
+
+
+										<div class="yr-Rtable">
+											<table class="table stripe datatable table-bordered" id="dg_table"
+												style="width: 100%;"></table>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+
+
+					</div>
+
+				</section>
+
+
+
+
+				<section class="yrTab mt-3">
+					<div class="grivance-wrapper" id="dist_report_id">
+
+						<div class="card-body px-4">
+
+							<div class="graph-table-tab-div">
+
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+									<div class="heading-part">
+										<h5 class="fw-bold mb-0">District's Report (Total : <span
+												id="distwise_grvs">0</span>)</h5>
+									</div>
+
+
+									<ul class="nav custom-nav-tabs nav-tabs justify-content-end m-0" role="tablist">
+										<li><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-table22"
+												aria-selected="true" role="tab">
+												<i class="bx bx-table"></i>
+											</button></li>
+										<li><button class="nav-link active" data-bs-toggle="tab"
+												data-bs-target="#tab-piehchart" aria-selected="true" role="tab">
+												<i class="bx bx-pie-chart-alt-2"></i>
+											</button></li>
+
+										<li class="nav-item" role="presentation"><button class="nav-link "
+												data-bs-toggle="tab" data-bs-target="#tab-table12" aria-selected="false"
+												role="tab" tabindex="-1">
+												<i class="bx bx-bar-chart-alt-2"></i>
+											</button></li>
+
+									</ul>
+								</div>
+
+								<hr class="mb-1">
+
+								<div class="tab-content pt-2">
+									<div class="tab-pane active show" id="tab-piehchart" role="tabpanel">
+										<div id="chart_distwise_pie"> </div>
+									</div>
+									<div class="tab-pane " id="tab-table12" role="tabpanel">
+										<div id="chart_distwise"> </div>
+									</div>
+									<div class="tab-pane " id="tab-table22" role="tabpanel">
+										<div class="button-part btn-wrapper justify-content-end mb-2">
+											<button class="btn btn-purple btnd-customBtn" title="Download Excel"
+												value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+											<button class="btn btn-black btnd-customBtn" title="Download PDF"
+												value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+										</div>
+
+
+										<div class="yr-Rtable">
+											<table class="table stripe datatable table-bordered" id="distPertainTable"
+												style="width: 100%;"></table>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+
+
+					</div>
+
+				</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<section class="yrTab mt-3">
+					<div class="grivance-wrapper">
+
+						<div class="card-body px-4">
+
+							<div class="graph-table-tab-div">
+
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+									<div class="heading-part">
+										<h5 class="fw-bold mb-0">Day-wise Report (Total : <span
+												id="dayWise_grvs">0</span>)</h5>
+									</div>
+
+
+
+									<ul class="nav custom-nav-tabs nav-tabs justify-content-end m-0" role="tablist">
+										<li><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-table23"
+												aria-selected="true" role="tab">
+												<i class="bx bx-table"></i>
+											</button></li>
+										<li class="nav-item" role="presentation"><button class="nav-link active"
+												data-bs-toggle="tab" data-bs-target="#tab-table13" aria-selected="false"
+												role="tab" tabindex="-1">
+												<i class="bx bx-bar-chart-alt-2"></i>
+											</button></li>
+
+									</ul>
+								</div>
+
+								<hr class="mb-1">
+
+								<div class="tab-content pt-2">
+									<div class="tab-pane active show" id="tab-table13" role="tabpanel">
+
+										<select class="form-control mt-2 d-none" id="line-year">
+											<option value="select" selected disabled>Select Year</option>
+											<option th:each="deptlist: ${years}" th:value="${deptlist.year}"
+												th:text="${deptlist.year}"></option> ></option>
+										</select>
+
+										<select class="form-control mt-2 d-none" id="line-date-select">
+											<option selected disabled>Select Month</option>
+											<option value="1">January</option>
+											<option value="2">February</option>
+											<option value="3">March</option>
+											<option value="4">April</option>
+											<option value="5">May</option>
+											<option value="6">June</option>
+											<option value="7">July</option>
+											<option value="8">August</option>
+											<option value="9">September</option>
+											<option value="10">October</option>
+											<option value="11">November</option>
+											<option value="12">December</option>
+										</select>
+
+										<div id="chart_H4"> </div>
+									</div>
+									<div class="tab-pane " id="tab-table23" role="tabpanel">
+										<div class="button-part btn-wrapper justify-content-end mb-2">
+											<button class="btn btn-purple btno-customBtn" title="Download Excel"
+												value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+											<button class="btn btn-black btno-customBtn" title="Download PDF"
+												value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+										</div>
+
+
+										<div class="yr-Rtable">
+											<table class="table stripe datatable table-bordered" id="overall_table"
+												style="width: 100%;"></table>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+
+
+					</div>
+
+				</section>
+
+
+
+
+
+
+
+
+
+
+
+
+				<!-- <div class="row mt-3" id="H4_id"> -->
+				<!-- 					<div class="col-md-12"> -->
+				<!-- 						<div class="card"> -->
+				<!-- 							<div class="card-body"> -->
+				<!-- 								<div -->
+				<!-- 									class="table-header-section d-flex justify-content-between align-items-center mb-3"> -->
+				<!-- 									<div class="heading-part"> -->
+				<!-- 										<h4>Day-wise Grievance</h4> -->
+
+				<!-- 	<select class="form-control mt-2" id="line-year"> -->
+				<!-- 											<option value="select" selected disabled>Select Year</option> -->
+				<!-- 											<option th:each="deptlist: ${years}" th:value="${deptlist.year}" -->
+				<!-- 												th:text="${deptlist.year}"></option> ></option> -->
+				<!-- 										</select> -->
+
+				<!-- 										<select class="form-control mt-2" id="line-date-select"> -->
+				<!-- 											<option selected disabled>Select Month</option> -->
+				<!-- 											<option value="1">January</option> -->
+				<!-- 											<option value="2">February</option> -->
+				<!-- 											<option value="3">March</option> -->
+				<!-- 											<option value="4">April</option> -->
+				<!-- 											<option value="5">May</option> -->
+				<!-- 											<option value="6">June</option> -->
+				<!-- 											<option value="7">July</option> -->
+				<!-- 											<option value="8">August</option> -->
+				<!-- 											<option value="9">September</option> -->
+				<!-- 											<option value="10">October</option> -->
+				<!-- 											<option value="11">November</option> -->
+				<!-- 											<option value="12">December</option> -->
+				<!-- 										</select> -->
+
+				<!-- 									</div> -->
+
+				<!-- 								</div> -->
+				<!-- 								<hr /> -->
+				<!-- 								<div id="chart_H4"> -->
+
+				<!-- 								</div> -->
+				<!-- 							</div> -->
+				<!-- 						</div> -->
+				<!-- 					</div> -->
+
+
+				<!-- 				</div> -->
+
+
+
+
+
+
+
+
+				<div class="row mt-2" style="display: none;" id="jks_id">
+					<div class="col-md-12">
+						<div class="card mb-3">
+							<div class="card-body">
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+									<div class="heading-part">
+										<h4>Growth Analysis</h4>
+
+										<select class="form-control mt-2" id="month">
+											<option selected disabled>Select Month</option>
+											<option value="1">January</option>
+											<option value="2">February</option>
+											<option value="3">March</option>
+											<option value="4">April</option>
+											<option value="5">May</option>
+											<option value="6">June</option>
+											<option value="7">July</option>
+											<option value="8">August</option>
+											<option value="9">September</option>
+											<option value="10">October</option>
+											<option value="11">November</option>
+											<option value="12">December</option>
+										</select>
+
+
+										<select class="form-control mt-2" id="year">
+											<!-- <option 2024 selected>Select Year</option> -->
+											<option value="select" selected disabled>Select Year</option>
+											<option th:each="deptlist: ${years}" th:value="${deptlist.year}"
+												th:text="${deptlist.year}"></option>
+										</select>
+
+									</div>
+								</div>
+								<hr />
+								<!--							  style="display: flex;justify-content: center;"-->
+								<div id="chart_jks"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+
+
+				<div class="row mt-2" id="H1_idaaaa" style="display: none;">
+					<div class="col-md-12">
+						<div class="card mb-3">
+							<div class="card-body">
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+									<div class="heading-part">
+										<h4>Departmental Grievance </h4>
+										<!-- (Total : <span id="total_c"></span>) -->
+										<select id="date-select" class="form-control mt-2" style="display: none;">
+											<option value="select" selected>Select Date</option>
+											<option th:each="deptlist: ${dates}" th:value="${deptlist.date}"
+												th:text="${#dates.format(deptlist.date, 'dd-MM-yyyy')}"></option>
+										</select>
+
+
+									</div>
+
+								</div>
+								<hr />
+
+								<div id="chart_H1aaaaa"></div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+
+
+
+
+
+
+
+
+
+				<div class="row mt-3 " style="display: none;">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-body">
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+									<div class="heading-part">
+										<h4>State-wise Grievance </h4>
+									</div>
+
+								</div>
+								<hr />
+								<div id="chart_statewise">
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+
+
+
+
+
+
+
+
+
+
+
+
+				<div class="row mt-3">
+					<div class="col-md-6" id="ma_id">
+						<div class="card">
+							<div class="card-body">
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+									<div class="heading-part">
+										<h4>Mobile Applications (Total : <span id="total_mac"></span>)</h4>
+
+									</div>
+
+								</div>
+								<hr />
+								<div id="chart_ma">
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6" id="wa_id">
+						<div class="card">
+							<div class="card-body">
+								<div
+									class="table-header-section d-flex justify-content-between align-items-center mb-3">
+									<div class="heading-part">
+										<h4>Web Applications (Total : <span id="total_wac"></span>)</h4>
+
+									</div>
+
+								</div>
+								<hr />
+
+								<div id="chart_wa"></div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+
+
+
+				<!-- <div class="card mb-3 mt-3">
+						<div class="card-body">
+						  <div
+							class="table-header-section d-flex justify-content-between align-items-center mb-3"
+						  >
+							<div class="heading-part">
+							  <h4>Line Graph</h4>
+							</div>
+							<div>
+							  <select id="department-select" class="form-control">
+								<option disabled selected>Select Department</option>
+								<option
+								  th:each="deptlist: ${dept_dd}"
+								  th:value="${deptlist.department_name}"
+								  th:text="${deptlist.department_name}"
+								></option>
+							  </select>
+							</div>
+						  </div>
+						  <hr />
+		  
+						  <div  id="chart_H3">
+								  
+						  </div>
+						</div>
+					  </div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<!-- 				<div class="row mt-3" id="p_f_id"> -->
+				<!-- 					<div class="col-md-6"> -->
+				<!-- 						<div class="card"> -->
+				<!-- 							<div class="card-body"> -->
+				<!-- 								<div -->
+				<!-- 									class="table-header-section d-flex justify-content-between align-items-center mb-3"> -->
+				<!-- 									<div class="heading-part"> -->
+				<!-- 										<h4>Pending Grievance</h4> -->
+				<!-- 									</div> -->
+
+				<!-- 								</div> -->
+				<!-- 								<hr /> -->
+				<!-- 								<div id="chart_p"> -->
+
+				<!-- 								</div> -->
+				<!-- 							</div> -->
+				<!-- 						</div> -->
+				<!-- 					</div> -->
+				<!-- 					<div class="col-md-6"> -->
+				<!-- 						<div class="card"> -->
+				<!-- 							<div class="card-body"> -->
+				<!-- 								<div -->
+				<!-- 									class="table-header-section d-flex justify-content-between align-items-center mb-3"> -->
+				<!-- 									<div class="heading-part"> -->
+				<!-- 										<h4>Forwarded Grievance</h4> -->
+				<!-- 									</div> -->
+
+				<!-- 								</div> -->
+				<!-- 								<hr /> -->
+
+				<!-- 								<div id="chart_f"></div> -->
+				<!-- 							</div> -->
+				<!-- 						</div> -->
+				<!-- 					</div> -->
+
+				<!-- 				</div> -->
+
+			</div>
+		</section>
+
+
+		<section id="treeDeskDash" class="" style="display: none">
+			<!-- SKY Tree Graph 02 FEB 2024 -->
+			<div class="yrTab">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="fw-bold">Tree Dashboard</h5>
+						<hr>
+						<div class="row">
+							<!-- <div class="col-md-4">
+						<div class="form-floating mb-3">
+
+							<select class="form-select" id="depType">
+								<option value="0">Select</option>
+							</select> <label for="depType">Department Type:</label>
+						</div>
+					</div> -->
+							<div class="col-md-8 col-lg-4">
+								<div class="form-input-block mb-3">
+									<label for="mydepartmentss">List of Departments:</label>
+									<select class="form-select" id="mydepartmentss">
+										<option value="0">Select</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--  ///////////////////////////////////////////Siddheshwar testing////////////////////////////// -->
+
+			<div class="card mt-2" style="border-radius: 36px;">
+				<div class="card-body p-0">
+					<div class="button-part btn-wrapper mb-2 float-end">
+						<button class="btn btn-purple btn-customBtn printCharts" data-value="tree">
+							<i class='bx bx-download'></i>
+						</button>
+					</div>
+					<div id="tree" class="tree-diagonal getChartsID">
+
+					</div>
+				</div>
+				<!--  ///////////////////////////////////////////Siddheshwar testing////////////////////////////// -->
+
+				<!-- <div class="card">
+								<div class="card-body p-0">
+									<div id="tree" class="tree-diagonal">
+									</div>
+								</div>
+							</div> -->
+
+			</div>
+
+		</section>
+
+
+	</main>
+	<!-- End #main -->
+
+	<!-- DATA MODAL -->
+	<div class="modal fade" id="treeDashboardDataModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<table class="table table bordered" id="treeDashBoardTable">
+						<thead>
+							<tr>
+								<th>S.NO</th>
+								<th>Grievance ID</th>
+								<th>Department</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<!-- <button type="button" class="btn btn-primary">Understood</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<script type="text/javascript" th:inline="javascript">
+
+		let cmonthly = [[${ cmonthly }]];
+
+		let monthly = [[${ monthly }]];
+
+		var abc;
+
+		let data = [[${ dept }]];
+		//console.log(data.length);
+		if (data != null && data.length > 0) {
+			$('#total_c').html(data[0].total_c);
+
+			const statenames = data.map(item => item.department);
+			const counts = data.map(item => item.count);
+
+			const options1 = {
+				chart: {
+					type: 'pie',
+					width: 1200,
+					toolbar: {
+						show: true,
+						tools: {
+							download: true,
+							selection: true,
+							zoom: true,
+							zoomin: true,
+							zoomout: true,
+							pan: true,
+							reset: '<img src="/static/icons/reset.png" width="20">',
+							customIcons: []
+						},
+						export: {
+							csv: {
+								filename: 'pie_chart_data',
+								columnSeparator: ',',
+								headerCategory: 'category',
+								headerValue: 'value',
+								dateFormatter(timestamp) {
+									return new Date(timestamp).toDateString()
+								}
+							},
+							png: {
+								filename: 'pie_chart'
+							},
+							pdf: {
+								filename: 'pie_chart'
+							}
+						}
+					}
+				},
+				series: counts,
+				labels: statenames,
+				responsive: [{
+					breakpoint: 480,
+					options: {
+						chart: {
+							width: 300
+						},
+						legend: {
+							position: 'bottom'
+						}
+					}
+				}]
+			};
+
+			var chart1 = new ApexCharts(document.querySelector("#chart_H2"), options1);
+			chart1.render();
+
+
+
+
+			/* 250125		const distSelect = document.getElementById('dm_district-select');
+					var chart1pie;
+					distSelect.addEventListener('change', () => {
+		
+						const selectedDist = distSelect.value;
+						if (selectedDist) {
+		
+							// console.log(chart1pie);
+							if (chart1pie) {
+								chart1pie.destroy();
+								chart1pie = null; // set chart to null after destroying
+							}
+							// console.log(chart1pie);
+							// console.log(chart1);
+							// Clear the previous chart
+							if (chart1) {
+								chart1.destroy();
+								chart1 = null; // set chart to null after destroying
+								// ApexCharts.exec('chart1', 'destroy');
+							}
+							// console.log(chart1);
+							// Remove any existing chart elements
+							const chartElement = document.getElementById('chart_H2');
+							while (chartElement.firstChild) {
+								chartElement.removeChild(chartElement.firstChild);
+							}
+		
+							var chart_H2_c = JSON.stringify({
+								dm_dist: selectedDist,
+							});
+							var chart_H2_d = chkV(chart_H2_c);
+		
+		
+							$.ajax({
+								url: 'getDistwiseDept?d=' + chart_H2_d,
+								type: 'get',
+								// data: JSON.stringify({ department: selectedDepartment }),
+								contentType: 'application/json',
+								success: function (j) {
+									j = setV(j);
+									j = JSON.parse(j);
+									let dataaa = j.data;
+		
+		
+									// console.log(data);
+									// $('#total_c').html(data[0].total_c);
+									const statenamespie = dataaa.map(item => item.department);
+									const countspie = dataaa.map(item => item.count);
+		
+									const options1pie = {
+										chart: {
+											type: 'pie',
+											width: 1000,
+											toolbar: {
+												show: true,
+												tools: {
+													download: true,
+													selection: true,
+													zoom: true,
+													zoomin: true,
+													zoomout: true,
+													pan: true,
+													reset: '<img src="/static/icons/reset.png" width="20">',
+													customIcons: []
+												},
+												export: {
+													csv: {
+														filename: 'pie_chart_data',
+														columnSeparator: ',',
+														headerCategory: 'category',
+														headerValue: 'value',
+														dateFormatter(timestamp) {
+															return new Date(timestamp).toDateString()
+														}
+													},
+													png: {
+														filename: 'pie_chart'
+													},
+													pdf: {
+														filename: 'pie_chart'
+													}
+												}
+											}
+										},
+										series: countspie,
+										labels: statenamespie,
+										responsive: [{
+											breakpoint: 480,
+											options: {
+												chart: {
+													width: 300
+												},
+												legend: {
+													position: 'bottom'
+												}
+											}
+										}]
+									};
+		
+									chart1pie = new ApexCharts(document.querySelector("#chart_H2"), options1pie);
+									chart1pie.render();
+		
+		},
+		error: function (xhr, status, error) {
+			console.error(error);
+		}
+		});
+		}
+		});
+		*/
+		}
+		else {
+
+			$('#H1_id').hide();
+			$('#H2_id').hide();
+		}
+
+
+
+		//------
+
+		const departmentSelect = document.getElementById('date-select');
+
+		departmentSelect.addEventListener('change', () => {
+
+			const selectedDepartment = departmentSelect.value;
+			if (selectedDepartment) {
+
+				// Clear the previous chart
+				if (chart) {
+					chart.destroy();
+					chart = null; // set chart to null after destroying
+				}
+
+				// Remove any existing chart elements
+				const chartElement = document.getElementById('chart_H1');
+				while (chartElement.firstChild) {
+					chartElement.removeChild(chartElement.firstChild);
+				}
+
+				var chart_H1_c = JSON.stringify({
+					date: selectedDepartment,
+				});
+				var chart_H1_d = chkV(chart_H1_c);
+
+
+				$.ajax({
+					url: 'getDateBar?d=' + chart_H1_d,
+					type: 'get',
+					// data: JSON.stringify({ department: selectedDepartment }),
+					contentType: 'application/json',
+					success: function (j) {
+						j = setV(j);
+						j = JSON.parse(j);
+						let data = j.data;
+
+
+						// console.log(data);
+						$('#total_c').html(data[0].total_c);
+						const statenames = data.map(item => item.department);
+						const counts = data.map(item => item.count);
+
+						const options = {
+							chart: {
+								type: 'bar',
+								height: 500, // Increase the overall chart height
+							},
+							series: [{
+								name: 'Counts',
+								data: counts,
+							}],
+							colors: '#66DA26',
+							xaxis: {
+								categories: statenames,
+								labels: {
+									trim: true,
+									rotate: -45,
+									style: {
+										fontSize: '10px', // Adjust the font size to fit your labels
+										fontFamily: 'Helvetica, Arial, sans-serif',
+										cssClass: 'apexcharts-xaxis-label' // Add a custom CSS class
+									},
+									// hideOverlappingLabels: true
+								},
+								tickPlacement: 'on', // Place the tick marks on the axis
+								tickAmount: statenames.length, // Show all tick marks
+								min: 0, // Start the x-axis from 0
+								max: statenames.length - 1, // End the x-axis at the last category
+
+							},
+							title: {
+								align: 'center'
+							},
+							plotOptions: {
+								bar: {
+									horizontal: false, // Make sure the bars are vertical
+									columnWidth: '50%' // Adjust the column width to fit your labels
+								}
+							}
+						};
+
+						var chart = new ApexCharts(document.querySelector("#chart_H1"), options);
+						chart.render();
+					},
+					error: function (xhr, status, error) {
+						console.error(error);
+					}
+				});
+			}
+		});
+
+
+
+
+
+
+
+		let ddata = [[${ daywise }]];
+		// console.log(ddata);
+		if (ddata != null && ddata.length > 0) {
+
+			const dstatenames = ddata.map(item => item.date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$3-$2-$1').substring(0, 2));
+			const dcounts = ddata.map(item => item.count);
+
+			const doptions = {
+				chart: {
+
+					type: 'line',
+					height: 350
+				},
+				series: [{
+					name: 'Counts',
+					data: dcounts
+				}],
+				xaxis: {
+					categories: dstatenames
+				},
+				title: {
+					//  text: 'Month-wise grievance count',
+					align: 'center'
+				}
+			};
+
+			var dchart = new ApexCharts(document.querySelector("#chart_H4"), doptions);
+			dchart.render();
+
+
+
+			const ldSelect = document.getElementById('line-date-select');
+
+
+			const lineYearSelect = document.getElementById('line-year');
+
+
+			const backendValue1 = ddata[0].current_month;
+
+			const matchingOption1 = ldSelect.querySelector(`option[value="${backendValue1}"]`);
+			if (matchingOption1) {
+				matchingOption1.selected = true;
+			}
+
+			const lineYearSelectOption = lineYearSelect.querySelector(`option[value="${ddata[0].current_year}"]`);
+			if (lineYearSelectOption) {
+				lineYearSelectOption.selected = true;
+			}
+
+			ldSelect.addEventListener('change', () => {
+
+				const selectedState = ldSelect.value;
+				if (selectedState) {
+
+					// Clear the previous chart
+					if (dchart) {
+						dchart.destroy();
+						dchart = null; // set chart to null after destroying
+					}
+
+					// Remove any existing chart elements
+					const chartElement = document.getElementById('chart_H4');
+					while (chartElement.firstChild) {
+						chartElement.removeChild(chartElement.firstChild);
+					}
+
+					let dept = $("#departmentss").find(":selected").val();
+					let category = $("#catGraph").find(":selected").val();
+					let fromDate = $("#dateFrom").val();
+					let toDate = $("#dateTo").val();
+					let dist = $("#districtFilter").val();
+					let distText = $("#districtFilter").find("option:selected").text();
+
+					let raabitaFilters = abc;
+					var chart_H4_c = JSON.stringify({
+						month: selectedState,
+						year: lineYearSelect.value,
+						dist: dist,
+						distText: distText,
+						dept: dept,
+						fromDate: fromDate,
+						toDate: toDate,
+						category: category,
+						raabitaFilters
+					});
+					var chart_H4_d = chkV(chart_H4_c);
+
+					$.ajax({
+						url: '/analytics/getLineByDate?d=' + chart_H4_d,
+						type: 'get',
+						// data: JSON.stringify({ department: selectedDepartment }),
+						contentType: 'application/json',
+						success: function (j) {
+
+							// 							j = setV(j);
+							j = JSON.parse(j);
+							let data = j.data;
+							// console.log(data);
+							//   $('#total_c').html(data[0].total_c);
+
+
+							const dstatenames = data.map(item => item.date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$3-$2-$1').substring(0, 2));
+							const dcounts = data.map(item => item.count);
+
+							const doptions = {
+								chart: {
+
+									type: 'line',
+									height: 350
+								},
+								series: [{
+									name: 'Counts',
+									data: dcounts
+								}],
+								xaxis: {
+									categories: dstatenames
+								},
+								title: {
+									//  text: 'Month-wise grievance count',
+									align: 'center'
+								}
+							};
+
+							dchart = new ApexCharts(document.querySelector("#chart_H4"), doptions);
+							dchart.render();
+						},
+						error: function (xhr, status, error) {
+							console.error(error);
+						}
+					});
+				}
+			});
+
+		}
+		else {
+			$('#H4_id').hide();
+		}
+		/*      const departmentSelect = document.getElementById('department-select');
+		
+		departmentSelect.addEventListener('change', () => {
+		
+		let chart;
+		
+		const selectedDepartment = departmentSelect.value;
+		if (selectedDepartment) {
+		
+		// Clear the previous chart
+		if (chart) {
+		chart.destroy();
+		chart = null; // set chart to null after destroying
+		}
+		
+		// Remove any existing chart elements
+		const chartElement = document.getElementById('chart_H3');
+		while (chartElement.firstChild) {
+		chartElement.removeChild(chartElement.firstChild);
+		}
+		
+		$.ajax({
+		url: 'getDeptLine?dept=' + selectedDepartment,
+		type: 'get',
+		// data: JSON.stringify({ department: selectedDepartment }),
+		contentType: 'application/json',
+		success: function(data) {
+		  console.log(data);
+		  const months = [];
+		  const counts = [];
+		
+		  data.forEach(item => {
+			const month = item.date.split('-')[1];
+			const monthName = getMonthName(month);
+			if (!months.includes(monthName)) {
+			  months.push(monthName);
+			  counts.push(1);
+			} else {
+			  const index = months.indexOf(monthName);
+			  counts[index]++;
+			}
+		  });
+		  let options = "";
+		   options = {
+			chart: {
+			  type: 'line',
+			  height: 350
+			},
+			series: [{
+			  name: 'Counts',
+			  data: counts
+			}],
+			xaxis: {
+			  categories: months
+			},
+			title: {
+			  text: 'Month-wise grievance count',
+			  align: 'center'
+			}
+		  };
+		
+		   chart = new ApexCharts(document.querySelector("#chart_H3"), options);
+		  chart.render();
+		},
+		error: function(xhr, status, error) {
+		  console.error(error);
+		}
+		});
+		}
+		});
+		
+		function getMonthName(month) {
+		switch (month) {
+		case '01':
+		return 'Jan';
+		case '02':
+		return 'Feb';
+		case '03':
+		return 'Mar';
+		case '04':
+		return 'Apr';
+		case '05':
+		return 'May';
+		case '06':
+		return 'Jun';
+		case '07':
+		return 'Jul';
+		case '08':
+		return 'Aug';
+		case '09':
+		return 'Sep';
+		case '10':
+		return 'Oct';
+		case '11':
+		return 'Nov';
+		case '12':
+		return 'Dec';
+		default:
+		return '';
+		}
+		}
+		
+		*/
+
+
+
+		// pending
+		let pdata = [[${ pending }]];
+		// console.log(pdata);
+		if (pdata != null && pdata.length > 0) {
+			const pstatenames = pdata.map(item => item.department);
+			const pcounts = pdata.map(item => item.count);
+
+			const poptions = {
+				chart: {
+					type: 'bar',
+					height: 900
+				}, plotOptions: {
+					bar: {
+						borderRadius: 4,
+						borderRadiusApplication: 'end',
+						horizontal: true,
+					}
+				},
+				series: [{
+					name: 'Counts',
+					data: pcounts
+				}],
+				colors: '#F0B27A',
+				xaxis: {
+					categories: pstatenames
+				},
+				title: {
+					// text: 'Pending',
+					align: 'center'
+				}
+			};
+
+			const pchart = new ApexCharts(document.querySelector("#chart_p"), poptions);
+			pchart.render();
+		}
+		else {
+			$('#p_f_id').hide();
+		}
+		// Forwarded
+		let fdata = [[${ Forwarded }]];
+		// console.log(fdata);
+
+		if (fdata != null && fdata.length > 0) {
+
+			const fstatenames = fdata.map(item => item.department);
+			const fcounts = fdata.map(item => item.count);
+
+			const foptions = {
+				chart: {
+
+					type: 'bar',
+					height: 900
+				}, plotOptions: {
+					bar: {
+						borderRadius: 4,
+						borderRadiusApplication: 'end',
+						horizontal: true,
+					}
+				},
+				series: [{
+					name: 'Counts',
+					data: fcounts
+				}],
+				colors: '#F0B27A',
+				xaxis: {
+					categories: fstatenames
+				},
+				title: {
+					// text: 'Forwarded',
+					align: 'center'
+				}
+			};
+
+			const fchart = new ApexCharts(document.querySelector("#chart_f"), foptions);
+			fchart.render();
+		}
+		else {
+			$('#p_f_id').hide();
+		}
+
+
+
+		// webapp
+
+		// }
+		// else {
+		// 	$('#wa_ma_id').hide();
+		// 	$('#total_wac').html(0);
+		// }
+
+		// mobileapp
+
+		// } else {
+		// 	$('#wa_ma_id').hide();
+		// 	$('#total_mac').html(0);
+		// }
+
+
+
+		//--------jks----------
+		let jdata = [[${ jks }]];
+		if (jdata != null && jdata.length > 0) {
+			// console.log(madata);
+			const jdate = jdata.map(item => item.date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$3-$2-$1'));
+			const daily_count = jdata.map(item => item.daily_count);
+			const day_total = jdata.map(item => item.day_total);
+			const i_growth = jdata.map(item => item.i_growth);
+
+			var joptions = {
+				series: [{
+					name: 'Daily Grievance',
+					data: daily_count
+				}, {
+					name: 'Commulative Grievance',
+					data: day_total
+				}, {
+					name: 'Growth',
+					data: i_growth
+				}],
+				chart: {
+					type: 'bar',
+					height: 500
+				},
+				plotOptions: {
+					bar: {
+						horizontal: false,
+						columnWidth: '55%',
+						endingShape: 'rounded',
+						dataLabels: {
+							position: 'top', // Place data labels on top of bars
+						},
+					},
+				},
+				dataLabels: {
+					enabled: true
+				},
+				stroke: {
+					show: true,
+					width: 2,
+					colors: ['transparent']
+				},
+				xaxis: {
+					categories: jdate
+				},
+/*     yaxis: {
+       title: {
+         text: '$ (thousands)'
+       }
+     },
+  */   fill: {
+					opacity: 1
+				},
+				/*  tooltip: {
+					y: {
+					  formatter: function (val) {
+						return "$ " + val + " thousands"
+					  }
+					}
+				  }  */
+			};
+
+			var jchart = new ApexCharts(document.querySelector("#chart_jks"), joptions);
+			jchart.render();
+
+
+
+
+			const monthSelect = document.getElementById('month');
+			const yearSelect = document.getElementById('year');
+
+
+			const backendValue = jdata[0].current_month;
+
+			const matchingOption = monthSelect.querySelector(`option[value="${backendValue}"]`);
+			if (matchingOption) {
+				matchingOption.selected = true;
+			}
+			const yearSelectOption = yearSelect.querySelector(`option[value="${jdata[0].current_year}"]`);
+			if (yearSelectOption) {
+				yearSelectOption.selected = true;
+			}
+
+
+
+			monthSelect.addEventListener('change', () => {
+
+				const selectedMonth = monthSelect.value;
+				if (selectedMonth) {
+
+					// Clear the previous chart
+					if (jchart) {
+						jchart.destroy();
+						jchart = null; // set chart to null after destroying
+					}
+
+					// Remove any existing chart elements
+					const chartElement = document.getElementById('chart_jks');
+					while (chartElement.firstChild) {
+						chartElement.removeChild(chartElement.firstChild);
+					}
+
+					var jks_c = JSON.stringify({
+						month: selectedMonth,
+						year: yearSelect.value
+					});
+					var jks_d = chkV(jks_c);
+
+					$.ajax({
+						url: 'getMonthJKS?d=' + jks_d,
+						type: 'get',
+						// data: JSON.stringify({ department: selectedDepartment }),
+						contentType: 'application/json',
+						success: function (j) {
+							j = setV(j);
+							j = JSON.parse(j);
+							let jdata = j.data;
+							//  console.log(jdata);
+							//   $('#total_c').html(data[0].total_c);
+
+							const jdate = jdata.map(item => item.date.replace(/(\d{4})-(\d{2})-(\d{2})/, '$3-$2-$1'));
+							const daily_count = jdata.map(item => item.daily_count);
+							const day_total = jdata.map(item => item.day_total);
+							const i_growth = jdata.map(item => item.i_growth);
+
+							var joptions = {
+								series: [{
+									name: 'Daily Grievance',
+									data: daily_count
+								}, {
+									name: 'Commulative Grievance',
+									data: day_total
+								}, {
+									name: 'Growth',
+									data: i_growth
+								}],
+								chart: {
+									type: 'bar',
+									height: 500
+								},
+								plotOptions: {
+									bar: {
+										horizontal: false,
+										columnWidth: '55%',
+										endingShape: 'rounded',
+										dataLabels: {
+											position: 'top', // Place data labels on top of bars
+										},
+									},
+								},
+								dataLabels: {
+									enabled: true
+								},
+								stroke: {
+									show: true,
+									width: 2,
+									colors: ['transparent']
+								},
+								xaxis: {
+									categories: jdate
+								},
+/*     yaxis: {
+       title: {
+         text: '$ (thousands)'
+       }
+     },
+  */   fill: {
+									opacity: 1
+								},
+								/*  tooltip: {
+									y: {
+									  formatter: function (val) {
+										return "$ " + val + " thousands"
+									  }
+									}
+								  }  */
+							};
+
+							var jchart = new ApexCharts(document.querySelector("#chart_jks"), joptions);
+							jchart.render();
+
+
+						},
+						error: function (xhr, status, error) {
+							console.error(error);
+						}
+					});
+				}
+			});
+
+		} else {
+			$('#jks_id').hide();
+		}
+
+
+
+
+
+
+
+
+
+
+		// --------------------
+
+		let distwise = [[${ distPertain }]];
+		// console.log(ddata);
+		// if (distwise != null && distwise.length > 0) {
+
+		const distwisestatenames = distwise.map(item => item.name11);
+		const distwisecounts = distwise.map(item => item.count);
+
+		const distwiseoptions = {
+			chart: {
+
+				type: 'bar',
+				height: 500
+			},
+			series: [{
+				name: 'Counts',
+				data: distwisecounts
+			}],
+			colors: '#CCCC33',
+			xaxis: {
+				categories: distwisestatenames
+			},
+			title: {
+				//  text: 'Month-wise grievance count',
+				align: 'center'
+			},
+			plotOptions: {
+				bar: {
+					horizontal: false, // Make sure the bars are vertical
+					columnWidth: '50%' // Adjust the column width to fit your labels
+				}
+			}
+		};
+
+
+		var distwisechart = new ApexCharts(document.querySelector("#chart_distwise"), distwiseoptions);
+		distwisechart.render();
+
+
+
+		const options1_pie = {
+			chart: {
+				type: 'pie',
+				width: 800,
+				toolbar: {
+					show: true,
+					tools: {
+						download: true,
+						selection: true,
+						zoom: true,
+						zoomin: true,
+						zoomout: true,
+						pan: true,
+						reset: '<img src="/static/icons/reset.png" width="20">',
+						customIcons: []
+					},
+					export: {
+						csv: {
+							filename: 'pie_chart_data',
+							columnSeparator: ',',
+							headerCategory: 'category',
+							headerValue: 'value',
+							dateFormatter(timestamp) {
+								return new Date(timestamp).toDateString()
+							}
+						},
+						png: {
+							filename: 'pie_chart'
+						},
+						pdf: {
+							filename: 'pie_chart'
+						}
+					}
+				}
+			},
+			// colors: ['#5499C7', '#FFF176', '#4DB6AC', '#FF6666','#BA68C8','#546E7A', '#FF9800'],
+			series: distwisecounts,
+			labels: distwisestatenames,
+			responsive: [{
+				breakpoint: 480,
+				options: {
+					chart: {
+						width: 300
+					},
+					legend: {
+						// fontSize: '36px',
+						position: 'bottom'
+					}
+				}
+			}]
+		};
+
+		var chart_pie = new ApexCharts(document.querySelector("#chart_distwise_pie"), options1_pie);
+		chart_pie.render();
+
+
+
+
+		/* 250125		const stateSelect = document.getElementById('state-select');
+	
+				stateSelect.addEventListener('change', () => {
+	
+					const selectedState = stateSelect.value;
+					if (selectedState) {
+	
+						// Clear the previous chart
+						if (distwisechart) {
+							distwisechart.destroy();
+							distwisechart = null; // set chart to null after destroying
+						}
+	
+						// Remove any existing chart elements
+						const chartElement = document.getElementById('chart_distwise');
+						while (chartElement.firstChild) {
+							chartElement.removeChild(chartElement.firstChild);
+						}
+	
+						var distwise_c = JSON.stringify({
+							state: selectedState,
+						});
+	
+						//console.log(distwise_c)
+						var distwise_d = chkV(distwise_c);
+	
+	
+						$.ajax({
+							url: 'getDistByLevel?d=' + distwise_d,
+							type: 'get',
+							// data: JSON.stringify({ department: selectedDepartment }),
+							contentType: 'application/json',
+							success: function (j) {
+								j = setV(j);
+								j = JSON.parse(j);
+								let data = j.data;
+	
+	
+								// console.log(data);
+								//   $('#total_c').html(data[0].total_c);
+								const distwisestatenames = data.map(item => item.name11);
+								const distwisecounts = data.map(item => item.count);
+	
+								const distwiseoptions = {
+									chart: {
+	
+										type: 'bar',
+										height: 500
+									},
+									series: [{
+										name: 'Counts',
+										data: distwisecounts
+									}],
+									colors: '#CCCC33',
+									xaxis: {
+										categories: distwisestatenames
+									},
+									title: {
+										//  text: 'Month-wise grievance count',
+										align: 'center'
+									},
+									plotOptions: {
+										bar: {
+											horizontal: false, // Make sure the bars are vertical
+											columnWidth: '50%' // Adjust the column width to fit your labels
+										}
+									}
+								};
+	
+								var distwisechart = new ApexCharts(document.querySelector("#chart_distwise"), distwiseoptions);
+								distwisechart.render();
+							},
+							error: function (xhr, status, error) {
+								console.error(error);
+							}
+						});
+					}
+				});
+	
+	*/
+
+
+		/* 
+				}
+				else {
+		// 			$('#distwise_id').hide();
+		// 			$('#distwise_pie_id').hide();
+					
+					$('#dist_report_id').hide();
+					
+				}
+		*/
+
+		// -----------------
+
+
+		let statewise = null;//[[${statewise}]];
+		// console.log(ddata);
+		if (statewise != null && statewise.length > 0) {
+
+			const statewisestatenames = statewise.map(item => item.stname);
+			const statewisecounts = statewise.map(item => item.count);
+
+			const statewiseoptions = {
+				chart: {
+
+					type: 'bar',
+					height: 500
+				},
+				series: [{
+					name: 'Counts',
+					data: statewisecounts
+				}],
+				colors: '#CCCC33',
+				xaxis: {
+					categories: statewisestatenames
+				},
+				title: {
+					//  text: 'Month-wise grievance count',
+					align: 'center'
+				}
+				, plotOptions: {
+					bar: {
+						horizontal: false, // Make sure the bars are vertical
+						columnWidth: '50%' // Adjust the column width to fit your labels
+					}
+				}
+			};
+
+			var statewisechart = new ApexCharts(document.querySelector("#chart_statewise"), statewiseoptions);
+			statewisechart.render();
+		}
+
+
+
+		//--------------
+		// $(document).ready(function () {
+		let overall = [[${ overall }]];
+		//console.log(overall)
+		//$('#overall_tbody').html("");
+		if (overall.length > 0 && false) {
+			alert("ssss")
+			$.each(overall, function (index, item) {
+				$('#overall_tbody').append('<tr>' +
+					'<td>' + item.date + '</td>' +
+					'<td>' + item.rec_today + '</td>' +
+					'<td>' + item.total_till + '</td>' +
+					//	'<td>' + item.growth + '</td>' +
+					'<td>' + item.resolved + '</td>' +
+					'<td>' + item.pending + '</td>' +
+					'<td>' + item.resolved_percentage + ' % </td>' +
+
+					'</tr>');
+			});
+
+			$('#overall_table').DataTable({
+				"paging": true,       // Enable pagination
+				"ordering": true,     // Enable column ordering
+				"info": true,         // Display table information
+				"searching": true,    // Enable searching
+				"pageLength": 10,      // Set default page length
+
+			});
+		}
+
+
+		//			if ($.fn.DataTable.isDataTable('#overall_table')) {
+		//				$('#overall_table').dataTable().fnDestroy();
+		//				$('#overall_table').empty();
+		//		}
+
+		$(".btno-customBtn").on("click", function () {
+			// console.log($(this).val());
+			overall_table.button("." + $(this).val()).trigger();
+		});
+
+		var overall_table = $('#overall_table').DataTable({
+			//dom: 'frtip',
+			buttons: [
+				{
+					extend: "excel",
+					title: "JKGOVT",
+					messageTop: "The information in this table is copyright to JK GOVT.",
+					exportOptions: {
+						columns: ':not(.noExport)' // Exclude columns with the class 'noExport'
+					}
+				},
+				{
+					extend: "pdf",
+					title: "JKGOVT",
+					messageBottom:
+						"The information in this table is copyright to JK GOVT.",
+					pageSize: "A4",
+					download: "open",
+					customize: function (doc) {
+						// Set the page orientation and size
+						doc.pageSize = 'A4';
+						doc.pageOrientation = 'landscape';
+
+						// Adjust the content styling
+						doc.styles.tableHeader.fontSize = 8;
+						doc.styles.tableBodyOdd.fontSize = 8;
+						doc.styles.tableBodyEven.fontSize = 8;
+
+						// Center the table content
+						var rowCount = doc.content[1].table.body.length;
+						for (var i = 0; i < rowCount; i++) {
+							var row = doc.content[1].table.body[i];
+							for (var j = 0; j < row.length; j++) {
+								row[j].alignment = 'center';
+							}
+						}
+
+						// Scale the table width to fit the page
+						var totalColumns = doc.content[1].table.body[0].length;
+						var columnWidths = [];
+						for (var i = 0; i < totalColumns; i++) {
+							columnWidths.push('*');
+						}
+						doc.content[1].table.widths = columnWidths;
+					},
+					exportOptions: {
+						columns: ':not(.noExport)' // Exclude columns with the class 'noExport'
+					}
+				},
+			],
+			paging: true,
+			pageLength: 10,
+			searching: true,
+			responsive: true,
+			data: overall,
+			//	serverSide: true,
+			processing: true,
+			columns: [
+				{
+					data: null, title: "Sr No", render: function (data, type, row, meta) {
+						var adjustedIndex = meta.row + 1 + (meta.settings._iDisplayStart);
+						return adjustedIndex;
+					}
+				},
+				{ title: 'Date', data: 'date' },
+				{ title: "Received Today", data: "rec_today" },
+				{ title: "Total till date", data: "total_till" },
+				{ title: "Resolved", data: "resolved" },
+				{ title: "Rejected", data: "rejected" },
+				{ title: "Appealed", data: "appealed" },
+				{ title: "Pending", data: "pending" },
+				{ title: "Forwarded", data: "forwarded" },
+				{ title: "dnpToOffice", data: "dnp" },
+				{ title: "Resolved Percentage", data: "resolved_percentage" },
+
+			],
+		});
+
+
+		//	distPertainTable
+		let distPertainData = [[${ distPertainTable }]]
+
+		if (distPertainData != null && distPertainData.length > 0) {
+		}
+		else {
+			$('#dist_report_id').hide();
+		}
+
+		$(".btnd-customBtn").on("click", function () {
+			// console.log($(this).val());
+			distPertainTable.button("." + $(this).val()).trigger();
+		});
+
+		var distPertainTable = $('#distPertainTable').DataTable({
+			//dom: 'frtip',
+			buttons: [
+				{
+					extend: "excel",
+					title: "JKGOVT",
+					messageTop: "The information in this table is copyright to JK GOVT.",
+					exportOptions: {
+						columns: ':not(.noExport)' // Exclude columns with the class 'noExport'
+					}
+				},
+				{
+					extend: "pdf",
+					title: "JKGOVT",
+					messageBottom:
+						"The information in this table is copyright to JK GOVT.",
+					pageSize: "A4",
+					download: "open",
+					customize: function (doc) {
+						// Set the page orientation and size
+						doc.pageSize = 'A4';
+						doc.pageOrientation = 'landscape';
+
+						// Adjust the content styling
+						doc.styles.tableHeader.fontSize = 8;
+						doc.styles.tableBodyOdd.fontSize = 8;
+						doc.styles.tableBodyEven.fontSize = 8;
+
+						// Center the table content
+						var rowCount = doc.content[1].table.body.length;
+						for (var i = 0; i < rowCount; i++) {
+							var row = doc.content[1].table.body[i];
+							for (var j = 0; j < row.length; j++) {
+								row[j].alignment = 'center';
+							}
+						}
+
+						// Scale the table width to fit the page
+						var totalColumns = doc.content[1].table.body[0].length;
+						var columnWidths = [];
+						for (var i = 0; i < totalColumns; i++) {
+							columnWidths.push('*');
+						}
+						doc.content[1].table.widths = columnWidths;
+					},
+					exportOptions: {
+						columns: ':not(.noExport)' // Exclude columns with the class 'noExport'
+					}
+				},
+			],
+			paging: true,
+			pageLength: 10,
+			searching: true,
+			responsive: true,
+			data: distPertainData,
+			//	serverSide: true,
+			processing: true,
+			columns: [
+				{
+					data: null, title: "Sr No", render: function (data, type, row, meta) {
+						var adjustedIndex = meta.row + 1 + (meta.settings._iDisplayStart);
+						return adjustedIndex;
+					}
+				},
+				// 							{title: 'District', data: 'name11'},
+				// //							{title: "Received Today", data: "rec_today"},
+				// 							{title: "Total till date", data: "total_till"},
+				// 							{title: "Resolved", data: "resolved"},
+				// 							{title: "Pending", data: "pending"},
+
+				{ title: 'District', data: 'dm_district' },
+				//							{title: "Received Today", data: "rec_today"},
+				{ title: "Total till date", data: "total_count" },
+				{ title: "Resolved", data: "resolved_count" },
+				{ title: "Pending", data: "pending_count" },
+
+				{ title: "Forwarded", data: "forwarded_count" },
+				{ title: "Does Not Pertain", data: "dnp_count" },
+				{ title: "Remark Added", data: "remark_count" },
+				{ title: "Rejected", data: "rejected_count" },
+				{ title: "Appealed", data: "appealed_count" },
+				// {title: "LG Mulakat", data: "lg_count"},
+				//							{title: "Resolved Percentage", data: "resolved_percentage"},
+
+			],
+		});
+		// }
+		// else {
+		// 	$('#distPertainData_id').hide();
+		// }
+
+
+
+		// });
+
+		let opie = [[${ opie }]];
+		//console.log(opie)
+
+		if (opie != null && opie.length > 0 && false) {
+
+			const onames = opie.map(item => item.name);
+			const ocounts = opie.map(item => item.count);
+
+			const options_o = {
+				chart: {
+					type: 'pie',
+					width: 700,
+					toolbar: {
+						show: true,
+						tools: {
+							download: true,
+							selection: true,
+							zoom: true,
+							zoomin: true,
+							zoomout: true,
+							pan: true,
+							reset: '<img src="/static/icons/reset.png" width="20">',
+							customIcons: []
+						},
+						export: {
+							csv: {
+								filename: 'pie_chart_data',
+								columnSeparator: ',',
+								headerCategory: 'category',
+								headerValue: 'value',
+								dateFormatter(timestamp) {
+									return new Date(timestamp).toDateString()
+								}
+							},
+							png: {
+								filename: 'pie_chart'
+							},
+							pdf: {
+								filename: 'pie_chart'
+							}
+						}
+					}
+				},
+				// colors: ['#5499C7', '#FFF176', '#4DB6AC', '#FF6666','#BA68C8','#546E7A', '#FF9800'],
+				series: ocounts,
+				labels: onames,
+				responsive: [{
+					breakpoint: 480,
+					options: {
+						chart: {
+							width: 300
+						},
+						legend: {
+							// fontSize: '36px',
+							position: 'bottom'
+						}
+					}
+				}]
+			};
+
+			var ochart = new ApexCharts(document.querySelector("#chart_opie"), options_o);
+			ochart.render();
+		}
+		else {
+			$('#opie_id').hide();
+		}
+	</script>
+
+
+
+	<!-- <div lang="en" th:include="chart_fragment :: chartScript"></div> -->
+	<script th:src="@{/js/dataMonitor.js}"></script>
+	<script th:src="@{/js/chart/chart_report_filter.js}"></script>
+	<script th:src="@{/js/chart/chart_report.js}"></script>
+
+
+</body>
+
+
+</html>

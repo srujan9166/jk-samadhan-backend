@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="img/favicon/apple-icon-76x76.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="img/favicon/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="img/favicon/favicon-512x512.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="img/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="img/favicon/favicon-16x16.png"
+    />
+    <link rel="icon" href="img/favicon/favicon.ico" />
+  </head>
+
+  <body>
+    <!-- Spinner Start -->
+    <!--<div id="spinner"
+		class="show position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+		<div class="spinner-grow text-primary" role="status"></div>
+	</div>-->
+    <!-- Spinner End -->
+
+    <!--- New header -->
+
+    <!-- Topbar Start -->
+
+    <div lang="en" th:include="mainHeader :: mainHeader"></div>
+    <!-- Navbar End -->
+
+    <!-- Right bottom side sticky button div start -->
+
+    <!-- Right bottom side sticky button div end -->
+
+    <!-- Carousel Start -->
+
+    <!-- Carousel End -->
+
+    <!-- Fact Start -->
+
+    <!-- Fact End -->
+
+    <!-- About Start -->
+
+    <!-- Home Video Modal -->
+
+    <!-- About End -->
+
+    <!-- Services Start -->
+
+    <!-- Services End -->
+
+    <!--- Steps to follow new section starts -->
+
+    <!-- Faqs Start -->
+    <div class="container-fluid faqs py-5">
+      <div class="container pb-5">
+        <div class="row g-5 justify-content-center">
+          <div class="col-lg-12 col-xl-12 wow fadeIn" data-wow-delay=".3s">
+            <!-- Default Accordion -->
+            <div class="accordion accordion-flush" id="">
+              <div class="main-content">
+                <div class="container-fluid">
+                  <div class="card card-primary suggestion-card">
+                    <div class="custom-card-head">
+                      <h4 class="text-center">
+                        Your <span>Suggestion</span> is important to us.
+                      </h4>
+                      <h4>
+                        <span>Help us</span> to shape the new
+                        <span>JK SAMADHAN</span> portal by sharing your valuable
+                        suggestion.
+                      </h4>
+                    </div>
+                    <div class="card-body">
+                      <form
+                        action="#"
+                        th:object="${suggestionofusr}"
+                        id="suggestionform"
+                      >
+                        <div class="form-wrapper">
+                          <div class="form-block">
+                            <label class="sname">Name :</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="sname"
+                              required
+                              maxlength="50"
+                              placeholder="Type Your Name here"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-wrapper">
+                          <div class="form-block">
+                            <label class="smob">Mobile :</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="smob"
+                              required
+                              maxlength="10"
+                              placeholder="Type Your Mobile Number here"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-wrapper">
+                          <div class="form-block">
+                            <label class="smail">Email :</label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="smail"
+                              required
+                              maxlength="50"
+                              placeholder="Type Your Email here"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-wrapper">
+                          <div class="form-block">
+                            <label class="smail">Suggestion 1 :</label>
+                            <select class="form-control" id="suggestionone">
+                              <option value="0">--Select--</option>
+                              <option value="Registration Process">
+                                Registration Process
+                              </option>
+                              <option value="Filling Process">
+                                Filing Process
+                              </option>
+                              <option value="Resolution Proces">
+                                Resolution Process
+                              </option>
+                              <option value="Portal Related Suggestion">
+                                Portal Related Suggestion
+                              </option>
+                            </select>
+                          </div>
+                          <div class="advice-txt">
+                            <textarea
+                              rows="3"
+                              class="mt-2 form-control"
+                              id="descriptionsone"
+                              placeholder="Type Your Suggestion here..."
+                            ></textarea>
+                            <p class="text-end m-0 mt-1 text-danger">
+                              *Maximum upto
+                              <span
+                                class="remWCounter1"
+                                style="font-size: inherit"
+                                >500</span
+                              >
+                              Words
+                            </p>
+                          </div>
+                        </div>
+                        <div class="form-wrapper">
+                          <div class="form-block">
+                            <label class="smail">Suggestion 2 :</label>
+                            <select class="form-control" id="suggestiontwo">
+                              <option value="0">--Select--</option>
+                              <option value="Registration Process">
+                                Registration Process
+                              </option>
+                              <option value="Filling Process">
+                                Filing Process
+                              </option>
+                              <option value="Resolution Proces">
+                                Resolution Process
+                              </option>
+                              <option value="portal related suggestion">
+                                Portal Related Suggestion
+                              </option>
+                            </select>
+                          </div>
+                          <div class="advice-txt">
+                            <textarea
+                              rows="3"
+                              class="mt-2 form-control"
+                              id="descriptionstwo"
+                              placeholder="Type Your Suggestion here..."
+                            ></textarea>
+
+                            <p class="text-end m-0 mt-1 text-danger">
+                              *Maximum upto
+                              <span
+                                class="remWCounter2"
+                                style="font-size: inherit"
+                                >500</span
+                              >
+                              Words
+                            </p>
+                          </div>
+                        </div>
+                        <div class="form-wrapper">
+                          <div class="form-block">
+                            <label class="smail">Suggestion 3 :</label>
+                            <select class="form-control" id="suggestionthree">
+                              <option value="0">--Select--</option>
+                              <option value="Registration Process">
+                                Registration Process
+                              </option>
+                              <option value="Filling Process">
+                                Filing Process
+                              </option>
+                              <option value="Resolution Proces">
+                                Resolution Process
+                              </option>
+                              <option value="Portal Related Suggestio">
+                                Portal Related Suggestion
+                              </option>
+                            </select>
+                          </div>
+                          <div class="advice-txt">
+                            <textarea
+                              rows="3"
+                              class="mt-2 form-control"
+                              id="descriptionsthree"
+                              placeholder="Type Your Suggestion here..."
+                            ></textarea>
+
+                            <p class="text-end m-0 mt-1 text-danger">
+                              *Maximum upto
+                              <span
+                                class="remWCounter3"
+                                style="font-size: inherit"
+                                >500</span
+                              >
+                              Words
+                            </p>
+                          </div>
+                        </div>
+                        <div class="form-wrapper">
+                          <div class="form-block">
+                            <label class="smail">Suggestion 4 :</label>
+                            <select class="form-control" id="suggestionthree">
+                              <option value="0">--Select--</option>
+                              <option value="Registration Process">
+                                Registration Process
+                              </option>
+                              <option value="Filling Process">
+                                Filing Process
+                              </option>
+                              <option value="Resolution Proces">
+                                Resolution Process
+                              </option>
+                              <option value="Portal Related Suggestio">
+                                Portal Related Suggestion
+                              </option>
+                            </select>
+                          </div>
+                          <div class="advice-txt">
+                            <textarea
+                              rows="3"
+                              class="mt-2 form-control"
+                              id="descriptionsthree"
+                              placeholder="Type Your Suggestion here..."
+                            ></textarea>
+
+                            <p class="text-end m-0 mt-1 text-danger">
+                              *Maximum upto
+                              <span
+                                class="remWCounter4"
+                                style="font-size: inherit"
+                                >500</span
+                              >
+                              Words
+                            </p>
+                          </div>
+                          <div class="col-md-4 mb-4" id="caDiv">
+                            <div class="yr-eCap">
+                              <label
+                                for="enterCaptcha"
+                                class="form-label fw-bold"
+                                tabindex="0"
+                                >Enter Captcha</label
+                              >
+                              <div class="input-group registr has-validation">
+                                <!-- <input type="hidden" id="hiddenCaptchasuggstion" th:value="${hiddencaptcha}"/> -->
+                                <input
+                                  type="search"
+                                  class="form-control m-0 stopsql"
+                                  maxlength="10"
+                                  id="captchaUsuggestoin"
+                                  placeholder="Enter Captcha"
+                                  required
+                                />
+                                <span class="text-center">
+                                  <img
+                                    th:src="${'data:realcaptcha/jpg;base64,'+ realcaptcha}"
+                                    class="captchaImage"
+                                    id="captchaImage"
+                                    style="max-height: 40px"
+                                  />
+                                  <!--												<i class="h3 bi bi-arrow-clockwise" id="resetCap"></i>-->
+                                  <i
+                                    class="fas fa-sync-alt px-2 resetCap"
+                                    id="resetCap"
+                                    style="cursor: pointer"
+                                  ></i>
+                                </span>
+                              </div>
+                            </div>
+                            <!-- 						<a href="javascript:void(0);" class="float-end text-dark my-2">Forgot Password?</a>
+              
+               -->
+                          </div>
+                        </div>
+                        <button class="common-btn" id="submitsuggestion">
+                          Submit
+                        </button>
+                      </form>
+
+                      <a href="login" class="btn btn-social btn-primary">
+                        <i class="fa fa-arrow-circle-left"></i>
+                        Home
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Default Accordion Example -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Faqs End -->
+
+    <!-- Footer Start -->
+    <div lang="en" th:include="mainFooter :: mainFooter"></div>
+
+    <script src="js/suggestion.js"></script>
+  </body>
+</html>

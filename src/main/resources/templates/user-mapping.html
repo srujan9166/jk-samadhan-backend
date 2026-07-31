@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<title>NODAL ADMIN - User Mapping</title>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Create Department Users</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+		<section class="section dashboard yrTab">
+			<!--  -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<h5 class="fw-bold">Create Department Users</h5>
+					<hr>
+					<!-- <div class="text-danger fw-bold mb-4">
+						Note: Dear Nodal, please map / create the users to whom below mentioned categories shall be
+						assigned.
+					</div> -->
+					<div class="row">
+
+						<div class="mb-3">
+							<h5 class="font-monospace text-danger">
+								Note:
+							</h5>
+							<ul class="font-monospace text-danger">
+								
+										<li id="rule-1">
+											Please check if the user is availabe or not.
+										   </li>
+										<li id="rule-2">
+											If you want to update details of user kindly visit userlist in dashboard.
+										</li>
+										<li id="rule-3">
+											It will be helpfull for downline users to create the lastmile user.
+										</li>
+									
+									
+							</ul>
+
+						</div>
+						<div class="col-md-4">
+							<div class="form-input-block mb-2">
+								<label for="departName">Department</label>
+								<select class="form-select" id="selDept" aria-label="usser" disabled>
+									<option th:value="${department}" th:text="${department}" selected></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-input-block mb-2">
+								<label>User Type</label>
+								<select class="form-select" id="userType"> 
+									<option value="0">Select User Type</option>
+									<option th:if="${TypeOfUser=='UT' || TypeOfUser=='Administrative'}" value="UT">UT</option>
+									<option th:if="${TypeOfUser!='DISTRICT'}" value="DIVISION">Division</option>
+									<option value="DISTRICT">District</option>
+									<option th:if="${userType=='ROLE_Admin'}" value="Appellate">Appellate Authority</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="d-flex" id="createUserDiv" style="display: none">
+
+								<div class="form-input-block mb-2">
+
+									<input type="hidden" th:value="${TypeOfUser}" id="typeUser">
+									<input type="hidden" th:value="${userDist}" id="userDist">
+									<input type="hidden" th:value="${userDiv}" id="userDiv">
+
+									<!-- <input type="text" th:value="${TypeOfUser}"> -->
+									<!-- <div>
+						<input type="radio" name="userType" class="userType" value="OFFICIAL" id="Official">
+						<label for="Official">Official</label>
+						</div> -->
+
+									<!-- <div th:if="${TypeOfUser=='UT' || TypeOfUser=='Administrative'}">
+										<input type="radio" name="userType" class="userType" value="UT" id="UT">
+										<label for="UT">UT</label>
+									</div>
+
+									<div th:if="${TypeOfUser!='DISTRICT'}">
+										<input type="radio" name="userType" class="userType" value="DIVISION"
+											id="Division">
+										<label for="Division">Division</label>
+									</div>
+
+									<div>
+										<input type="radio" name="userType" class="userType" value="DISTRICT"
+											id="distUser">
+										<label for="distUser">District</label>
+									</div> -->
+								</div>
+							</div>
+						</div>
+
+						<!--  <div  class="col-md-4">
+					<h5 class="card-title">Select User Type</h5>
+					<div class="form-input-block  mb-3">
+						<select id="selUsrType" class="form-select">
+							<option value="0">--Select User Type--</option>
+							<option th:each="dL : ${userTypeData}" th:value="${dL.user_type}" th:text="${dL.user_type}"></option>
+						</select> 
+						<label>Select User Type</label>
+					</div>
+				</div> -->
+
+						<!--       <div  class="col-md-4">
+					<h5 class="card-title">Select User Level</h5>
+					<div class="form-input-block  mb-3">
+						<select id="selUsrLevel" class="form-select" disabled>
+							<option value="0">--Select User Level--</option>
+						</select> 
+						<label>Select User Level</label>
+					</div>
+				
+
+				</div>
+-->
+
+
+
+
+						<!-- 14TH FEB 2024 - DIVISION WISE - start -->
+						<!-- <div th:if = "${districtList} != null " class="col-md-4">
+					<h5 class="card-title">Select District</h5>
+					<div class="form-input-block  mb-3">
+						<select id="sDistricts81" class="form-select">
+							<option value="0">--Select District--</option>
+							<option th:each="dL : ${districtList}" th:value="${dL.district_code}" th:text="${dL.district}"></option>
+						</select> 
+						<label>Select District</label>
+					</div>
+				14TH FEB 2024 - DIVISION WISE - end
+
+				</div> -->
+
+						<!-- <div class="row" id="createUserDiv" style="display: none">
+					<div class="col-md-6">
+						<h5 class="card-title">Select/Create new User</h5>
+						<div class="form-input-block  mb-3">
+							<select class="form-select" id="selUser" aria-label="usser">
+								<option value="0">Select</option>
+							<option value="add">Create new User</option>
+						</select> <label for="departName">User</label>
+						<div>
+						<input type="radio" name="userType" class="userType" value="Administrative" id="addminUser">
+						<label for="addminUser">Administrative User</label>
+						</div>
+						<div>
+						<input type="radio" name="userType" class="userType" value="District" id="distUser">
+						<label for="distUser">District User</label>
+						</div>
+						
+						<div>
+						<input type="radio" name="userType" class="userType" value="HOD" id="HODuser">
+						<label for="HODuser">HOD</label>
+						</div>
+						
+						
+					</div>
+				</div>
+			</div> -->
+					</div>
+				</div>
+			</div>
+			<!-- ASSIGN CATEGORIES DIV - start -->
+			<!-- <div class="row" id="categDiv" style="display: none">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">Assign Categories</h5>
+							<div class="form-input-block  mb-3" id="checkBoxDiv">
+							</div><br><br>
+							<div class="row" id="assignDiv" style="display: none">
+								<div class="col-md-6 mt-3">
+									<div>
+										<button type="submit" class="btn btn-primary" id="assignUser">Submit</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div> -->
+			<!-- ASSIGN CATEGORIES DIV - end -->
+
+			<div class="row" id="newUserDiv" style="display: none">
+				<div class="col-lg-12">
+					<div class="card mb-4">
+						<div class="card-body">
+							<h5 class="fw-bold">User Mapping - Create Next Level User</h5>
+							<hr>
+							<div>
+								<ul>
+																<li><span class="text-danger d-block mb-2">Password should be minimum of 8 characters contain uppercase letter,lowercase letter,digits and special characters between @$!%*?&.</span></li>
+
+																<li><span class="text-danger d-block mb-2">All * marked fields are mandatory.</span></li>
+
+																<li th:if="${userType=='ROLE_Department'}"><span class="text-danger d-block mb-2">If usertype/designation/office are not availabe please contact to your administrative department.</span></li>
+
+																<li th:if="${userType=='ROLE_Admin'}"><span class="text-danger d-block mb-2">If usertype/designation/office are not availabe please create it from dashboard under office and designation creation.</span></li>
+															</ul>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-input-block ">
+											<label for="floatingZip">First name<span class="text-danger m-0 h6">*</span> </label>
+											<input type="text" class="form-control input-f" placeholder="First name"
+												id="fn">
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-input-block ">
+											<label for="floatingZip">Middle Name </label>
+											<input type="text" class="form-control input-f" placeholder="Middle name"
+												id="mn">
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-input-block ">
+											<label for="floatingZip">Last Name<span class="text-danger m-0 h6">*</span> </label>
+											<input type="text" class="form-control input-f" placeholder="Last name"
+												id="ln">
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-input-block ">
+											<label for="floatingZip">Mobile<span class="text-danger m-0 h6">*</span></label>
+											<input type="text" class="form-control" placeholder="Mobile" id="mobile"
+												maxlength="10">
+										</div>
+									</div>
+									<div class="col-md-4 mt-3">
+										<div class="form-input-block ">
+											<label for="floatingZip">Email<span class="text-danger m-0 h6">*</span>
+											</label>
+											<input type="email" class="form-control" placeholder="Email" id="email"
+												maxlength="50">
+										</div>
+									</div>
+									<!-- 	<div class="col-md-4 mt-3">
+										<div class="form-input-block ">
+											<input type="text" class="form-control input-field"
+												placeholder="Designation" id="designation"> <label
+												for="floatingZip">Designation </label>
+										</div>
+									</div> -->
+									
+
+									<div class="col-md-4 mt-3">
+										<div class="form-input-block ">
+											<label>Select User Type<span class="text-danger m-0 h6">*</span></label>
+											<select id="selUsrType" class="form-select">
+												<option value="0">--Select User Type--</option>
+
+												<!-- 							<option th:each="dL : ${userTypeData}" th:value="${dL.user_type}" th:text="${dL.user_type}"></option>
+ -->
+											</select>
+
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-input-block ">
+											<label>Select Office Name<span class="text-danger m-0 h6">*</span></label>
+											<select id="offName" class="form-select">
+												<option value="0">--Select office--</option>
+											</select>
+
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-input-block ">
+											<label>Select Designation<span class="text-danger m-0 h6">*</span></label>
+											<select id="designation" class="form-select">
+												<option value="0">--Select Designation--</option>
+
+												<!-- 							<option th:each="dL : ${userTypeData}" th:value="${dL.user_type}" th:text="${dL.user_type}"></option>
+ -->
+											</select>
+
+										</div>
+									</div>
+
+								
+
+								
+									<!-- 									<div id="distDiv" class="row">
+ -->
+									<div class="col-md-4 mt-3" id="divvvv">
+										<div class="form-input-block ">
+											<label for="inputRegion">Division<span class="text-danger m-0 h6">*</span></label>
+											<select id="inputRegion" class="form-select">
+												<option value="0">--Select Division--</option>
+												<option th:each="c : ${regiontList}" th:value="${c.region}"
+													th:text="${c.region}"></option>
+											</select>
+										</div>
+									</div>
+									
+
+									<div class="col-md-4 mt-3" id="distsss">
+										<div class="form-input-block ">
+											<label for="floatingZip">District<span class="text-danger m-0 h6">*</span></label>
+											<select id="dist" class="form-select multi-select2" multiple="multiple">
+												<!-- <option value="0">--Select District--</option> -->
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-input-block ">
+											<label for="floatingZip">Password<span class="text-danger m-0 h6">*</span></label>
+											<input  type="password" class="form-control" placeholder="Password"
+												id="password">
+												<span id="errMsg2" class="text-danger"><span id="length">Password should be minimum of 8 characters</span> <span id="uppercase">contain uppercase letter</span><span id="lowercase">,lowercase letter</span><span id="digit">,digits</span><span id="special"> and special characters between @$!%*?&.</span></span>
+
+										</div>
+									</div>
+
+									<!-- </div> -->
+								</div>
+
+								<div class="col-md-4 mt-3">
+									<div class="button-part">
+										<button type="submit" class="btn btn-purple" id="submitUser">Create</button>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+
+			<div class="row">
+
+				<!-- Left side columns -->
+								<div class="col-lg-12 yrTab">
+									<div class="card">
+										<div id="cUsers" class="card-body visibility-hidden">
+											<div class="d-flex align-items-center justify-content-between">
+												<h5 class="fw-bold">Created Users</h5>
+												<div class="button-part btn-wrapper ms-2">
+								
+													<button id="exportExcel" class="btn btn-purple" title="Download Excel">
+														<i class="bi bi-filetype-xls"></i>
+													</button>
+													<button id="exportPdf" class="btn btn-black" title="Download PDF">
+														<i class="bi bi-filetype-pdf"></i>
+													</button>
+												</div>
+											</div>
+											<hr>
+											<div class="yr-Rtable ">
+												<table class="table table-bordered" id="YRreport11" style="width: 100%;"></table>
+											</div>
+										</div>
+									</div>
+								</div>
+				<!-- End Left side columns -->
+			</div>
+		</section>
+
+	</main>
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- <table class="table datatable table-bordered" id="rtb2"
+						style="width: 100%">
+						<thead>
+							<tr>
+								<th>Username</th>
+								<th>Assigned Category</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table> -->
+					<table class="table table-bordered" id="rtb2" style="width: 100%">
+						<thead>
+							<tr>
+								<th>Username</th>
+								<th>Assigned Category</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<script th:src="@{/js/user-mapping.js}"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<style>
+    #mainContainer {
+        padding: 10rem 8rem;
+        zoom: 1.2;
+    }
+
+    #mainContainer * {
+        font-family: serif;
+    }
+
+    #mainContainer .header-top {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    #mainContainer .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #mainContainer .top p {
+        font-size: 1.125rem;
+    }
+
+    #mainContainer .header-line p,
+    #mainContainer .header-line a {
+        font-size: 1.5rem;
+    }
+
+    .header-line {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .header-line p {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .para {
+        margin-top: 4rem;
+    }
+
+    .para p {
+        font-size: 2rem;
+        line-height: 3.5rem;
+    }
+</style>
+
+<body>
+
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <input class="usrFlag" type="hidden" name="hidden" th:value="${userflag}">
+            <nav>
+                <ol class="breadcrumb">
+                    <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+                    <li th:if="${userflag == 'DH User'}" class="breadcrumb-item active">Dealing Hand Grievance Form</li>
+                    <li th:if="${userflag == 'RMC User'}" class="breadcrumb-item active">RMC Grievance Form</li>
+                    <li th:if="${userflag == 'Raabita User'}" class="breadcrumb-item active">Raabita Form</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- End Page Title -->
+
+
+        <section class="section dashboard">
+            <div class="row">
+
+                <!-- <button class="collapsible card-title px-3 py-2 mb-2 text-dark" data-toggle="collapse" data-target="#collapseDiv">Citizen Grievance Form</button> -->
+                <!-- Sales Card -->
+                <!-- <div class="col-md-12 yrTab content collapse show" id="collapseDiv"> -->
+                <div class="col-md-12 yrTab">
+                    <div class="card">
+                        <div class="card-body ">
+                            <h5 class="">
+                                Update Grievance Details for
+                                <span class="spanDetails" th:each="g : ${grevMaster}" th:text="${g.uniqid}"></span>
+                            </h5>
+                            <h5 class="fw-bold text-center mb-0 ">Citizen Details</h5>
+                            <hr>
+                            <!-- 14 JAN 2024 - SKY - dealing hand form - start -->
+                            <div class="row g-3 px-3">
+                                <!-- <div class="col-md-12">
+										<label for="" class="form-label">Complaint Date & Time</label>
+											<input type="datetime-local" class="form-control">
+										</div> -->
+
+                                <div class="col-md-6">
+                                    <label for="inputState" class="form-label">Mode Of Complaint / Reference</label>
+                                    <span style="color: red;">*</span>
+                                    <select name="" id="moComp" class="form-select">
+                                        <option value="0">Select</option>
+                                        <option value="In Person"
+                                            th:selected="${grevMaster[0].modeofcomplaint == 'In Person'}">In Person / By
+                                            Hand</option>
+                                        <option value="By Post"
+                                            th:selected="${grevMaster[0].modeofcomplaint == 'By Post'}">By Post</option>
+                                        <option th:if="${userflag == 'DH User'}" value="By Call"
+                                            th:selected="${grevMaster[0].modeofcomplaint == 'By Call'}">By Call</option>
+                                        <option th:if="${userflag == 'DH User'}" value="Video Grievance"
+                                            th:selected="${grevMaster[0].modeofcomplaint == 'Video Grievance'}">Video
+                                            Grievance
+                                        </option>
+                                        <option th:if="${userflag == 'RMC User' ||  userflag == 'Raabita User'}"
+                                            value="By Email"
+                                            th:selected="${grevMaster[0].modeofcomplaint == 'By Email'}">By Email
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 " id="pTrackingDiv"
+                                    th:if="${grevMaster[0].modeofcomplaint == 'By Post'}">
+
+                                    <label for="inputState" class="form-label">Post Tracking No.</label>
+
+                                    <span style="color: red;">*</span>
+                                    <input type="text" name="" id="" class="form-control pTrackingNo" maxlength="30"
+                                        th:value="${grevMaster[0].post_trackingno}">
+                                    <small id="pTrackingNoError" style="color: red; display: none;">Only 30 alphanumeric
+                                        characters are allowed.</small>
+                                    <span id='postTrack' style='color:red'></span>
+                                </div>
+
+
+                                <div th:if="${userflag == 'RMC User'}" class="col-md-6">
+                                    <label for="inputState" class="form-label">
+                                        Grievance / Reference Received from
+                                    </label>
+                                    <span style="color: red;">*</span>
+
+                                    <select name="receivedFrom" id="grvRefrecFrom" class="form-select">
+                                        <option value="0">Select</option>
+
+                                        <option value="HLG Secretariat, Lok Bhavan"
+                                            th:selected="${grevMaster[0].grievancereference == 'HLG Secretariat, Lok Bhavan'}">
+                                            HLG Secretariat, Lok Bhavan
+                                        </option>
+
+                                        <option value="Office of Chief Secretary"
+                                            th:selected="${grevMaster[0].grievancereference == 'Office of Chief Secretary'}">
+                                            Office of Chief Secretary
+                                        </option>
+
+                                        <option value="Central Registry Unit (CRU)"
+                                            th:selected="${grevMaster[0].grievancereference == 'Central Registry Unit (CRU)'}">
+                                            Central Registry Unit (CRU)
+                                        </option>
+
+                                        <option value="General Administration Department (GAD)"
+                                            th:selected="${grevMaster[0].grievancereference == 'General Administration Department (GAD)'}">
+                                            General Administration Department (GAD)
+                                        </option>
+
+                                        <option value="Other"
+                                            th:selected="${grevMaster[0].grievancereference == 'Other'}">
+                                            Other
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="inputState" class="form-label">Any previous file
+                                        number (if any)</label>
+                                    <label th:if="${userflag == 'RMC User'}" for="" class="form-label">Previous
+                                        LG-RMCGAD Tracking Number (if any)</label>
+                                    <label th:if="${userflag == 'Raabita User'}" for="" class="form-label">Previous
+                                        Raabita Tracking Number (if any)</label>
+                                    <input type="text" name="" id="" class="form-control prevFileNo" maxlength="30">
+                                    <small id="prevFileNoError" style="color: red; display: none;">Only 30 alphanumeric
+                                        characters are allowed.</small>
+                                </div>
+                                <div th:if="${userflag == 'RMC User' || userflag == 'Raabita User'}" class="col-md-6">
+                                    <label for="" class="form-label">Communication Number</label>
+                                    <span th:if="${userflag != 'Raabita User'}" style="color: red;">*</span>
+                                    <input type="text" name="" id="" class="form-control commRmcNo" maxlength="30"
+                                        th:value="${grevMaster[0].communicationrmcno}">
+                                    <small id="commRmcNoError" style="color: red; display: none;">Only 30 alphanumeric
+                                        characters are allowed.</small>
+                                </div>
+
+                                <!-- <div class="col-md-6">
+									<label for="" class="form-label">Region</label>
+									<select id="inputRegion1" class="form-select">
+										<option value="0">Select</option>
+										<option th:each="c : ${regiontList}" th:value="${c.region}"
+											th:text="${c.region}"></option>
+									</select>
+								</div>
+								<div class="col-md-6">
+									<label for="" class="form-label">District</label>
+									<select id="inputDistrict" class="form-select" disabled="disabled">
+										<option value="0">Select</option>
+									</select>
+								</div> -->
+                                <!-- Naitik Changes 29/05/2025 -->
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Name</label>
+                                    <span style="color: red;">*</span>
+                                    <input type="text" name="" id="" class="form-control grvName" maxlength="50"
+                                        th:value="${grevMaster[0].name}">
+                                    <small id="grvNameError" style="color: red; display: none;">Only 50 characters are
+                                        allowed.</small>
+                                    <span id='gName' style='color:red'></span>
+                                </div>
+
+                                <!-- Naitik Changes 29/05/2025 -->
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Gender</label>
+                                    <span style="color: red;">*</span>
+                                    <select name="" id="gender" class="form-select">
+                                        <option value="0">Select</option>
+                                        <option value="Male" th:selected="${grevMaster[0].gender == 'Male'}">Male
+                                        </option>
+                                        <option value="Female" th:selected="${grevMaster[0].gender == 'Female'}">Female
+                                        </option>
+                                        <option value="Transgender"
+                                            th:selected="${grevMaster[0].gender == 'Transgender'}">Transgender</option>
+                                    </select>
+                                </div>
+
+                                <!-- Naitik Changes 29/05/2025 -->
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Mobile No.</label>
+                                    <span style="color: red;">*</span>
+                                    <input type="text" name="" id="" class="form-control mobileNo" maxlength="10"
+                                        th:value="${grevMaster[0].mobile}">
+                                    <span id='mNo' style='color:red'></span>
+                                </div>
+
+                                <!-- Citizen Email ID Available toggle switch added - SKY - 21/10/2024 -->
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <label for="" class="form-label mb-0 me-2">Email Id</label>
+                                        <div class="form-check form-switch ms-3">
+                                            <input class="form-check-input" type="checkbox" id="toggleCitizenEmail" />
+                                            <label class="form-check-label" for="toggleCitizenEmail">Citizen Email
+                                                Availabe?</label>
+                                        </div>
+                                    </div>
+                                    <input type="email" name="" id="" class="form-control emailId"
+                                        placeholder="Enter citizen email" th:value="${grevMaster[0].email}">
+                                    <span id='emailId' style='color:red'></span>
+                                </div>
+
+
+                                <!-- Naitik Changes 29/05/2025 -->
+
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Address</label>
+                                    <span style="color: red;">*</span>
+                                    <input type="text" class="form-control grvAddress" maxlength="50"
+                                        th:value="${grevMaster[0].address}">
+                                    <small id="grvAddressError" style="color: red; display: none;">Only 50 alphanumeric
+                                        characters are allowed.</small>
+                                </div>
+
+                                <!-- Naitik Column addition 07/05/2026 -->
+                                <div class="col-md-6" th:if="${userflag == 'RMC User'}">
+                                    <label for="" class="form-label">Residential Address</label>
+                                    <span style="color: red;">*</span>
+
+                                    <input type="text" class="form-control resiAddress" maxlength="50"
+                                        th:value="${grevMaster[0].resi_address}">
+
+                                    <small id="resiAddressError" style="color: red; display: none;">
+                                        Only 50 alphanumeric characters are allowed.
+                                    </small>
+                                </div>
+                                <!-- Naitik Changes End 07/05/2026 -->
+
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Pincode</label>
+                                    <span id='pnCode' style='color:red'>*</span>
+                                    <input type="text" name="" id="" class="form-control grvPinCode" maxlength="6"
+                                        th:value="${grevMaster[0].Pincode}">
+
+                                </div>
+
+                                <div class="col-md-12">
+                                    <h5 class="fw-bold text-center mb-0 ">Grievance
+                                        Details</h5>
+                                    <hr>
+                                </div>
+                                <!-- For DH User -->
+
+                                <!-- <div class="row d-none" id="raabitaDivisions"> -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="" class="form-label">Division</label>
+                                        <span style="color: red;">*</span>
+                                        <select id="divName" class="form-select">
+                                            <option value="0">Select</option>
+                                            <option th:each="dln : ${divisionMaster}" th:value="${dln.id}"
+                                                th:text="${dln.division}"
+                                                th:selected="${dln.id == grevMaster[0].div_id}"></option>
+
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+
+                                        <label for="" class="form-label">District</label>
+                                        <span style="color: red;">*</span>
+                                        <select class="form-select" id="distName">
+                                            <option value="0">Select District</option>
+                                            <option th:each="distln : ${distList}" th:value="${distln.id}"
+                                                th:text="${distln.district_name}"
+                                                th:selected="${distln.id == grevMaster[0].dist_id}"></option>></option>
+                                        </select>
+                                    </div>
+
+                                    <!-- UMRB - start -->
+                                    <!-- <div th:if="${userflag == 'Raabita User'}" class="col-md-12 mt-3 mb-2"> -->
+                                    <div class="col-md-12 mt-3 mb-2">
+                                        <input id="mcdID" type="hidden" name="hidden"
+                                            th:value="${grevMaster[0].municipality_id}">
+                                        <label class="form-label" style="font-weight: bold;">Whether under Municipality
+                                            or Block?</label>
+                                        <span style="color: red;">*</span>
+                                        <div class="form-check form-check-inline mx-3">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="umrb"
+                                                    value="Municipality"
+                                                    th:checked="${grevMaster[0].municipality_id != null and grevMaster[0].municipality_id != 0}">
+                                                Municipality
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="umrb" value="Block"
+                                                    th:checked="${grevMaster[0].block_id != null and grevMaster[0].block_id != 0}">
+                                                Block
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <!-- UMRB - end -->
+
+                                    <!-- 03 April 2024 sub categ and next level sub categ etc... - SKY -->
+
+                                    <div class="col-md-6 umrb1 d-none">
+
+                                        <label for="" class="form-label">Municipality</label>
+                                        <span style="color: red;">*</span>
+                                        <select class="form-select" id="municipalityName"
+                                            aria-label="Municipality Name">
+                                            <option value="0">Select Municipality</option>
+                                            <option th:each="municipalityln : ${municipalityList}"
+                                                th:value="${municipalityln.id}" th:text="${municipalityln.ulb_name}"
+                                                th:selected="${municipalityln.id == grevMaster[0].municipality_id}">
+                                            </option>
+
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 umrb1 d-none">
+                                        <label for="" class="form-label">Ward</label>
+                                        <select class="form-select" id="wardName" aria-label="Ward Name">
+                                            <option value="0">Select Ward</option>
+                                            <option th:each="wardln : ${wardList}" th:value="${wardln.id}"
+                                                th:text="${wardln.ward_name}"
+                                                th:selected="${wardln.id == grevMaster[0].ward_id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-6 umrb2 d-none">
+
+                                        <label for="" class="form-label">Block</label>
+                                        <span style="color: red;">*</span>
+                                        <select class="form-select" id="blockName"
+                                            aria-label="Sub Category of Grievance">
+                                            <option value="0">Select Block</option>
+                                            <option th:each="blockln : ${BlockList}" th:value="${blockln.id}"
+                                                th:text="${blockln.block_name}"
+                                                th:selected="${blockln.id == grevMaster[0].block_id}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+
+                                    <div class="col-md-6 umrb2 d-none">
+
+                                        <label for="" class="form-label">Panchayat</label>
+                                        <select class="form-select" id="panchayatName"
+                                            aria-label="Sub Category of Grievance">
+                                            <option value="0">Select Panchayat</option>
+                                            <option th:each="panchayatln : ${PanchayatList}"
+                                                th:value="${panchayatln.id}"
+                                                th:text="${panchayatln.halqa_panchayat_name}"
+                                                th:selected="${panchayatln.id == grevMaster[0].panchayat_id}">
+                                        </select>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="" class="form-label">Department</label>
+                                        <span style="color: red;">*</span>
+                                        <select id="depName" class="form-select">
+                                            <option value="0">Select</option>
+                                            <option th:each="dln : ${deptListName}" th:value="${dln.department_name}"
+                                                th:text="${dln.department_name}"
+                                                th:selected="${dln.id == grevMaster[0].department_id}"></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="" class="form-label">Main Category</label>
+                                        <span style="color: red;">*</span>
+                                        <select class="form-select" id="categ" aria-label="Category of Grievance">
+                                            <option value="0">Select</option>
+                                            <option th:each="categln : ${editCatList}"
+                                                th:value="${categln.category_name}" th:text="${categln.category_name}"
+                                                th:selected="${categln.category_name == grevMaster[0].category}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="py-2 row m-0" id="addInfoDiv"></div>
+                                    <!-- 03 April 2024 sub categ and next level sub categ etc... - SKY -->
+                                    <div class="col-md-6">
+
+                                        <label for="" class="form-label">Sub Category</label>
+                                        <select class="form-select" id="subcateg"
+                                            aria-label="Sub Category of Grievance">
+
+                                            <option value="0">Select</option>
+
+                                            <option th:each="subcategln : ${editsubCatList}"
+                                                th:value="${subcategln.sub_category_name}"
+                                                th:text="${subcategln.sub_category_name}"
+                                                th:selected="${subcategln.sub_category_name == grevMaster[0].sub_category}">
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+
+                                        <label for="" class="form-label">Next Level Sub Category 2</label>
+                                        <select class="form-select" id="subcateg2"
+                                            aria-label="Sub Category of Grievance">
+                                            <option value="0">Select</option>
+                                            <option th:each="subcategln2 : ${editsubCatList2}"
+                                                th:value="${subcategln2.sub_category_level2_name}"
+                                                th:text="${subcategln2.sub_category_level2_name}"
+                                                th:selected="${subcategln2.sub_category_level2_name == grevMaster[0].sub_cat_next_level2}">
+                                        </select>
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+
+                                        <label for="" class="form-label">Next Level Sub Category 3</label>
+                                        <select class="form-select" id="subcateg3"
+                                            aria-label="Sub Category of Grievance">
+                                            <option value="0">Select</option>
+                                            <option th:each="subcategln3 : ${editsubCatList3}"
+                                                th:value="${subcategln3.sub_category_level3_name}"
+                                                th:text="${subcategln3.sub_category_level3_name}"
+                                                th:selected="${subcategln3.sub_category_level3_name == grevMaster[0].sub_cat_next_level3}">
+                                        </select>
+                                    </div>
+
+
+                                    <div class="col-md-6">
+                                        <input id="SubCatgId4" type="hidden" name="hidden"
+                                            th:value="${grevMaster[0].sub_cat_next_level4}">
+                                        <label for="" class="form-label">Next Level Sub Category 4</label>
+                                        <select class="form-select" id="subcateg4"
+                                            aria-label="Sub Category of Grievance">
+                                            <option value="0">Select</option>
+                                            <option th:each="subcategln4 : ${editsubCatList4}"
+                                                th:value="${subcategln4.sub_category_level4_name}"
+                                                th:text="${subcategln4.sub_category_level4_name}"
+                                                th:selected="${subcategln4.sub_category_level4_name == grevMaster[0].sub_cat_next_level4}">
+                                        </select>
+                                    </div>
+                                    <!-- 03 April 2024 sub categ and next level sub categ etc... - SKY -->
+
+                                </div><br><br><br><br>
+
+
+                                <!-- <div class="col-md-6">
+
+									<label for="" class="form-label">Upload File</label>
+									<input type="file" name="" id="stUploadPhoto1" class="stUploadPhoto form-control"
+										accept="application/pdf, image/png, image/jpeg, image/jpg"
+										th:value="${grevMaster[0].file_path}">
+									<p class="small">JPEG,JPG,PNG,PDF only (5MB)</p>
+								</div> -->
+
+
+                                <!-- Naitik Changes on file upload Start 17/06/2025 -->
+
+                                <div class="col-md-6">
+                                    <label for="stUploadPhoto1">Upload File</label>
+
+                                    <input type="file" id="stUploadPhoto1" class="form-control stUploadPhoto"
+                                        accept="application/pdf, image/png, image/jpeg, image/jpg">
+
+                                    <div class="d-flex align-items-center mt-1 flex-wrap">
+
+                                        <div th:each="gg : ${grevMaster}">
+                                            <a th:if="${gg.file_path != null}"
+                                                th:href="@{'/fileViewer?filename=' + ${gg['file_path']} + '&name=' + ${gg['file_name']}}"
+                                                class="form-text text-truncate me-2" target="_blank">
+                                                <u><span style="color:blue;" th:text="${gg.file_name}"></span></u>
+                                            </a>
+                                            <span th:if="${gg.file_path == null}"
+                                                class="form-text text-muted text-truncate me-2">
+                                                No file chosen
+                                            </span>
+                                        </div>
+
+                                        <small class="text-danger ms-2">JPEG, JPG, PNG, PDF files only (Max 5MB)</small>
+                                    </div>
+                                </div>
+
+
+                                <!-- Naitik Changes on file Uploads End  -->
+
+
+
+                                <!-- PSGA - start -->
+
+                                <!-- <div th:if="${userflag == 'Raabita User'}" class="col-md-12"> -->
+                                <div class="col-md-12">
+                                    <label class="form-label" style="font-weight: bold;">Does it reside under the Public
+                                        Service Guarantee Act?</label>
+                                    <span style="color: red;">*</span>
+
+                                    <div class="form-check form-check-inline mx-3">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" name="psga" value="Yes"
+                                                th:checked="${grevMaster[0].psga == 'Yes'}"> Yes
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" name="psga" value="No"
+                                                th:checked="${grevMaster[0].psga == 'No'}"> No
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- PSGA - end -->
+
+
+                                <!-- Naitik Changes made 29/05/2025 -->
+                                <div class="col-md-12">
+                                    <label for="descrp" class="form-label">Description</label>
+                                    <span style="color: red;">*</span>
+                                    <textarea class="form-control" rows="4" id="descrp" placeholder="Description..."
+                                        th:text="${description}"></textarea>
+                                    <span class="text-danger">Special characters are not allowed.</span>
+                                </div>
+
+                                <!-- Naitik Changes End  -->
+
+                                <!-- Dealing Hand Submit Grievance Button -->
+                                <div class="col-12">
+                                    <div class="row justify-content-center button-part">
+                                        <!-- <button type="button" class="btn btn-primary pHbtn">Preview Details</button> -->
+                                        <button type="button"
+                                            class="btn btn-purple sm-2 col-2 text-white editGrievanceBtn">Update
+                                            Grievance</button>
+                                        <!-- <button type="button" class="btn btn-purple sm-2 col-2 text-white cpgramBtn">Forward To CPGRAM</button> -->
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- 14 JAN 2024 - SKY - dealing hand form - end -->
+                        </div>
+                    </div>
+                </div>
+                <!-- End Left side columns -->
+            </div>
+        </section>
+
+    </main>
+    <!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+
+
+</body>
+
+</html>

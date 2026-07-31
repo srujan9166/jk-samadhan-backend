@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<!-- <div lang="en" th:include="left_sidebar :: returnToDashboard"></div> -->
+
+	<main id="main" style="margin-left: 0px !important;" class="main position-relative">
+		<div class="pagetitle mb-3">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Citizen Registration</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+
+			<input type="hidden" id="userType" th:value="${userType}">
+			<input type="hidden" id="dm_district" th:value="${dm_district}">
+			<!-- <div class="row grivance-wrapper"> -->
+
+			<!-- Filter Box Start -->
+			<div class="filter-box">
+				<div class="filter-box-head">
+					<h4>Filter</h4>
+					<div class="d-flex align-items-center gap-2">
+						<button class="filter-close-btn">
+							<i class="bi bi-x-lg"></i>
+						</button>
+					</div>
+				</div>
+				<div class="filter-box-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-input-block">
+								<label for="dateFrom">From / on</label>
+								<input type="date" class="form-control" id="dateFrom">
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-input-block">
+								<label for="dateTo">To</label>
+								<input type="date" class="form-control" id="dateTo" disabled>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="row gy-2">
+						<div class="col-md-4">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input data-search" type="radio" name="total-app"
+									id="total-web-search" th:value="web">
+								<label class="form-check-label" for="total-web-search">
+									Web</label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input data-search" type="radio" name="total-app"
+									id="total-app-search" th:value="mobile">
+								<label class="form-check-label" for="total-app-search">
+									Mobile</label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input data-search" type="radio" name="total-app"
+									id="total-app-search" th:value="Female">
+								<label class="form-check-label" for="total-app-search">
+									Female</label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input data-search" type="radio" name="total-app"
+									id="total-app-search" th:value="Male">
+								<label class="form-check-label" for="total-app-search">
+									Male</label>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input data-search" type="radio" name="total-app"
+									id="total-app-search" th:value="Transgender">
+								<label class="form-check-label" for="total-app-search">
+									Transgender</label>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="row gy-2">
+						<div class="col-12">
+							<div class="form-input-block">
+								<label for="stateFilter">State</label>
+								<select id="stateFilter" class="form-select">
+									<option value="0">Select</option>
+									<!-- <option th:each = "disD : ${districtData}" th:text="${disD.district_name}" th:value="${disD.district_name}"></option> -->
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="row gy-2">
+						<div class="col-12">
+							<div class="form-input-block">
+								<label for="districtFilter">District</label>
+								<select id="districtFilter" class="form-select">
+									<option value="0">Select</option>
+									<!-- <option th:each = "disD : ${districtData}" th:text="${disD.district_name}" th:value="${disD.district_name}"></option> -->
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- Naitik Changes on filters of MIS Citizen -->
+
+					<div class="row gy-2 mt-2">
+						<div class="col-12 fw-bold">Select Municipality / Block</div>
+
+						<div class="col-md-6">
+							<div class="form-check form-check-inline">
+
+								<input class="form-check-input area-radio" type="radio" name="area"
+									id="municipality-search" value="municipality">
+								<label class="form-check-label" for="municipality-search">Municipality</label>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input area-radio" type="radio" name="area" id="block-search"
+									value="block">
+								<label class="form-check-label" for="block-search">Block</label>
+							</div>
+						</div>
+					</div>
+
+
+					<div id="municipalityDropdowns" class="row gy-2 mt-2 hidden">
+						<div class="col-md-6">
+							<div class="form-input-block">
+								<label for="Municipalityfilter">Select Municipality</label>
+								<select id="Municipalityfilter" class="form-select">
+									<option value="0">Select Municipality</option>
+
+								</select>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="form-input-block">
+								<label for="WardFilter">Select Ward</label>
+								<select id="Wardfilter" class="form-select">
+									<option value="0">Select Ward</option>
+
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div id="blockDropdowns" class="row gy-2 mt-2 hidden">
+						<div class="col-md-6">
+							<div class="form-input-block">
+								<label for="Blockfilter">Select Block</label>
+								<select id="Blockfilter" class="form-select">
+									<option value="0">Select Block</option>
+
+								</select>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="form-input-block">
+								<label for="Panchayatfilter">Select Panchayat</label>
+								<select id="Panchayatfilter" class="form-select">
+									<option value="0">Select Panchayat</option>
+
+								</select>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+
+			</div>
+			<!-- Naitik changes End -->
+			<!-- Filter Box End -->
+
+
+
+
+
+
+
+			<!-- Left side columns -->
+			<div class="col-lg-12 yrTab">
+				<div class="card">
+					<div class="card-body">
+						<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+							<div class="heading-part">
+								<h5 class="fw-bold mb-0">Citizen Registration Report</h5>
+							</div>
+							<div class="button-part btn-wrapper ms-2">
+								<button class="btn btn-yellow btnmis-customBtn" title="Reload" value="buttons-reset"> <i
+										class="bi bi-bootstrap-reboot"></i></button>
+								<button type="button" class="btn btn-warning filter-btn" title="Filter">
+									<i class="bi bi-funnel"></i>
+								</button>
+								<button class="btn btn-purple btnmis-customBtn" title="Download Excel"
+									value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+								<button class="btn btn-black btnmis-customBtn" title="Download PDF" value="buttons-pdf">
+									<i class="bi bi-filetype-pdf"></i></button>
+							</div>
+						</div>
+						<hr>
+						<div class="yr-Rtable ">
+							<table class="table datatable table-bordered" id="citizenRegtbl" style="width: 100%;">
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Mis Report Citizen Registration total Count Changes by Naitik -->
+
+
+			<div class="row" th:if="${userType=='ROLE_SuperAdmin'}">
+				<div class="col-lg-12 yrTab">
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h5 class="fw-bold mb-0">Division Wise-Citizen Registration Report</h5>
+								</div>
+
+
+								<div class="button-part btn-wrapper ms-2">
+									<button class="btn btn-purple dwd-customBtnctz" title="Download Excel"
+										value="buttons-excel">
+										<i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black dwd-customBtnctz" title="Download PDF"
+										value="buttons-pdf">
+										<i class="bi bi-filetype-pdf"></i></button>
+								</div>
+							</div>
+
+							<div class="yr-Rtable p-4" style="overflow-x:auto;">
+
+								<table id="misReportTableCitizen" class="table table-bordered stripe"
+									style="width:100%">
+
+								</table>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+			<!-- </div> -->
+
+			<!-- Naitik Changes End -->
+
+
+
+			<!--Naitik Changes on Mis Report Districtwise -->
+
+			<div class="row" th:if="${userType=='ROLE_SuperAdmin'}">
+				<div class="col-lg-12 yrTab">
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h5 class="fw-bold mb-0">District Wise Citizen - Registration Report</h5>
+								</div>
+
+								<div class="button-part btn-wrapper ms-2">
+									<button class="btn btn-purple dwd-customBtndist" title="Download Excel"
+										value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black dwd-customBtndist" title="Download PDF"
+										value="buttons-pdf">
+										<i class="bi bi-filetype-pdf"></i></button>
+								</div>
+							</div>
+
+
+							<div class="yr-Rtable p-4" style="overflow-x:auto;">
+
+								<table id="misReportTableDistrict" class="table table-bordered stripe"
+									style="width:100%">
+
+								</table>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+			</div>
+			</div>
+			</div>
+
+
+			<!-- Naitik Changes End on MIs Report -->
+
+			</div>
+
+
+		</section>
+
+		<!-- Modal -->
+		<div class="modal fade" id="citizenModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<!-- <h3 class="card-title text-center">Grievance/s Pending With Result</h3> -->
+					<div class="card-body yr-Rtable p-4">
+						<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+							<div class="heading-part">
+								<h5 class="fw-bold mb-0">Grievance/s Registered by Citizens</h5>
+							</div>
+
+							<div class="button-part btn-wrapper ms-2">
+								<button class="btn btn-purple dwd-grievancesLodged" title="Download Excel"
+									value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+								<button class="btn btn-black dwd-grievancesLodged" title="Download PDF"
+									value="buttons-pdf">
+									<i class="bi bi-filetype-pdf"></i></button>
+							</div>
+						</div>
+
+
+						<div class="advPendingWithDiv yr-Rtable p-4">
+							<table class="table table-bordered stripe" id="filteredDHList" style="width: 100%;">
+							</table>
+						</div>
+					</div>
+
+					<div class="modal-footer"></div>
+				</div>
+			</div>
+		</div>
+
+	</main>
+	<!-- End #main -->
+
+
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer2"></div>
+	<!-- <script src="/js/area-filter.js"></script> -->
+
+</body>
+
+</html>

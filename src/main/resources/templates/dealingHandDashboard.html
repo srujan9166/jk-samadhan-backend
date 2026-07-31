@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+
+<style>
+	.card-box {
+		width: calc(20% - 1rem);
+		min-width: unset;
+	}
+
+	@media only screen and (max-width: 1600px) and (min-width: 1200px) {
+		.card-box {
+			width: calc(20% - 1rem) !important;
+			min-width: unset;
+		}
+
+		.card-box .count+img {
+			min-width: 3vw;
+			max-width: 45px;
+		}
+
+		.card-box .card-body {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.card-box .card-body p {
+			flex-grow: 1;
+		}
+	}
+</style>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+	<div lang="en" th:include="left_sidebar :: left_sidebar"></div>
+
+
+
+	<main id="main" class="main">
+
+		<div class="position-fixed mx-4 top-20 end-0" style="z-index: 999">
+			<div th:if="${showLoginToast}" id="loginToast" class="toast align-items-center text-bg-success border-0"
+				role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="d-flex">
+					<div class="toast-body">
+						Successfully logged in.
+					</div>
+					<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+						aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="#">Home</a></li>
+					<li th:if="${userflag == 'DealingHand Head'}" class="breadcrumb-item active">DealingHand Head
+						Dashboard</li>
+					<li th:if="${userflag == 'Raabita Head'}" class="breadcrumb-item active">Raabita Head Dashboard</li>
+					<li th:if="${userflag == 'RMC Head'}" class="breadcrumb-item active">RMC Head Dashboard</li>
+					<li th:if="${userflag == 'DH User'}" class="breadcrumb-item active">DealingHand User Dashboard</li>
+					<li th:if="${userflag == 'Raabita User'}" class="breadcrumb-item active">Raabita User Dashboard</li>
+					<li th:if="${userflag == 'RMC User'}" class="breadcrumb-item active">RMC User Dashboard</li>
+				</ol>
+			</nav>
+		</div>
+
+		<section class="section dashboard">
+			<div class="container-fluid">
+				<div class="row count-dash">
+
+					<!-- Left side columns -->
+					<div class="col-lg-12 p-0">
+						<div class="dbBox d-flex">
+
+							<!-- Sales Card -->
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<a href="#">
+										<div class="card-body ">
+											<p class="mb-0">Total Grievances Submitted</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${totalG}"></h6>
+
+												</div>
+												<img src="../img/icons/total-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</a>
+
+								</div>
+							</div>
+
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<a href="#">
+										<div class="card-body ">
+											<p class="mb-0">Pending with Department</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${pending}"></h6>
+
+												</div>
+												<img src="../img/icons/pending-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</a>
+
+								</div>
+							</div>
+							<input type="hidden" th:value="${userflag}" id="userFlag">
+							<div th:if="${userflag == 'DealingHand Head' || userflag == 'RMC Head' || userflag == 'Raabita Head'}"
+								class="card-box mt-3">
+								<a href="#">
+									<div class="card info-card sales-card pb-0">
+										<div class="card-body ">
+											<p class="mb-0">Forwarded</p>
+											<div class="d-flex justify-content-between align-items-end">
+
+												<div class="count">
+													<h6 th:text="${forwardedGrv}"></h6>
+
+												</div>
+												<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</div>
+								</a>
+
+							</div>
+
+
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<a href="#">
+										<div class="card-body ">
+											<p class="mb-0">Resolved</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${resolved}"></h6>
+
+												</div>
+												<img src="../img/icons/resolved-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</a>
+
+								</div>
+							</div>
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<a href="#">
+										<div class="card-body ">
+											<p class="mb-0">Rejected</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${rejected}"></h6>
+
+												</div>
+												<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</a>
+
+								</div>
+							</div>
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<a href="#">
+										<div class="card-body ">
+											<p class="mb-0">Appealed</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${appealed}"></h6>
+
+												</div>
+												<img src="../img/icons/rejected-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</a>
+
+								</div>
+							</div>
+
+
+							<div class="card-box">
+								<div class="card info-card sales-card pb-0">
+									<a href="#">
+										<div class="card-body ">
+											<p class="mb-0">Does not Pertain</p>
+											<div class="d-flex justify-content-between align-items-center">
+
+												<div class="count">
+													<h6 th:text="${DNP}"></h6>
+
+												</div>
+												<img src="../img/icons/appealed-icon.png" alt="Icon Image"
+													class="img-fluid">
+											</div>
+
+										</div>
+									</a>
+
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!-- End Left side columns -->
+				</div>
+
+
+			</div>
+
+
+
+
+
+			<div class="row">
+
+
+
+				<!-- Data Table Column start -->
+				<div class="col-lg-12 yrTab">
+					<div class="card">
+						<div class="card-body">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+								<div class="heading-part">
+									<h4>Total Grievances</h4>
+								</div>
+								<div class="button-part btn-wrapper ms-2">
+									<button class="btn btn-purple btn-customBtn" title="Download Excel"
+										value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black btn-customBtn" title="Download PDF"
+										value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+								</div>
+
+
+
+							</div>
+							<div class="yr-Rtable p-4">
+								<table class="table text-center" id="dealingHandTbl" style="width: 100%;">
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Data Table Column end -->
+			</div>
+		</section>
+
+
+		<div class="modal fade" id="griStatus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body" id="statusBody">
+
+						<div class="form-input-block">
+							<label for="floatingZip">Grievance Id </label>
+							<input type="text" class="form-control" placeholder="Enter Grievance Id" id="griId"
+								maxlength="30">
+							<small id="griIdError" style="color: red; display: none;">Invalid Grievance Id. Only 30
+								alphanumeric characters are allowed.</small>
+						</div><br>
+
+						<button type="button" id="chSt" class="btn btn-success">Check Status</button>
+
+					</div>
+					<div class="modal-footer"></div>
+				</div>
+			</div>
+		</div>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+</body>
+
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html
+  th:fragment="header"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+>
+  <head lang="en" th:include="head :: head"> </head>
+
+  <style>
+    #mainContainer {
+      padding: 10rem 8rem;
+      zoom: 1.2;
+    }
+    #mainContainer * {
+      font-family: serif;
+    }
+    #mainContainer .header-top {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    #mainContainer .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #mainContainer .top p {
+      font-size: 1.125rem;
+    }
+    #mainContainer .header-line p,
+    #mainContainer .header-line a {
+      font-size: 1.5rem;
+    }
+    .header-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .header-line p {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .para {
+      margin-top: 4rem;
+    }
+    .para p {
+      font-size: 2rem;
+      line-height: 3.5rem;
+    }
+
+    .tooltip-menu {
+      display: none;
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .tooltip-menu div {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .tooltip-menu div:hover {
+      background: #eee;
+    }
+    @media (max-width: 991px) {
+	.file-size { display: contents; }
+}
+  </style>
+
+  <body>
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+    <main id="main" class="main">
+      <div class="pagetitle">
+        <nav>
+          <ol class="breadcrumb">
+            <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+            <li class="breadcrumb-item active">Lodge Raabta</li>
+          </ol>
+        </nav>
+      </div>
+
+
+      <!-- End Page Title -->
+
+      <section class="section dashboard">
+        <!--  -->
+        <div class="row">
+          <!-- Left side columns -->
+          <div class="col-lg-12 yrTab">
+            <div class="card">
+              <div class="card-body">
+                <!-- <div class="text-danger mb-2">Please Note: If specific
+								information related to a service is not available / known,
+								select Others / Misc. option for lodging of Grievance, if
+								available.</div> -->
+                <h5 class="fw-bold mb-0">Raabta Submitted by:</h5>
+                <hr />
+                <div
+                  class="py-2 bg-light-purple row m-0"
+                  style="border-radius: 25px 25px 0px 0px"
+                >
+                  <div class="col-lg-3 col-md-4 fw-bold">Name:</div>
+                  <div
+                    class="col-lg-9 col-md-8"
+                    th:text="${username}"
+                    id="usrName"
+                  ></div>
+                </div>
+                <div th:each="dt : ${userDetails}">
+                  <div class="py-2 row bg-light-pink m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Mobile No.:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.mobile}"
+                      id="mobNo"
+                    ></div>
+                  </div>
+                  <div class="py-2 bg-light-purple row m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Email Id:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.email}"
+                      id="emailId"
+                    ></div>
+                  </div>
+                  <div class="py-2 bg-light-purple row m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Gender:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.gender}"
+                      id="emailId"
+                    ></div>
+                  </div>
+                  <div class="py-2 bg-light-purple row m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Date of Birth:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.date_of_birth}"
+                      id="emailId"
+                    ></div>
+                  </div>
+                  <div class="py-2 row bg-light-pink m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Address:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.address}"
+                      id="add"
+                    ></div>
+                  </div>
+                  <div class="py-2 row bg-light-pink m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Pincode:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.pincode}"
+                      id="add"
+                    ></div>
+                  </div>
+                   <div class="py-2 row bg-light-pink m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">State:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.region}"
+                      id="add"
+                    ></div>
+                  </div>
+                   <div class="py-2 row bg-light-pink m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">District:</div>
+                    <div
+                      class="col-lg-9 col-md-8"
+                      th:text="${dt.district}"
+                      id="add"
+                    ></div>
+                  </div>
+
+                  <!-- <div class="py-2 row border-bottom">
+									<div class="col-lg-3 col-md-4 fw-bold">Department:</div>
+									<div class="col-lg-9 col-md-8">
+										<div style="max-width: 450px">
+											<select class="form-select" id="depName"
+												aria-label="Department">
+												<option value="0">Select</option>
+											</select>
+										</div>
+									</div>
+								</div> -->
+
+                  <!-- <div class="py-2 row border-bottom">
+									<div class="col-lg-3 col-md-4 fw-bold">Divison:</div>
+									<div class="col-lg-9 col-md-8">
+										<div style="max-width: 450px">
+											<select id="inputRegion1" class="form-select">
+												<option value="0">--Select Region--</option>
+												<option th:each="c : ${regiontList}" th:value="${c.region}"
+													th:text="${c.region}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="py-2 row border-bottom" id="distDivs">
+									<div class="col-lg-3 col-md-4 fw-bold">District:</div>
+									<div class="col-lg-9 col-md-8">
+										<div style="max-width: 450px">
+											<select id="inputDistrict" class="form-select"
+												disabled="disabled">
+												<option value="0">--Select District--</option>
+											</select>
+										</div>
+									</div>
+								</div>
+ -->
+                  <div class="py-2 bg-light-purple row m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">
+                      Department:<span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-9 col-md-8">
+                      <div style="max-width: 450px">
+                        <select id="depName" class="form-select">
+                          <option value="0">Select</option>
+                          <option
+                            th:each="dln : ${deptListName}"
+                            th:value="${dln.department_name}"
+                            th:text="${dln.department_name}"
+                          ></option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="py-2 row bg-light-pink m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">
+                      Main Category of Grievance:<span style="color: red"
+                        >*</span
+                      >
+                    </div>
+                    <div class="col-lg-9 col-md-8">
+                      <div style="max-width: 450px">
+                        <select
+                          class="form-select"
+                          id="categ"
+                          aria-label="Category of Grievance"
+                        >
+                          <option value="0">Select</option>
+                          <!-- <option th:each="c : ${categ}" th:value="${c.category_name}"
+												th:text="${c.category_name}"></option> -->
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!--  <div class="py-2 row border-bottom" style="display:none" id="addInfoDiv">
+									<div class="col-lg-3 col-md-4 fw-bold">Additional Information:<span style="color:red">*</span></div>
+									<div class="col-lg-9 col-md-8">
+										<div style="max-width: 450px">
+											<select class="form-select" id="addInfo"
+												aria-label="Category of Grievance">
+												<option value="0">Select</option>
+												<option th:each="c : ${categ}" th:value="${c.category_name}"
+												th:text="${c.category_name}"></option>
+											</select>
+										</div>
+									</div>
+								</div> -->
+
+                  <div
+                    class="py-2 bg-light-purple row m-0"
+                    id="addInfoDiv"
+                  ></div>
+
+                  <div
+                    class="py-2 bg-light-pink row m-0"
+                    id="subcategDiv"
+                    style="display: none"
+                  >
+                    <div class="col-lg-3 col-md-4 fw-bold">
+                      Next level Category of Grievance:
+                    </div>
+                    <div class="col-lg-9 col-md-8">
+                      <div style="max-width: 450px">
+                        <select
+                          class="form-select"
+                          id="subcateg"
+                          aria-label="Sub Category of Grievance"
+                          disabled
+                        >
+                          <option value="0">Select</option>
+                          <!-- <option th:each="c : ${categ}" th:value="${c.category_name}"
+												th:text="${c.category_name}"></option> -->
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!--  <div class="py-2 row border-bottom">
+									<div class="col-lg-3 col-md-4 fw-bold">Forward application To:</div>
+									<div class="col-lg-9 col-md-8">
+										<div style="max-width: 450px">
+											<select class="form-select" id="forwardTo"
+												aria-label="Forward To" disabled>
+												<option value="0">Select</option>
+												
+											</select>
+										</div>
+									</div>
+								</div>
+ -->
+                  <div
+                    class="py-2 bg-light-purple row m-0"
+                    id="subcateg2Div"
+                    style="display: none"
+                  >
+                    <div class="col-lg-3 col-md-4 fw-bold">
+                      Next level Category of Grievance:
+                    </div>
+                    <div class="col-lg-9 col-md-8">
+                      <div style="max-width: 450px">
+                        <select
+                          class="form-select"
+                          id="subcateg2"
+                          aria-label="Sub Category of Grievance"
+                          disabled
+                        >
+                          <option value="0">Select</option>
+                          <option
+                            th:each="c : ${categ}"
+                            th:value="${c.category_name}"
+                            th:text="${c.category_name}"
+                          ></option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="py-2 bg-light-pink row m-0"
+                    id="subcateg3Div"
+                    style="display: none"
+                  >
+                    <div class="col-lg-3 col-md-4 fw-bold">
+                      Next level Category of Grievance:
+                    </div>
+                    <div class="col-lg-9 col-md-8">
+                      <div style="max-width: 450px">
+                        <select
+                          class="form-select"
+                          id="subcateg3"
+                          aria-label="Sub Category of Grievance"
+                          disabled
+                        >
+                          <option value="0">Select</option>
+                          <option
+                            th:each="c : ${categ}"
+                            th:value="${c.category_name}"
+                            th:text="${c.category_name}"
+                          ></option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="py-2 bg-light-purple row m-0"
+                    id="subcateg4Div"
+                    style="display: none"
+                  >
+                    <div class="col-lg-3 col-md-4 fw-bold">
+                      Next level Category of Grievance:
+                    </div>
+                    <div class="col-lg-9 col-md-8">
+                      <div style="max-width: 450px">
+                        <select
+                          class="form-select"
+                          id="subcateg4"
+                          aria-label="Sub Category of Grievance"
+                          disabled
+                        >
+                          <option value="0">Select</option>
+                          <option
+                            th:each="c : ${categ}"
+                            th:value="${c.category_name}"
+                            th:text="${c.category_name}"
+                          ></option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="py-2 bg-light-pink row m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">
+                      Description: <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-9 col-md-8">
+                      <div
+                        style="
+                          max-width: 650px;
+                          display: flex;
+                          gap: 1.5rem;
+                          align-items: flex-start;
+                        "
+                      >
+                        <textarea
+                          class="form-control"
+                          rows="7"
+                          id="descrp"
+                          placeholder="Description.."
+                          maxlength="3000"
+                        ></textarea>
+                        <div class="audio-btn">
+                          <button
+                            id="micButton"
+                            class="common-btn mic-btn bi bi-mic-fill"
+                          ></button>
+                          <div id="tooltipMenu" class="custom-tooltip">
+                            <div data-lang="en-US">English</div>
+                            <div data-lang="hi-IN">Hindi</div>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="text-danger"
+                        >Remaining word's
+                        <span class="remWCounter">3000</span>.</span
+                      >
+                      <span class="text-danger d-block"
+                        >Special characters are not allowed.</span
+                      >
+                    </div>
+                  </div>
+
+                  <form
+                    th:action="@{sendDocument}"
+                    method="post"
+                    id="docForm"
+                    enctype="multipart/form-data"
+                  >
+                    <div
+                      class="py-2 pb-5 bg-light-purple row m-0 align-items-end"
+                    >
+                      <div class="col-lg-4 col-md-4 fw-bold">
+                        Upload Document File: <br />
+                        <div style="max-width: 450px">
+                          <div class="position-relative">
+                            <input type="hidden" id="grivanceId" name="id" />
+                            <input
+                              type="file"
+                              name="files"
+                              class="form-control"
+                              id="fileUp"
+                            />
+                            <p id="fileUpA" class="small text-danger file-size">
+                              JPEG,JPG,PNG,PDF only (5MB)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-3 col-md-3">
+                        <button type="button" class="btn btn-info geoLoc">
+                          <i class="bi bi-geo-alt"></i> Mark Your Location
+                        </button>
+                      </div>
+                      <div class="col-lg-5 col-md-5">
+                        <div id="latLongDiv" class="lat-wrapper pb-2">
+                          <div class="lang-block">
+                            <label>Latitude:</label> <span id="lat"></span>
+                          </div>
+                          <div class="lang-block">
+                            <label>Longitude:</label>
+                            <span id="long"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div
+                      class="py-2 pb-5 bg-light-purple row m-0 align-items-end"
+                    >
+                      <div class="col-lg-4 col-md-4 fw-bold">
+                        Upload Audio/Video File: <br />
+                        <div style="max-width: 450px">
+                          <div class="position-relative">
+                            <input type="hidden" id="grivanceId" name="id" />
+                            <input
+                              type="file"
+                              name="vidfiles"
+                              class="form-control"
+                              id="fileAudVid"
+                            />
+                            <p id="fileUpB" class="small text-danger file-size">
+                              Audio,Video Only (40MB)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  <!-- <div class="py-2 bg-light-pink row m-0">
+
+
+
+								<form th:action="@{sendDocument}" method="post" id="docForm"
+									enctype="multipart/form-data">
+
+									<div class="py-2 pb-5 bg-light-purple row m-0 align-items-end gy-lg-0 gy-3">
+										<div class="col-lg-4 fw-bold">Upload Document File: <br>
+											<div style="max-width: 450px">
+												<div class="position-relative">
+												<input type="hidden" id="grivanceId" name="id"> <input type="file"
+													name="files" class="form-control" id="fileUp" />
+												<p id="fileUpA" class="small text-danger file-size">JPEG,JPG,PNG,PDF only
+													(5MB)</p>
+												</div>
+											</div>
+										</div>
+										<div class="col-lg-3 col-md-4">
+											<button type="button" class="btn btn-info geoLoc">
+												<i class="bi bi-geo-alt"></i> Mark Your Location
+											</button>	
+										</div>
+										<div class="col-lg-5 col-md-8">
+											<div id="latLongDiv" class="lat-wrapper flex-wrap pb-2">
+												<div class="lang-block">
+													<label>Latitude:</label> <span id='lat'></span>
+												</div> 
+												<div class="lang-block">
+													<label>Longitude:</label>
+													<span id='long'></span>
+												</div>
+												
+											</div>	
+										</div>
+									</div>
+									
+									<div class="py-2 pb-5 bg-light-purple row m-0 align-items-end">
+									<div class="col-lg-4 col-md-4 fw-bold">Upload Audio/Video File: <br>
+											<div style="max-width: 450px">
+												<div class="position-relative">
+												<input type="hidden" id="grivanceId" name="id"> <input type="file"
+													name="vidfiles" class="form-control" id="fileAudVid" />
+												<p id="fileUpB" class="small text-danger file-size">Audio,Video Only
+													(40MB)</p>
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</form>
+								<!-- <div class="py-2 bg-light-pink row m-0">
+
+									<div class="col-lg-3 col-md-4 fw-bold">
+										
+									</div>
+									<div class="col-lg-9 col-md-8">
+										
+									</div>
+								</div> -->
+                </div>
+
+                <div class="col-md-12 mt-3">
+                  <div class="text-center">
+                    <button
+                      type="submit"
+                      class="common-btn"
+                      id="submitGrievance"
+                    >
+                      Submit Raabta
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Left side columns -->
+        </div>
+        <!-- <div id="mainContainer"></div> -->
+      </section>
+
+      <!--   <h1>Speech Recognition</h1>
+    <button id="startButton">Start Listening</button>
+    <button id="stopButton" style="display:none;">Stop Listening</button>
+    <p id="output"></p>
+ -->
+
+      <!-- <div id="mainContainer" style="position: absolute; "></div> -->
+    </main>
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+    <script th:src="@{/js/speechTotext.js}"></script>
+    <script th:src="@{/js/raabta.js}"></script>
+    <script src="js/suggestion.js"></script>
+  </body>
+</html>

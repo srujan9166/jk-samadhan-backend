@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org">
+
+<head lang="en" th:include="head :: head">
+</head>
+<style>
+	.left-panel {
+		border-right: 1px solid #ddd;
+		height: 100%;
+	}
+
+	.upper-part {
+		border-bottom: 1px solid #ccc;
+		/* Border between upper and scrollable part */
+		padding: 10px;
+		background-color: #f8f9fa;
+	}
+
+	.scrollable-part {
+		overflow-y: auto;
+	}
+
+	.small-label {
+		font-size: 0.875rem;
+		font-weight: bold;
+	}
+
+	.value {
+		word-break: break-word;
+		/* Allow long descriptions to break into new lines */
+	}
+
+	.row:nth-child(even) {
+		background-color: #f2f2f2;
+		/* Alternate row background color */
+	}
+
+	.created-div {
+		border: 1px solid #ccc;
+		/* Add border to divs */
+		padding: 10px;
+		/* Add padding inside divs */
+		margin: 5px 0;
+		/* Add margin between divs */
+		border-radius: 5px;
+		/* Rounded corners */
+		background-color: #f8f9fa;
+		/* Light background */
+		position: relative;
+	}
+
+	.remark,
+	.status {
+		font-weight: bold;
+		/* Bold for labels */
+		margin-bottom: 5px;
+		/* Space below remark */
+	}
+
+	.status {
+		margin: 0;
+	}
+
+	.timestamp,
+	.updated-by {
+		display: inline-block;
+		/* Inline block for positioning */
+		font-size: 0.875rem;
+		/* Smaller font size */
+		color: #6c757d;
+		/* Gray color */
+	}
+
+	.updated-by {
+		display: block;
+		text-align: end;
+		/* Align to the right */
+	}
+
+	.gr-table .update-by {
+		position: absolute;
+		bottom: 8px;
+		right: 20px;
+	}
+
+	.updated-by span {
+		font-size: 12px;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 20px 0;
+	}
+
+	th,
+	td {
+		border: 1px solid #000;
+		padding: 10px;
+		text-align: left;
+	}
+
+	.pdf-head {
+		background-color: var(--blue-clr);
+		color: #fff;
+		font-size: 1.5rem;
+		padding: 8px 12px;
+		margin-bottom: 1rem;
+	}
+
+	.pdf-content {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.pdf-content>div {
+		width: 50%;
+		border: 1px solid black;
+	}
+
+	.pdf-content div h4 {
+		border-block: 1px solid black;
+		margin: 0;
+		padding: 6px 12px;
+		color: white;
+		background-color: var(--purple);
+		font-size: 1.25rem;
+	}
+
+	.pdf-content div p {
+		background: var(--body);
+		margin: 0;
+		padding: 6px 12px;
+		color: #2E3B55;
+		font-size: 1.25rem;
+	}
+
+	.gr-table-wrapper {
+		border: 1px solid black;
+		margin-bottom: 20px;
+	}
+
+	.gr-table-wrapper .table-block {
+		padding: 6px;
+	}
+
+	.gr-table {
+		margin-top: 10px;
+		margin-bottom: 0;
+	}
+
+	.gr-table td {
+		padding: 6px;
+	}
+
+	.gr-table td p {
+		margin: 0;
+	}
+
+	.sidebar-wrapper {
+		transform: translateX(100%);
+		transition: all 0.6s;
+		height: calc(100vh - 60px);
+		z-index: 22;
+		position: fixed;
+		right: 0;
+		top: 60px;
+		background: #ECD8FD;
+		width: 500px;
+	}
+
+	.sidebar-wrapper.active {
+		transform: translateX(0);
+	}
+
+	.sidebar-wrapper .attech-btn {
+		position: absolute;
+		left: 0;
+		top: 40%;
+		background: var(--purple);
+		border: 1px solid var(--purple);
+		color: white;
+		writing-mode: tb;
+		transform: scale(-1) translateX(100%);
+		transition: all 0.6s;
+	}
+
+	.sidebar-content {
+		height: 100%;
+		overflow: auto;
+	}
+
+	.descHisDoc {
+		background: transparent;
+		padding: 0px;
+		border: 0px;
+	}
+
+	.printableDiv {
+		border: 1px solid #000;
+		padding: 10px;
+		margin: 10px 0;
+		font-family: Arial, sans-serif;
+	}
+
+	.custom-style {
+		color: red;
+		font-size: 20px;
+	}
+
+
+	.header-line p {
+		font-size: 0.8rem;
+	}
+
+	.header-line a {
+		font-size: 0.8rem;
+	}
+
+	.header-line {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+	}
+</style>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<!-- <div lang="en" th:include="left_sidebar :: returnToDashboard"></div> -->
+
+
+	<main id="main" style="margin-left: 0px !important;" class="main position-relative">
+
+		<div class="sidebar-wrapper">
+			<button class="attech-btn">View Attachments</button>
+			<div class="sidebar-content">
+
+
+
+
+				<div class="p-3 flex-grow-1" style="background: var(--body)">
+					<div th:each="vdetail : ${list}">
+						<div th:if="${vdetail['file_name'] != null && vdetail['file_name'] != ''}"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">Document uploaded By User</div>
+								<div class="remarks">
+									File Name: <span th:text="${vdetail['file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp" th:text="${vdetail['created_date']}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur"
+									th:href="@{'/fileViewer?filename=' + ${vdetail['file_path']} + '&name=' + ${vdetail['file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+
+						<div class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status"> System Generated Acknowledement Slip</div>
+								<div class="remarks">
+									File Name: <span>Acknowledgement Slip</span>
+								</div>
+								<div class="timestamp"
+									th:text="${#dates.format(list[0].createddate, 'dd-MM-yyyy HH:mm:ss')}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur ackSlip" href="#" data-status="false"
+									th:data-value="${list[0].uniqid}" title="View"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+
+
+						<div th:if="${vdetail['second_file_name'] != null && vdetail['second_file_name'] != ''}"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">Audio/Video uploaded By User</div>
+								<div class="remarks">
+									File Name: <span th:text="${vdetail['second_file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp" th:text="${vdetail['created_date']}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur" href="#"
+									th:href="@{'/fileViewer?filename=' + ${vdetail['second_file_path']} + '&name=' + ${vdetail['second_file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="descHisDoc" th:each="detail : ${hisQ}">
+						<!--  Department document -->
+
+						<!--  User document -->
+						<div th:if="${detail['dept_file_name'] != null && detail['dept_file_name'] != ''}"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">
+									Uploaded By <span th:text="${detail['action_taken_by'] ?: 'N/A'}"></span>
+								</div>
+								<div class="remarks">
+									File Name: <span th:text="${detail['dept_file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp">
+									<span th:text="${detail['updated_on']}"></span>
+								</div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur"
+									th:href="@{'/fileViewer?filename=' + ${detail['depdocument']} + '&name=' + ${detail['dept_file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+								<!-- Uncomment the following line to include the download button -->
+								<!-- <a class="btn-view btn-blue fileDownloader" title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a> -->
+							</div>
+						</div>
+						<!--  User Appeal document -->
+						<div th:if="${detail['file_name'] != null && detail['file_name'] != '' && detail['status'] =='Appealed' }"
+							class="mb-2 d-flex align-items-end justify-content-between">
+							<div class="flex-grow-1">
+								<div class="status">Appeal Document uploaded By User</div>
+								<div class="remarks">
+									File Name: <span th:text="${detail['file_name'] ?: 'No file name'}"></span>
+								</div>
+								<div class="timestamp" th:text="${detail['created_date']}"></div>
+							</div>
+							<div class="updated-by">
+								<a class="btn-view btn-pur"
+									th:href="@{'/fileViewer?filename=' + ${detail['file_path']} + '&name=' + ${detail['file_name']}}"
+									title="View" target="_blank"> <i class="bi bi-eye-fill"></i>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		</div>
+		<div class="pagetitle mb-3">
+			<input type="hidden" id="usrVV" th:value="${usrDD}">
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="#">Grievance Details</a></li>
+				</ol>
+			</nav>
+		</div>
+
+
+
+		<!--  Dashboard  -->
+		<div class="tab-content" id="pills-tabContent">
+			<div class="tab-pane fade show  active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+				tabindex="0">
+				<section class="section dashboard dash1">
+
+					<!--  <button id="start-button">Start Recording</button>
+    <button id="stop-button">Stop Recording</button>
+    <p id="transcript"></p> -->
+					<!-- correspondences -->
+					<!-- 					<button class="grievancepdf btn btn-purple ms-auto mb-3" -->
+					<!-- 						data-value="downloadgrpdf" data-value1="Grievance Detail"> -->
+					<!-- 						<i class='bx bx-download'></i> -->
+					<!-- 					</button> -->
+					<!-- Naitik Changes Start 30/01/2026 -->
+					<div class="d-flex align-items-center justify-content-end gap-3">
+						<button class="grievancepdfAppeal btn-purple common-btn mx-0"
+							th:data-grievance-id="${list[0].uniqid}" th:data-appflag="${radioVal}"
+							data-value1="Grievance Detail">
+							Download PDF
+						</button>
+
+						<!-- <button class="grievanceprint btn-black common-btn mx-0"
+							data-value="downloadgrpdf" data-value1="Grievance Detail">
+							Print PDF</button> -->
+					</div>
+					<!-- Naitik Changes End 30/01/2026 -->
+					<div class="mt-1" id="downloadgrpdf">
+						<div class="row grivance-wrapper">
+							<div class="col-lg-12">
+								<div class="card">
+									<div class="gr-table-wrapper">
+										<h2 class='header-line mt-3'>Department of Public Grievances</h2>
+										<div class='header-line'>
+											<p>website: <a href='https://samadhan.jk.gov.in'
+													target='_blank'>samadhan.jk.gov.in</a></p>
+											<p>Email : <a href='mailto:jk-grievance@jk.gov.in'
+													target='_blank'>jk-grievance@jk.gov.in</a></p>
+										</div>
+										<h5
+											style="margin: 0; padding: 4px 8px; background: #7246f5; text-align: center; color: white; font-size: 18px; line-height: 30px; font-weight: 600;">
+											ACKNOWLEDGEMENT - ONLINE GRIEVANCE
+										</h5>
+										<div class="table-block">
+
+
+											<table class="gr-table" th:each="Gdetail:${list}">
+												<tr>
+													<th colspan="4" style="background: #546F7A; color: white">Grievance
+														Details</th>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Grievance ID</td>
+													<td><span id="gId" th:text="${Gdetail.uniqid}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Grievance Date</td>
+													<td>
+														<p
+															th:text="${#dates.format(Gdetail.createddate, 'dd-MM-yyyy HH:mm:ss')}">
+														</p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Applicant Name</td>
+													<td><span th:text="${Gdetail.name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Mobile No.
+													</td>
+													<td>
+														<p th:text="${Gdetail.mobile}"></p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Department:</td>
+													<td><span th:text="${Gdetail.department}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Category</td>
+													<td>
+														<p th:text="${Gdetail.category}"></p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_category!=null}">Next Level Category:</td>
+													<td th:if="${Gdetail.sub_category!=null}"><span
+															th:text="${Gdetail.sub_category}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_Cat_Next_Level2!=null}">Next Level Category
+													</td>
+													<td th:if="${Gdetail.sub_Cat_Next_Level2!=null}">
+														<p th:text="${Gdetail.sub_Cat_Next_Level2}"></p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_Cat_Next_Level3!=null}">Next Level
+														Category:</td>
+													<td th:if="${Gdetail.sub_Cat_Next_Level3!=null}"><span
+															th:text="${Gdetail.sub_Cat_Next_Level3}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.sub_Cat_Next_Level4!=null}">Next Level Category
+													</td>
+													<td th:if="${Gdetail.sub_Cat_Next_Level4!=null}">
+														<p th:text="${Gdetail.sub_Cat_Next_Level4}"></p>
+													</td>
+												</tr>
+
+
+												<!-- Naitik changes to show these fields in history 30/01/2026 -->
+
+												<!-- District and Division  -->
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Pertain Division</td>
+													<td><span th:text="${Gdetail.division_name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Pertain District
+													</td>
+													<td>
+														<p th:text="${Gdetail.district_name}"></p>
+													</td>
+
+												</tr>
+
+												<!-- Municipality and Block -->
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Municipality</td>
+													<td><span th:text="${Gdetail.municipality_name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Ward
+													</td>
+													<td>
+														<p th:text="${Gdetail.ward_name}"></p>
+													</td>
+												</tr>
+
+
+												<!-- Block and Panchayat -->
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Block</td>
+													<td><span th:text="${Gdetail.block_name}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Panchayat
+													</td>
+													<td>
+														<p th:text="${Gdetail.panchayat_name}"></p>
+													</td>
+												</tr>
+
+												<!-- Naitik changes End 30/01/2026 -->
+
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/')) && (Gdetail.email != null && Gdetail.email != '' && Gdetail.email != 'NA')}">
+														Email ID</td>
+													<td
+														th:if="${(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/')) && (Gdetail.email != null && Gdetail.email != '' && Gdetail.email != 'NA')}">
+														<span th:text="${Gdetail.email}"></span>
+													</td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${!(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/'))}">
+														Email ID</td>
+													<td
+														th:if="${!(Gdetail.uniqid.startsWith('RMC') || Gdetail.uniqid.startsWith('DLH/'))}">
+														<span th:text="${Gdetail.email}"></span>
+													</td>
+
+													<td style="color: #546F7A; font-weight: 700;">Address</td>
+													<td>
+														<p th:text="${Gdetail.address}"></p>
+													</td>
+												</tr>
+												<tr
+													th:if="${(Gdetail.uniqid.startsWith('RMC/') || Gdetail.uniqid.startsWith('DLH/'))}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.modeofcomplaint != null && Gdetail.modeofcomplaint != '' && Gdetail.modeofcomplaint != 'NA'}">
+														Mode Of Complaint</td>
+													<td
+														th:if="${Gdetail.modeofcomplaint != null && Gdetail.modeofcomplaint != '' && Gdetail.modeofcomplaint != 'NA'}">
+														<span th:text="${Gdetail.modeofcomplaint}"></span>
+													</td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.post_trackingno != null && Gdetail.post_trackingno != '' && Gdetail.post_trackingno != 'NA'}">
+														Post Tracking No.</td>
+													<td
+														th:if="${Gdetail.post_trackingno != null && Gdetail.post_trackingno != '' && Gdetail.post_trackingno != 'NA'}">
+														<p th:text="${Gdetail.post_trackingno}"></p>
+													</td>
+												</tr>
+												<tr
+													th:if="${(Gdetail.uniqid.startsWith('RMC/') || Gdetail.uniqid.startsWith('DLH/'))}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.grievancereference != null && Gdetail.grievancereference != '' && Gdetail.grievancereference != 'NA'}">
+														Grievance / Reference Received from.</td>
+													<td
+														th:if="${Gdetail.grievancereference != null && Gdetail.grievancereference != '' && Gdetail.grievancereference != 'NA'}">
+														<span th:text="${Gdetail.grievancereference}"></span>
+													</td>
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.previous_fileno != null && Gdetail.previous_fileno != '' && Gdetail.previous_fileno != 'NA'}">
+														Previous Tracking Number.</td>
+													<td
+														th:if="${Gdetail.previous_fileno != null && Gdetail.previous_fileno != '' && Gdetail.previous_fileno != 'NA'}">
+														<p th:text="${Gdetail.previous_fileno}"></p>
+													</td>
+												</tr>
+												<tr
+													th:if="${(Gdetail.uniqid.startsWith('RMC/') || Gdetail.uniqid.startsWith('DLH/'))}">
+													<td style="color: #546F7A; font-weight: 700;"
+														th:if="${Gdetail.communicationrmcno != null && Gdetail.communicationrmcno != '' && Gdetail.communicationrmcno != 'NA'}">
+														Communication Number.</td>
+													<td
+														th:if="${Gdetail.communicationrmcno != null && Gdetail.communicationrmcno != '' && Gdetail.communicationrmcno != 'NA'}">
+														<span th:text="${Gdetail.communicationrmcno}"></span>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;">Latitude</td>
+													<td><span th:text="${Gdetail.latitude}"></span></td>
+													<td style="color: #546F7A; font-weight: 700;">Longitude</td>
+													<td>
+														<p th:text="${Gdetail.longitude}"></p>
+													</td>
+												</tr>
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;" colspan="4">
+														Grievance Description:</td>
+												</tr>
+												<tr>
+													<td colspan="4">
+														<p th:text="${Gdetail.description}"></p>
+													</td>
+												</tr>
+
+												<tr>
+													<td style="color: #546F7A; font-weight: 700;" colspan="4">
+														Appeal Description:</td>
+												</tr>
+												<tr th:each="grevH,stat : ${hisQ}">
+													<td colspan="4" th:if="${grevH.status=='Appealed'}">
+														<p th:text="${grevH.description}"></p>
+													</td>
+												</tr>
+											</table>
+
+
+											<table id="grvDetailsTblComm" class="gr-table mt-2">
+												<tr>
+													<th style="background: #546F7A; color: white">
+														Grievance History</th>
+												</tr>
+												<tr>
+
+													<div class="yr-Rtable pt-3">
+														<div class=" table-responsive">
+															<table class="table">
+																<thead>
+																	<tr>
+																		<th>S.No</th>
+																		<th>Grievance ID</th>
+																		<th>Action By</th>
+																		<th>Date / Time Of Action</th>
+																		<th>Action Taken</th>
+																		<th>Remarks</th>
+																		<th>Privilege Assign</th>
+																		<th>Department</th>
+																		<th>Status</th>
+																		<th>Action Taken Time(days)</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr th:each="grevH,stat : ${hisQ}">
+																		<th scope="row" th:text="${stat.index+1}"></th>
+																		<td>
+																			<span th:text="${grevH.uniqid}"></span>
+																			<span
+																				th:if="${grevH.userflag == 'JKIGRAMS'}">
+																				<div class="flashing-label text-danger mt-2"
+																					role="alert">JK-IGRAMS</div>
+																			</span>
+																		</td>
+																		<td th:text="${grevH.action_taken_by}"></td>
+																		<td
+																			th:text="${#dates.format(grevH.date_and_time_of_action, 'dd-MM-yyyy HH:mm:ss')}">
+																		</td>
+																		<td th:text="${grevH.action_taken}"></td>
+																		<td th:text="${grevH.remarks}"></td>
+																		<td th:text="${grevH.authority}"></td>
+																		<td th:text="${grevH.department}"></td>
+																		<td th:text="${grevH.status}"></td>
+																		<td th:text="${grevH.app_processing_time}"></td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+												</tr>
+											</table>
+											<div class="acknowledge"
+												th:if="${(appstatus=='Appealed' or appstatus=='Remark Recieved') && (userType=='ROLE_Department' || userType=='ROLE_Appellate' || userType=='ROLE_Admin')}">
+												<div class="card mb-4">
+													<div class="card-body">
+														<div class="col-12">
+															<div class="col-12 mt-3">
+																<h4>Resolver Details</h4>
+															</div>
+															<div>
+																<table class="table table-striped">
+																	<thead>
+																		<!-- <th>S No.</th> -->
+																		<th>Grievance ID</th>
+																		<th>Appeal ID</th>
+																		<th>Submitted By</th>
+																		<th>Disposed By</th>
+																		<th>Status</th>
+																		<th>Action</th>
+																	</thead>
+																	<tbody th:each="appealdetail:${appealdetail}">
+																		<tr>
+																			<td th:text="${appealdetail.grievance_id}">
+																			</td>
+																			<td th:text="${appealdetail.appeal_id}">
+																			</td>
+																			<td th:text="${appealdetail.submitted_by}">
+																			</td>
+																			<td th:text="${appealdetail.resolved_by}">
+																			</td>
+																			<td th:text="${appealdetail.status}"></td>
+																			<td class="text-center">
+																				<input type="checkbox"
+																					th:value="${appealdetail.grievance_id}"
+																					id="appealcheckbox"
+																					class="form-check-input" />
+																			</td>
+																		</tr>
+																	</tbody>
+																</table>
+
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="p-1" th:if="${(appstatus!='Rejected' && appstatus!='Resolved' && appstatus!='Appeal Forwarded' && appstatus!='Seek Clarification') 
+              && (userType=='ROLE_Department' || userType=='ROLE_Appellate' || userType=='ROLE_Admin')}">
+
+												<input type="file" name="remarkDocument" class="form-control"
+													id="remarkDocument"
+													accept="application/pdf, image/png, image/jpeg, image/jpg">
+
+												<small class="text-danger fw-semibold">Max File Size: 2 MB</small>
+
+												<h3>Remarks</h3>
+
+												<textarea name="remarkDetail" id="remarksDetailsId"
+													placeholder="Enter Remark" class="form-control"></textarea>
+
+												<div class="d-flex gap-2">
+													<button class="btn btn-danger mt-2 procesApp"
+														th:value="Rejected">Reject</button>
+
+													<div th:if="${appstatus=='Remark Recieved'}">
+														<button class="btn btn-success mt-2 procesApp"
+															th:value="Resolved">Resolve</button>
+														<button class="btn btn-primary mt-2 procesApp"
+															th:value="clarification">Send Back</button>
+													</div>
+
+													<div th:if="${appstatus=='Appealed'}">
+														<button class="btn btn-success mt-2 procesApp"
+															th:value="sendRemark">Forward</button>
+													</div>
+												</div>
+											</div>
+
+										</div>
+										<div class="col-12 button-part"
+											th:if="${getStatus=='Pending' || getStatus=='Acknowledged' || getStatus=='Under Process'}">
+											<div class="d-flex justify-content-center gap-2">
+												<button class="btn btn-purple grevP" th:value="${list[0].uniqid}"
+													th:if="${auth=='Process' && userType!='ROLE_SuperAdmin'}">Process
+													Grievance</button>
+												<button class="btn btn-purple grevP" th:value="${list[0].uniqid}"
+													th:if="${auth=='Remark' && userType!='ROLE_SuperAdmin'}">Add
+													Remark</button>
+												<button class="btn btn-purple forward" th:value="${list[0].uniqid}"
+													th:if="${auth=='Process' && fnStatus!='Recieved' && userType!='ROLE_SuperAdmin'}">Forward
+													Grievance</button>
+												<button class="btn btn-purple forward" th:value="${list[0].uniqid}"
+													th:if="${fnStatus=='Recieved' && userType!='ROLE_SuperAdmin'}">Send
+													Back</button>
+											</div>
+										</div>
+										<div class="col-12 button-part"
+											th:if="${(getStatus=='Forwarded' || getStatus=='Under Process' || getStatus=='Acknowledged')}">
+											<div class="d-flex justify-content-center gap-2">
+												<button class="btn btn-purple pbInitiated" data-bs-toggle="modal"
+													data-bs-target="#pullGrievance"
+													th:if="${(userType=='ROLE_Admin' || userType=='ROLE_Department')}">Pull
+													Back Grievance</button>
+											</div>
+										</div>
+										<div class="col-12 button-part">
+											<div class="d-flex justify-content-center gap-2">
+												<button class="btn btn-purple pbInitiated" data-bs-toggle="modal"
+													data-bs-target="#sendreturnCase"
+													th:if="${userType=='ROLE_SuperAdmin' && origin=='cpgrams' &&(getStatus=='Pending' || getStatus=='dnpToOffice')}">Return
+													To CPGRAM</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			</div>
+
+			<!-- correspondences -->
+
+			</section>
+		</div>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- Modal -->
+	<div class="modal fade" id="pullGrievance" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+		aria-labelledby="pullGrievanceLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="pullGrievanceLabel"
+						th:text="'Pull Grievance: ' + ${list[0].uniqid}"></h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="message-text" class="col-form-label">Remarks:</label>
+						<textarea class="form-control stRemarks"></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button id="pbInitiated" type="button" class="btn btn-primary" th:data-value="${list[0].uniqid}"
+						th:data-applicant="${list[0].name}">
+						Submit
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--cpgram return Modal -->
+
+	<div class="modal fade" id="sendreturnCase" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header border-0" th:each="Gdetail:${list}">
+					<p class="fw-semibold text-primary mb-3" id="regNo" th:text="${Gdetail.uniqid}"></p>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+				<div class="modal-body">
+					<div class="mb-4">
+						<label for="returnRemark" class="form-label fw-semibold">Reason for return of the case</label>
+						<textarea class="form-control" id="returnRemark" placeholder="Enter Remark" maxlength="2000"
+							rows="5"></textarea>
+					</div>
+
+					<div class="d-flex justify-content-end">
+						<button type="button" id="rtnCaseBtn" class="btn btn-success">Return To CPGRAM</button>
+					</div>
+
+				</div>
+
+				<div class="modal-footer border-0"></div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer2"></div>
+	<script th:src="@{/js/appealDashboardMIS.js}"></script>
+
+
+</body>
+
+</html>

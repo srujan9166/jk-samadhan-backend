@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <!-- default header name is X-CSRF-TOKEN -->
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <meta name="abcd" th:content="${abcd}" />
+  <meta name="jklm" th:content="${jklm}" />
+  <meta name="mmnn" th:content="${mmnn}" />
+  <title>JK Samadhan - Feedback</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="" name="keywords" />
+  <meta content="" name="description" />
+
+  <!-- Favicons -->
+  <link href="img/favicon.png" rel="icon" />
+
+  <!-- Icon Font Stylesheet -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
+  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+
+  <!-- Libraries Stylesheet -->
+  <!-- <link href="lib/animate/animate.min.css" rel="stylesheet">
+	<link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"> -->
+
+  <!-- Customized Bootstrap Stylesheet -->
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Template Stylesheet -->
+  <link href="css/style.css" rel="stylesheet" />
+  <style></style>
+</head>
+
+<body>
+  <div class="offcanvas-menu-overlay"></div>
+
+  <!-- Topbar Start -->
+  <header class="header">
+    <div class="wrapper header-top-first">
+      <div class="container container-top"></div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <div class="header__top">
+      <div class="container">
+        <div class="container_head_1 text-center my-1 p-0">
+          <div class="row d-flex align-items-center">
+            <div class="col d-flex justify-content-start align-items-center ps-0">
+              <!-- <a href="#" target="_blank" class="logo-img"> <img src="img/JnKlogo.png" alt="JnK logo"> </a>
+              <a href="#" target="_blank" class="logo-img"> <img src="img/samadhan_logo.png" alt="Samadhan logo"> </a> -->
+              <a href="#" target="_blank" class="logo-img">
+                <img src="img/group_logo.png" alt="Samadhan logo" />
+              </a>
+            </div>
+
+            <div class="col d-flex justify-content-end text-end pe-0">
+              <div class="w-100">
+                <div class="clearfix">
+                  <div id="sizer" class="head_user">
+                    <div class="lang-box">
+                      <div class="lang-switcher-block nodtranslate">
+
+                      </div>
+                      <div class="user_accessibility">
+                        <a href="javascript:void(0)" class="access_icon" title="text">
+                          <!-- <i class="fa fa-font" aria-hidden="true"></i> -->
+                          <i class="fa fa-wheelchair"></i>
+                        </a>
+                        <div class="access-type" id="chcp_font_size">
+                          <a href="javascript:void(0)" class="changer" title="Decrease Text"
+                            id="font-decrease"><sup>-</sup>A</a>
+                          <a href="javascript:void(0)" class="changer" id="font-original" title="Reset Text">A</a>
+                          <a href="javascript:void(0)" class="changer" id="font-increase"
+                            title="Increase Text"><sup>+</sup>A</a>
+                          <div id="text_resize_clear"></div>
+                          <div class="color-switcher">
+                            <ul class="colorchanger select-theme">
+                              <li class="cp_white_to_black" id="white-theme-ctrl">
+                                <a href="javascript:void(0);" class="light bg-white"
+                                  title="Change Theme color to White">A</a>
+                              </li>
+                              <li class="cp_standard" id="black-theme-ctrl">
+                                <a href="javascript:void(0);" class="dark bg-black"
+                                  title="Change Theme color to Black">A</a>
+                              </li>
+                              <!-- <li id="white-theme-ctrl"><a href="javascript:void(0);" title="Change Theme color to White" class="bg-white"></a></li>
+															<li id="black-theme-ctrl"><a href="javascript:void(0);" title="Change Theme color to Black" class="bg-black"></a></li> -->
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas__open">
+          <i class="fa fa-bars"></i>
+        </div>
+      </div>
+    </div>
+    <div class="header__nav">
+      <div class="container">
+        <div class="justify-content-between row">
+          <div class="widht-fit">
+            <nav class="header__menu">
+              <ul>
+                <li class="active"><a href="login">Home</a></li>
+                <li><a href="#aboutBg">About</a></li>
+                <li><a href="#contactUs">Contact Us</a></li>
+                <li class="dropdown">
+                  <a href="#">
+                    Grievance <i class="fa fa-angle-down"> </i>
+                  </a>
+                  <ul>
+                    <li><a href="publicGrievance"> Lodge Grievance</a></li>
+                    <li>
+                      <a href="trackApp" target="_blank"> Check Status </a>
+                    </li>
+                    <li>
+                      <a href="publicGrievanceAppeal"> Lodge Appeal </a>
+                    </li>
+                  </ul>
+                </li>
+
+                <li class="dropdown">
+                  <a href="#">
+                    Help &amp; Support <i class="fa fa-angle-down"> </i>
+                  </a>
+                  <ul>
+                    <li><a href="#">Authority for Appeal</a></li>
+                    <li><a href="#faqDiv"> FAQ </a></li>
+                    <li><a href="#"> Redressal Process Flow</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="widht-fit">
+            <div class="header__social d-flex">
+              <a href="https://pgportal.gov.in/" target="_blank" class="btn btn-maroon text-white">CPGRAM</a>
+              <a href="#" class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#">LG-Grievance
+                (Department of Public Grievances)</a>
+              <a href="#" class="btn btn-secondary text-white" data-bs-toggle="modal"
+                data-bs-target="#formRegister">Registration</a>
+              <div class="dropdown text-center menuWithDropdown">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                  data-bs-auto-close="inside">
+                  Login
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item citiLog" href="#" data-bs-toggle="modal" data-bs-target="#formLogin"
+                      data-value="1">
+                      Citizen Login
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item deptAdminLog" href="#" data-bs-toggle="modal" data-bs-target="#formLogin"
+                      data-value="2">
+                      Department / Admin Login
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item dealHLog" href="#" data-bs-toggle="modal" data-bs-target="#formLogin"
+                      data-value="3">
+                      Dealing Hand Login
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item dmLog" href="#" data-bs-toggle="modal" data-bs-target="#formLogin"
+                      data-value="4">
+                      DM Login
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item superAdminLog" href="#" data-bs-toggle="modal" data-bs-target="#formLogin"
+                      data-value="5">
+                      Super Admin Login
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navbar End -->
+
+  <!-- Feedback Start -->
+  <div class="bg-white py-5" id="Feedback">
+    <div class="container">
+      <div class="row g-5 justify-content-center">
+        <div class="col-md-6 p-rel">
+          <div class="left-side-content">
+            <small class="text-purple">Submit your feedback</small>
+            <h2>Fill the form to submit Grievance Feedback</h2>
+            <small class="text-muted">Please share your feedback regarding the Grievance
+              Resolution.</small>
+            <img src="img/feedback-img.png" class="img-fluid my-4" />
+          </div>
+        </div>
+        <div class="col-md-6 right-side-content">
+          <div class="card mb-0">
+            <div class="card-body">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                  <div class="col-auto fw-bold">
+                    <label for="uniqueID" class="col-form-label">Grievance ID:</label>
+                  </div>
+                  <div class="col-auto">
+                    <span class="uniqueIDClass" th:text="${uniqueID}" id="uniqueID"></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="col-auto fw-bold">
+                    <label for="uniqueID" class="col-form-label">Grievance Status:</label>
+                  </div>
+                  <div class="col-auto">
+                    <span class="uniqueIDClass" th:text="${status}" id="uniqueID"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                  <div class="col-auto fw-bold">
+                    <label for="uniqueID" class="col-form-label">Department:</label>
+                  </div>
+                  <div class="col-auto">
+                    <span class="uniqueIDClass" th:text="${deptName}" id="uniqueID"></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="col-auto fw-bold">
+                    <label for="uniqueID" class="col-form-label">Updated On:</label>
+                  </div>
+                  <div class="col-auto">
+                    <span class="uniqueIDClass" th:text="${#dates.format(updatedOn, 'dd-MM-yyyy HH:mm:ss')}"
+                      id="uniqueID"></span>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="mt-1" />
+              <div class="form-group mb-3">
+                <label class="fw-bold mb-3">Overall, were you satisfied with the solution provided by
+                  Department officials?
+                  <span class="text-danger">*</span></label>
+                <div class="form-check form-check-inline ps-0">
+                  <input class="form-check-input" type="radio" name="satisfied-feed" id="satisfied-Yes" value="Yes" />
+                  <label class="form-check-label" for="satisfied-Yes">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check form-check-inline ps-0">
+                  <input class="form-check-input" type="radio" name="satisfied-feed" id="satisfied-No" value="No" />
+                  <label class="form-check-label" for="satisfied-No">
+                    No
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group mb-3 noDiv visually-hidden">
+                <label class="fw-bold mb-3">If no, please write in two lines.<span class="text-danger">*</span></label>
+                <input type="text" name="" placeholder="Type here..." class="form-control" id="desciption-box" />
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="fw-bold mb-3">Have you received any call or message from Department?
+                  <span class="text-danger">*</span></label><br />
+                <div class="form-check form-check-inline ps-0">
+                  <input class="form-check-input" type="radio" name="call-msg" id="call-msg-Yes" value="Yes" />
+                  <label class="form-check-label" for="call-msg-Yes">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check form-check-inline ps-0">
+                  <input class="form-check-input" type="radio" name="call-msg" id="call-msg-No" value="No" />
+                  <label class="form-check-label" for="call-msg-No">
+                    No
+                  </label>
+                </div>
+              </div>
+              <div class="form-group mb-3">
+                <label class="fw-bold mb-3">Overall, Experience of Grievance Disposal?<span
+                    class="text-danger">*</span></label><br />
+                <div class="rating-btn rBtn1">
+                  <button type="button" class="rating1">1</button>
+                  <button type="button" class="rating1">2</button>
+                  <button type="button" class="rating1">3</button>
+                  <button type="button" class="rating1">4</button>
+                  <button type="button" class="rating1">5</button>
+                  <button type="button" class="rating1">6</button>
+                  <button type="button" class="rating1">7</button>
+                  <button type="button" class="rating1">8</button>
+                  <button type="button" class="rating1">9</button>
+                  <button type="button" class="rating1">10</button>
+                </div>
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="fw-bold mb-3">Grievance Lodging Process<span class="text-danger">*</span></label><br />
+                <div class="rating-btn rBtn2">
+                  <button type="button" class="rating2">1</button>
+                  <button type="button" class="rating2">2</button>
+                  <button type="button" class="rating2">3</button>
+                  <button type="button" class="rating2">4</button>
+                  <button type="button" class="rating2">5</button>
+                  <button type="button" class="rating2">6</button>
+                  <button type="button" class="rating2">7</button>
+                  <button type="button" class="rating2">8</button>
+                  <button type="button" class="rating2">9</button>
+                  <button type="button" class="rating2">10</button>
+                </div>
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="fw-bold mb-3">Have you received any call or message from Department?
+                  <span class="text-danger">*</span></label><br />
+                <div class="form-check form-check-inline ps-0 me-0 w-40">
+                  <input class="form-check-input" type="radio" name="process" id="process1" value="Grievance Lodging" />
+                  <label class="form-check-label" for="process1">
+                    Grievance Lodging
+                  </label>
+                </div>
+                <div class="form-check form-check-inline ps-0 me-0">
+                  <input class="form-check-input" type="radio" name="process" id="process2"
+                    value="Visit of Department Officails" />
+                  <label class="form-check-label" for="process2">
+                    Visit of Department Officails
+                  </label>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-check form-check-inline ps-0 me-0 w-40">
+                  <input class="form-check-input" type="radio" name="process" id="process3" value="Lodging Appeal" />
+                  <label class="form-check-label" for="process3">
+                    Lodging Appeal
+                  </label>
+                </div>
+                <div class="form-check form-check-inline ps-0 me-0">
+                  <input class="form-check-input" type="radio" name="process" id="process4"
+                    value="Resolution Provided by Department" />
+                  <label class="form-check-label" for="process4">
+                    Resolution Provided by Department
+                  </label>
+                </div>
+              </div>
+              <div class="form-group mb-3">
+                <label class="fw-bold mb-3">Would you recommend this portal for Grievance lodging to
+                  others too? <span class="text-danger">*</span></label><br />
+                <div class="form-check form-check-inline ps-0 me-0 w-40">
+                  <input class="form-check-input" type="radio" name="loading" id="loading1" value="Yes, definitely" />
+                  <label class="form-check-label" for="loading1">
+                    Yes, definitely
+                  </label>
+                </div>
+                <div class="form-check form-check-inline ps-0 me-0">
+                  <input class="form-check-input" type="radio" name="loading" id="loading2"
+                    value="Maybe, if it take less time" />
+                  <label class="form-check-label" for="loading2">
+                    Maybe, if it take less time
+                  </label>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-check form-check-inline ps-0 me-0 w-40">
+                  <input class="form-check-input" type="radio" name="loading" id="loading3" value="No, never" />
+                  <label class="form-check-label" for="loading3">
+                    No, never
+                  </label>
+                </div>
+                <div class="form-check form-check-inline ps-0 me-0">
+                  <input class="form-check-input" type="radio" name="loading" id="loading4"
+                    value="Maybe, if the process will change" />
+                  <label class="form-check-label" for="loading4">
+                    Maybe, if the process will change
+                  </label>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-rounded feedB-btn">
+                Submit Feedback
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Feedback End -->
+
+  <!-- Footer Start -->
+  <div class="container-fluid footer ftr wow fadeIn" data-wow-delay=".3s">
+    <div class="container pt-5 pb-4">
+      <div class="row g-5">
+        <div class="col-lg-5 col-md-6">
+          <a href="index.html" class="footer_logo_a">
+            <!-- <h3 class="text-white fw-bold d-block">
+							<span class="text-secondary">JK-UNIFIED</span><br /> Jammu
+							Kashmir Unified Grievance Redressal & Monitoring System
+						</h3> -->
+            <img class="img-fluid" src="img/group_logo.png" />
+          </a>
+          <!-- <h1 class="ftrJk mt-5">JK-IGRAMS</h1> -->
+          <!-- <p class="mt-4 text-light">Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta facere delectus qui placeat inventore consectetur repellendus optio debitis.</p> -->
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <a href="#" class="h3 text-white">Quick Link</a>
+          <div class="mt-4 d-flex flex-column help-link">
+            <a href="" class="mb-2 text-white"><i class="fas fa-angle-right text-white me-2"></i>Holiday
+              List</a>
+            <a href="" class="mb-2 text-white"><i class="fas fa-angle-right text-white me-2"></i>Digital
+              Signature</a>
+            <a href="" class="mb-2 text-white"><i class="fas fa-angle-right text-white me-2"></i>Website
+              Policies</a>
+            <a href="" class="mb-2 text-white"><i class="fas fa-angle-right text-white me-2"></i>Sitemap</a>
+          </div>
+          <div class="d-flex hightech-link mt-4">
+            <a href="" class="btn-light nav-fill btn btn-square rounded-circle me-2"><i
+                class="fab fa-facebook-f"></i></a>
+            <a href="" class="btn-light nav-fill btn btn-square rounded-circle me-2"><i class="fab fa-twitter"></i></a>
+            <a href="" class="btn-light nav-fill btn btn-square rounded-circle me-2"><i
+                class="fab fa-instagram"></i></a>
+            <a href="" class="btn-light nav-fill btn btn-square rounded-circle me-0"><i
+                class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6" id="contactUs">
+          <a href="#" class="h3 text-white">Contact Us</a>
+          <div class="text-white mt-4 d-flex flex-column contact-link">
+            <a href="#" class="text-light">(Srinagar) : 0194-2502596, 2502910, 2483236</a>
+            <a href="#" class="text-light">(Jammu) : 0191 - 2560109, 2560265, 2560266</a>
+            <a href="#" class="pb-2 mt-2 text-light"><i class="fas fa-map-marker-alt text-white me-2"></i> Fax-
+              0194-2501262 (S), 0191-2566182(J) District Call Center for Jammu
+              Province : 18005722327 (Monday to Saturday, 9:30 AM - 5:30
+              PM)<br />
+              <br />
+              District Call Center for Kashmir Province : 18005722328 (Monday
+              to Saturday, 9:30 AM - 5:30 PM)</a>
+            <a href="#" class="text-light"><i class="far fa-envelope text-white me-2"></i>
+              jk-grievance[at]jk[dot]gov[dot]in</a>
+          </div>
+        </div>
+      </div>
+      <hr class="text-light mt-5 mb-4" />
+      <div class="row">
+        <div class="col-md-6 text-center text-md-start">
+          <span class="text-light">©2024, Website Developed by
+            <a href="#" class="text-white">BISAG-N.</a></span>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <span class="text-light">© 2024 Content Owned by Government of J&K</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer End -->
+
+  <!-- <div id="iframeDiv"></div> -->
+
+
+  <!-- Back to Top -->
+  <a href="#" class="btn btn-secondary btn-square rounded-circle back-to-top"><i
+      class="fa fa-arrow-up text-white"></i></a>
+
+  <!-- Modal Login -->
+  <div class="modal fade loginRegModal" id="formLogin" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="formLoginLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body p-0">
+          <div class="d-flex">
+            <div class="w-65 login-content">
+              <h1 class="modal-title fs-5" id="formLoginLabel">
+                Login Your Account
+              </h1>
+
+              <form class="row g-3 needs-validation" novalidate th:action="@{/login}" method="POST" id="loginF"
+                th:object="${user}">
+                <div class="col-12">
+                  <label for="yourUsername" class="form-label fw-bold">Username</label>
+                  <div class="input-group has-validation">
+                    <input type="text" name="username" class="form-control" id="yourUsername" required />
+                    <!-- <span class="input-group-text" id="inputGroupPrepend">
+									<i class="bi bi-person-fill"></i>
+								</span> -->
+                    <div class="invalid-feedback">
+                      Please enter your username.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="yourPassword" class="form-label fw-bold">Password</label>
+                  <div class="input-group has-validation">
+                    <input type="password" name="password" class="form-control" id="yourPassword" required />
+                    <!-- <span class="input-group-text" id="inputGroupPrepend">
+									<i class="bi bi-lock-fill"></i>
+								</span> -->
+                    <div class="invalid-feedback">
+                      Please enter your password!
+                    </div>
+                  </div>
+                </div>
+                <!-- LOGIN -->
+                <div class="col-12 mb-2" id="caDiv">
+                  <div class="yr-eCap">
+                    <label for="enterCaptcha" class="form-label fw-bold">Enter Captcha</label>
+                    <div class="input-group has-validation">
+                      <input type="hidden" th:field="*{hiddenCaptcha}" id="hiddenCaptcha" />
+                      <input type="text" th:field="*{captcha}" class="form-control m-0" id="captchaU"
+                        placeholder="Enter Captcha" required />
+                      <span class="text-center">
+                        <img th:src="*{'data:realCaptcha/jpg;base64,'+ realCaptcha}" id="captchaImage"
+                          style="max-height: 40px" />
+                        <i class="h3 bi bi-arrow-clockwise" id="resetCap"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <!-- 						<a href="javascript:void(0);" class="float-end text-dark my-2">Forgot Password?</a>
+ -->
+                </div>
+                <!-- LOGIN -->
+
+                <div class="col-6 d-grid m-auto">
+                  <button class="btn btn-primary w-100" type="button" id="loginB" disabled>
+                    Login
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div class="w-35">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal End -->
+
+  <!-- Modal Start-->
+  <div class="modal fade loginRegModal" id="formRegister" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="formRegisterLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="formRegisterLabel">
+            Sign Up to Your Account
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="#" th:object="${user}" id="registerForm">
+            <div class="row g-3">
+              <div class="col mb-3">
+                <input type="text" class="form-control input-f" placeholder="First name*" aria-label="First name"
+                  th:field="*{first_name}" required maxlength="50" id="fn" />
+              </div>
+              <div class="col mb-3">
+                <input type="text" class="form-control input-f" placeholder="Middle name" maxlength="50"
+                  aria-label="Middle name" th:field="*{middle_name}" id="mn" />
+              </div>
+              <div class="col mb-3">
+                <input type="text" class="form-control input-f" placeholder="Last name*" aria-label="Last name"
+                  maxlength="50" th:field="*{last_name}" required id="ln" />
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col mb-3">
+                <select id="inputGender" class="form-select">
+                  <option value="0">--Select Gender--</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="transgender">Transgender</option>
+                </select>
+              </div>
+              <div class="col mb-3">
+                <input type="date" class="form-control" id="dob" placeholder="Date of Birth" aria-label="Date of Birth"
+                  th:field="*{date_of_birth}" required="required" />
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col mb-3">
+                <select id="inputRegion" class="form-select">
+                  <option value="0">--Select State--</option>
+                  <option th:each="c : ${regiontList}" th:value="${c.statecode}" th:text="${c.statename}"></option>
+                </select>
+              </div>
+              <div class="col mb-3">
+                <select id="inputDistrict" class="form-select" disabled="disabled">
+                  <option value="0">--Select District--</option>
+                </select>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col mb-3">
+                <textarea maxlength="255" class="form-control" placeholder="Address*" aria-label="Address"
+                  th:field="*{address}" required="required" id="address"></textarea>
+              </div>
+              <div class="col-4 mb-3">
+                <input type="text" class="form-control" id="pin" placeholder="Enter Pincode*" maxlength="6"
+                  aria-label="Enter Pincode" th:field="*{pincode}" required="required" />
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="email" placeholder="Email ID*" required="required"
+                    th:field="*{email}" maxlength="50" />
+                  <button type="button" class="input-group-text btn btn-primary verify-idbtn" id="sendOTPButton"
+                    disabled>
+                    Send OTP
+                  </button>
+                </div>
+                <span id="lblErroremail" style="color: red"></span>
+              </div>
+              <div class="col-4 mb-3" style="pointer-events: none" id="verifyEDiv">
+                <div class="input-group" id="verifyDiv">
+                  <input type="password" class="form-control" placeholder="Email OTP*" maxlength="4" required="required"
+                    name="emailOTP" value="" id="OTPValueV" />
+                  <button type="button" class="input-group-text btn btn-primary verify-idbtn" id="verifyOTPButton">
+                    Verify
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="mobile" placeholder="Mobile no*" required="required"
+                    name="mobile" maxlength="10" />
+                  <button type="button" class="input-group-text btn btn-primary verify-idbtn" id="sendOTPButtonM"
+                    disabled>
+                    Send OTP
+                  </button>
+                </div>
+                <span id="lblErroremail" style="color: red"></span>
+              </div>
+              <div class="col-4 mb-3" style="pointer-events: none" id="verifyMDiv">
+                <div class="input-group" id="verifyDiv">
+                  <input type="password" class="form-control" placeholder="Mobile OTP*" maxlength="4"
+                    required="required" name="mobileOTP" value="" id="OTPValueM" />
+                  <button type="button" class="input-group-text btn btn-primary verify-idbtn" id="verifyOTPButtonM">
+                    Verify
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-2" style="pointer-events: none" id="registerDiv">
+              <div class="col-md-5 d-grid m-auto">
+                <button type="button" class="btn btn-primary my-3" id="registerB">
+                  Register
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal End -->
+
+  <!-- JavaScript Libraries -->
+  <script src="js/jquery.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script> -->
+  <script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
+  <!-- <script src="lib/wow/wow.min.js"></script>
+	<script src="lib/easing/easing.min.js"></script>
+	<script src="lib/waypoints/waypoints.min.js"></script>
+	<script src="lib/owlcarousel/owl.carousel.min.js"></script> -->
+  <script src="js/csrfToken.js"></script>
+  <script src="js/cryptoJS.js"></script>
+  <script src="js/code.js"></script>
+  <!-- 	<!-- <script src="js/googleTranlation.js"></script> -->
+  <script src="js/googletran.js"></script>
+  -->
+  <script src="js/Stopinspect.js"></script>
+  <script src="js/index.js"></script>
+  <script src="js/feedback.js"></script>
+  <!-- Template Javascript -->
+  <script src="js/color_font.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

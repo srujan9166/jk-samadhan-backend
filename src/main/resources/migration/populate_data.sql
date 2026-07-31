@@ -83,9 +83,14 @@ SELECT setval('wards_id_seq', COALESCE((SELECT MAX(id) FROM wards), 1));
 -- 7. departments
 INSERT INTO departments (name, type)
 SELECT DISTINCT TRIM(department_name), 
-       CASE WHEN department_type = 'Administrative' THEN 'Administrative' ELSE 'Line Department' END
+       CASE 
+           WHEN department_type = 'ADMIN' THEN 'ADMIN'
+           WHEN department_type = 'DOPG' THEN 'DoPG'
+           ELSE 'OTHER'
+       END
 FROM public.legacy_department_master
-WHERE department_name IS NOT NULL AND department_name != '';
+WHERE department_name IS NOT NULL AND department_name != ''
+ON CONFLICT (name) DO NOTHING;
 
 SELECT setval('departments_id_seq', COALESCE((SELECT MAX(id) FROM departments), 1));
 

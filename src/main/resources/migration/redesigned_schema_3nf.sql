@@ -59,7 +59,7 @@ CREATE TABLE wards (
 
 CREATE TABLE departments (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(150) NOT NULL,
+    name VARCHAR(150) NOT NULL UNIQUE,
     type VARCHAR(50) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -409,3 +409,5 @@ CREATE INDEX idx_grievance_history_grievance ON grievance_history(grievance_id);
 CREATE INDEX idx_grievance_history_date ON grievance_history(created_at DESC);
 CREATE INDEX idx_cpgram_reg_no ON cpgram_grievance_master(registration_no);
 CREATE INDEX idx_cpgram_status ON cpgram_grievance_master(status);
+
+ALTER TABLE departments ADD COLUMN created_by_id BIGINT REFERENCES users(id) ON DELETE SET NULL;

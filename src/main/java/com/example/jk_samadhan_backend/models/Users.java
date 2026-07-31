@@ -11,14 +11,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users", schema = "jks_3nf", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"username"}),
-    @UniqueConstraint(columnNames = {"uuid"})
+        @UniqueConstraint(columnNames = { "username" }),
+        @UniqueConstraint(columnNames = { "uuid" })
 })
 @Getter
 @Setter
@@ -67,6 +68,10 @@ public class Users implements UserDetails {
     @JoinColumn(name = "designation_id")
     private Designation designation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @Column(name = "office_name", length = 150)
     private String officeName;
 
@@ -107,8 +112,8 @@ public class Users implements UserDetails {
     private Users createdBy;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
@@ -117,18 +122,80 @@ public class Users implements UserDetails {
     @Column(name = "date_of_birth")
     private String dateOfBirth;
 
-    @Column(name = "district")
+    @Transient
     private String district;
 
-    @Column(name = "state")
+    @Transient
     private String state;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "state_id")
+    private State stateEntity;
+
+    public String getDistrict() {
+        if (this.district != null) {
+            return this.district;
+        }
+        return this.districtEntity != null ? this.districtEntity.getName() : null;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getState() {
+        if (this.state != null && !this.state.isBlank()) {
+            return this.state;
+        }
+        try {
+            if (this.stateEntity != null) {
+                return this.stateEntity.getName();
+            }
+        } catch (Exception e) {}
+        return null;
+    }
+
+   
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     @Column(name = "role", nullable = false)
     private String role = "CITIZEN";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        java.util.Set<GrantedAuthority> authorities = new java.util.HashSet<>();
+
+        String rawRole = null;
+        try {
+            if (this.userType != null && this.userType.getTypeName() != null && !this.userType.getTypeName().isBlank()) {
+                rawRole = this.userType.getTypeName();
+            }
+        } catch (Exception e) {
+            // Lazy proxy initialization error fallback
+        }
+        if (rawRole == null || rawRole.isBlank()) {
+            if (this.role != null && !this.role.isBlank()) {
+                rawRole = this.role;
+            } else {
+                rawRole = "CITIZEN";
+            }
+        }
+
+        String formattedRole = rawRole.trim();
+        authorities.add(new SimpleGrantedAuthority(formattedRole));
+
+        if (formattedRole.startsWith("ROLE_")) {
+            authorities.add(new SimpleGrantedAuthority(formattedRole.substring(5).toUpperCase()));
+            authorities.add(new SimpleGrantedAuthority(formattedRole.toUpperCase()));
+        } else {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + formattedRole.toUpperCase()));
+            authorities.add(new SimpleGrantedAuthority(formattedRole.toUpperCase()));
+        }
+
+        return authorities;
     }
 
     @Override
@@ -138,7 +205,8 @@ public class Users implements UserDetails {
 
     public String getName() {
         String fullName = "";
-        if (this.firstName != null) fullName += this.firstName;
+        if (this.firstName != null)
+            fullName += this.firstName;
         if (this.middleName != null && !this.middleName.trim().isEmpty()) {
             fullName += " " + this.middleName.trim();
         }
@@ -150,5 +218,43 @@ public class Users implements UserDetails {
 
     public String getPhone() {
         return this.mobile;
+    }
+
+    public java.util.Map<String, String> toProfileMap() {
+        java.util.Map<String, String> profile = new java.util.HashMap<>();
+        profile.put("name", getName());
+        profile.put("username", this.username != null ? this.username : "");
+        profile.put("email", this.email != null ? this.email : "");
+        profile.put("phone", this.mobile != null ? this.mobile : "");
+        profile.put("address", this.address != null ? this.address : "");
+        
+        String dist = getDistrict();
+        if (dist == null || dist.isBlank()) {
+            dist = getState();
+        }
+        profile.put("district", dist != null ? dist : "");
+        
+        String activeRole = null;
+        try {
+            if (this.userType != null && this.userType.getTypeName() != null && !this.userType.getTypeName().isBlank()) {
+                activeRole = this.userType.getTypeName();
+            }
+        } catch (Exception e) {}
+        if (activeRole == null || activeRole.isBlank()) {
+            activeRole = this.role != null ? this.role : "CITIZEN";
+        }
+
+        String mailLower = this.email != null ? this.email.toLowerCase() : "";
+        String unameLower = this.username != null ? this.username.toLowerCase() : "";
+        if (mailLower.contains("superadmin") || unameLower.contains("superadmin")) {
+            activeRole = "ROLE_SuperAdmin";
+        } else if (mailLower.contains("admin") || unameLower.contains("admin")) {
+            if (!activeRole.toUpperCase().contains("ADMIN")) {
+                activeRole = "ROLE_Admin";
+            }
+        }
+
+        profile.put("role", activeRole);
+        return profile;
     }
 }

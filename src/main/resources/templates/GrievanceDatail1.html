@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+<style>
+.left-panel {
+	border-right: 1px solid #ddd;
+	height: 100%;
+}
+
+.upper-part {
+	border-bottom: 1px solid #ccc;
+	/* Border between upper and scrollable part */
+	padding: 10px;
+	background-color: #f8f9fa;
+}
+
+.scrollable-part {
+	overflow-y: auto;
+}
+
+.small-label {
+	font-size: 0.875rem;
+	font-weight: bold;
+}
+
+.value {
+	word-break: break-word;
+	/* Allow long descriptions to break into new lines */
+}
+
+.row:nth-child(even) {
+	background-color: #f2f2f2;
+	/* Alternate row background color */
+}
+
+.created-div {
+	border: 1px solid #ccc;
+	/* Add border to divs */
+	padding: 10px;
+	/* Add padding inside divs */
+	margin: 5px 0;
+	/* Add margin between divs */
+	border-radius: 5px;
+	/* Rounded corners */
+	background-color: #f8f9fa;
+	/* Light background */
+}
+
+.remark, .status {
+	font-weight: bold;
+	/* Bold for labels */
+	margin-bottom: 5px;
+	/* Space below remark */
+}
+
+.timestamp, .updated-by {
+	display: inline-block;
+	/* Inline block for positioning */
+	font-size: 0.875rem;
+	/* Smaller font size */
+	color: #6c757d;
+	/* Gray color */
+}
+
+.updated-by {
+	float: right;
+	/* Align to the right */
+}
+</style>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+
+	<main id="main" class="main">
+
+
+
+		<div class="pagetitle mb-3">
+			<input type="hidden" id="usrVV" th:value="${usrDD}">
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="#">Grievance Details</a></li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+		<!-- key word filter card - start -->
+
+		<!--  <section class="yrTab">
+            <div class="card mb-4">
+                <div class="card-body">
+
+
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <div class="search-part">
+                                <h4>Filter</h4>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input data-search" type="radio" name="search-mod-app"
+                                        id="total-jksamadhan" checked value="jksamadhan">
+                                    <label class="form-check-label" for="total-jksamadhan"> JK-SAMADHAN </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input data-search" type="radio" name="search-mod-app"
+                                        id="total-jkigrams" value="jkigrams">
+                                    <label class="form-check-label" for="total-jkigrams"> JK-IGRAMS</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input data-search" type="radio" name="search-mod-app"
+                                        id="total-cpgram" value="cpgrams">
+                                    <label class="form-check-label" for="total-cpgram"> CPGRAM</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-box">
+                                <div class="form-input-block  mb-3">
+                                    <label for="floatingSelect">Search</label>
+                                    <select id="categories" class="form-select multi-select2" multiple="multiple">
+                                        <option th:each="c : ${categName}" th:value="${c.id}"
+                                            th:text="${c.category_name}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="common-btn me-auto ms-0 mt-0 w-75" id="reset"><span
+                                    class="bi bi-search"></span> Search</button>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </section> -->
+		<!-- key word filter card - end -->
+
+		<!--  Dashboard  -->
+		<div class="tab-content" id="pills-tabContent">
+			<div class="tab-pane fade show  active" id="pills-home"
+				role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+				<section class="section dashboard dash1">
+					<!-- <div class="row grivance-wrapper">
+						<div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade show active" id="home-tab-pane"
+								role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+								<div class="col-lg-12 ">
+									<div class="card">
+
+										<div class="card-body ">
+											<div
+												class="table-header-section d-flex justify-content-between align-items-center mb-3">
+												<div class="heading-part">
+													<h4 id="tblHeading"></h4>
+												</div>
+												<div class="button-part btn-wrapper ms-2">
+													<button class="btn btn-purple btn-customBtn"
+														title="Download Excel" value="buttons-excel">
+														<i class="bi bi-filetype-xls"></i>
+													</button>
+													<button class="btn btn-black btn-customBtn"
+														title="Download PDF" value="buttons-pdf">
+														<i class="bi bi-filetype-pdf"></i>
+													</button>
+												</div>
+											</div>
+											<div class="yr-Rtable" id="">
+												<table class="table table-bordered stripe"
+													id="searchModuleDT" style="width: 100%;"></table>
+
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						End Left side columns
+					</div> -->
+
+					<!-- correspondences -->
+					<div class="mt-5">
+						<div class="row grivance-wrapper">
+							<div class="col-lg-12">
+							<button class="grievancepdf btn btn-purple ms-auto mb-3" data-value="downloadgrpdf"
+											data-value1="Grievance Detail">
+											<i class='bx bx-download'></i>
+										</button>
+								<div class="card" id = "downloadgrpdf">
+									<div class="card-body d-flex" style="height: 900px;">
+										<div class="left-panel col-lg-8 d-flex flex-column p-0"
+											th:each="Gdetail:${list}">
+											<div class="bg-light upper-part p-3">
+												<p class="alert alert-primary fw-bold"
+													style="width: auto !important; border-radius: 10px !important;">
+													Application ID : <span id="gId" th:text="${Gdetail.uniqid}"></span>
+												</p>
+												<!-- Form Fields -->
+												<div class="container mt-5">
+													<div class="row mb-3">
+														<div class="col-sm-3 small-label">Name:</div>
+														<div class="col-sm-3 value" id="name"
+															th:text="${Gdetail.name}"></div>
+														<div class="col-sm-3 small-label">Mobile No:</div>
+														<div class="col-sm-3 value" id="mobile"
+															th:text="${Gdetail.mobile}"></div>
+													</div>
+													<div class="row mb-3">
+														<div class="col-sm-3 small-label">Email ID:</div>
+														<div class="col-sm-3 value" id="email"
+															th:text="${Gdetail.submitted_by}"></div>
+														<div class="col-sm-3 small-label">Address:</div>
+														<div class="col-sm-3 value" id="address"
+															th:text="${Gdetail.address}"></div>
+													</div>
+													<div class="row mb-3">
+														<div class="col-sm-3 small-label">Department:</div>
+														<div class="col-sm-3 value" id="department"
+															th:text="${Gdetail.department}"></div>
+														<div class="col-sm-3 small-label">Category:</div>
+														<div class="col-sm-3 value" id="category"
+															th:text="${Gdetail.category}"></div>
+													</div>
+													<div class="row mb-3">
+														<div class="col-sm-3 small-label">Description:</div>
+														<div class="col-sm-9 value" id="description"
+															th:text="${Gdetail.description}"></div>
+													</div>
+													<div class="row mb-3">
+														<div class="col-sm-3 small-label">Submitted On:</div>
+														<div class="col-sm-9 value" id="submitted"
+															th:text="${Gdetail.createddate}"></div>
+													</div>
+													<div class="row mb-3">
+														<div class="col-sm-3 small-label">Latitude:</div>
+														<div class="col-sm-3 value" id="latitude"
+															th:text="${Gdetail.latitude}"></div>
+														<div class="col-sm-3 small-label">Longitude:</div>
+														<div class="col-sm-3 value" id="longitude"
+															th:text="${Gdetail.longitude}"></div>
+													</div>
+												</div>
+											</div>
+											<div class="scrollable-part overflow-auto p-3 flex-grow-1"
+												style="background: var(--body)">
+												<div class="descHis" th:each="detail : ${hisQ}">
+													<div class="created-div">
+														<div class="status">
+															Status: <span th:text="${detail['status'] ?: 'N/A'}"></span>
+														</div>
+														<div class="remarks">
+															Remarks: <span th:text="${detail['remarks'] ?: 'N/A'}"></span>
+														</div>
+														<div class="remarks">
+															<span th:text="${detail['updated_on'] ?: 'N/A'}"></span>
+														</div>
+														<div class="timestamp">
+															<span th:text="${detail['action_taken_by'] ?: 'N/A'}"></span>
+														</div>
+														<div class="updated-by">
+															<span th:text="${detail['action_taken'] ?: 'N/A'}"></span>
+														</div>
+													</div>
+												</div>
+
+											</div>
+										</div>
+										<div
+											class="bg-light right-panel col-lg-4 d-flex flex-column p-0">
+											<div class="p-3">
+												<p class="alert alert-primary fw-bold"
+													style="width: auto !important; border-radius: 10px !important;">
+													Attached Doc / Files</p>
+												<!-- <p>Some fixed content here</p> -->
+											</div>
+											<div class="p-3 flex-grow-1" style="background: var(--body)">
+												<div class="descHisDoc" th:each="detail : ${hisQ}">
+												     <!--  Department document -->
+													<div
+														th:if="${detail['dept_file_name'] != null && detail['dept_file_name'] != ''}">
+														<div class="status">
+															Uploaded By: <span
+																th:text="${detail['action_taken_by'] ?: 'N/A'}"></span>
+														</div>
+														<div class="remarks">
+															File Name: <span
+																th:text="${detail['dept_file_name'] ?: 'No file name'}"></span>
+														</div>
+														<div class="timestamp" th:text="${detail['updated_on']}"></div>
+														<div class="updated-by" style="margin-top: -10px;">
+															<a class="btn-view btn-pur fileViewer" href="#"
+																th:attr="data-filename=${detail['depdocument']}, data-name=${detail['dept_file_name']}"
+																title="View"> <i class="bi bi-eye-fill"></i>
+															</a>
+															<!-- Uncomment the following line to include the download button -->
+															<!-- <a class="btn-view btn-blue fileDownloader" title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a> -->
+														</div>
+													</div>
+													<!--  User document -->
+													<div
+														th:if="${detail['file_name'] != null && detail['file_name'] != ''}">
+														<div class="status">
+															Uploaded By User
+														</div>
+														<div class="remarks">
+															File Name: <span
+																th:text="${detail['file_name'] ?: 'No file name'}"></span>
+														</div>
+														<div class="timestamp" th:text="${detail['updated_on']}"></div>
+														<div class="updated-by" style="margin-top: -10px;">
+															<a class="btn-view btn-pur fileViewer" href="#"
+																th:attr="data-filename=${detail['file_path']}, data-name=${detail['file_name']}"
+																title="View"> <i class="bi bi-eye-fill"></i>
+															</a>
+															<!-- Uncomment the following line to include the download button -->
+															<!-- <a class="btn-view btn-blue fileDownloader" title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a> -->
+														</div>
+													</div>
+													
+													<!--  Acknoledgement sleep document -->
+													<div
+														th:if="${detail['ack_slip_name'] != null && detail['ack_slip_name'] != ''}">
+														<div class="status">
+															Uploaded By User
+														</div>
+														<div class="remarks">
+															File Name: <span
+																th:text="${detail['ack_slip_name'] ?: 'No file name'}"></span>
+														</div>
+														<div class="timestamp" th:text="${detail['updated_on']}"></div>
+														<div class="updated-by" style="margin-top: -10px;">
+															<a class="btn-view btn-pur fileViewer" href="#"
+																th:attr="data-filename=${detail['ack_slip_path']}, data-name=${detail['ack_slip_path']}"
+																title="View"> <i class="bi bi-eye-fill"></i>
+															</a>
+															<!-- Uncomment the following line to include the download button -->
+															<!-- <a class="btn-view btn-blue fileDownloader" title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a> -->
+														</div>
+													</div>
+													
+													<div class="d-none descHisDocCitz"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- correspondences -->
+
+				</section>
+			</div>
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+	<script th:src="@{/js/searchModule.js}"></script>
+
+
+</body>
+
+</html>

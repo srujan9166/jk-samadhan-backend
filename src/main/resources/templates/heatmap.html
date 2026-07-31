@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html
+  th:fragment="header"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
+>
+  <head lang="en" th:include="head :: head"> </head>
+  <link rel="stylesheet" th:href="@{/openlayer/css/ol.css}" />
+  <link
+    rel="stylesheet"
+    th:href="@{/openlayer/layerswitcher/ol-layerswitcher.css}"
+  />
+  <script th:src="@{/openlayer/js/ol.js}"></script>
+  <script th:src="@{/openlayer/layerswitcher/ol-layerswitcher.js}"></script>
+  <!-- Vendor CSS Files -->
+  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="../vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+  <link
+    href="../vendor/datatable/css/dataTables.bootstrap5.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="../vendor/datatable/css/buttons.bootstrap5.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    #map {
+      width: 100%;
+      height: 60vh;
+    }
+
+    .ol-popup {
+      position: absolute;
+      background-color: white;
+      padding: 0px;
+      border-radius: 10px;
+      border: 0;
+      right: 0;
+      top: 0;
+      min-width: 300px;
+      max-width: 300px;
+      height: 100%;
+    }
+
+    .ol-popup:after,
+    .ol-popup:before {
+      top: 100%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+    }
+    .ol-popup:after {
+      border-top-color: white;
+      border-width: 10px;
+      left: 48px;
+      margin-left: -10px;
+    }
+    .ol-popup:before {
+      border-top-color: #cccccc;
+      border-width: 11px;
+      left: 48px;
+      margin-left: -11px;
+    }
+    .ol-popup-closer {
+      text-decoration: none;
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      /*         transform: translate(50%,-50%); */
+      width: 22px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+    }
+    .ol-popup-closer:after {
+      content: "✖";
+      font-size: 26px;
+      color: #a4c0e4;
+      line-height: 30px;
+    }
+    #legend {
+      position: absolute;
+      bottom: 0;
+      right: 4px;
+    }
+    #main {
+      padding: 0;
+    }
+  </style>
+  <title>SUPER ADMIN - Heat Map</title>
+
+  <body>
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+    <main id="main" class="main">
+      <input id="usrR" th:value="${role}" type="hidden" />
+      <!--     <div class="pagetitle"> -->
+      <!--       <h1 th:if="${role=='ROLE_SuperAdmin'}">Super Admin Dashboard</h1> -->
+      <!--       <h1 th:if="${role=='ROLE_Admin'}">Admin Dashboard</h1> -->
+      <!--       <h1 th:if="${role=='ROLE_DM'}">DM Dashboard</h1> -->
+
+      <!--       <nav> -->
+      <!--         <ol class="breadcrumb"> -->
+      <!--           <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+      <!--           <li class="breadcrumb-item active">Dashboard</li> -->
+      <!--         </ol> -->
+      <!--       </nav> -->
+      <!--     </div> -->
+      <!-- End Page Title -->
+      <section id="olmap">
+        <input type="hidden" id="typeofmap" />
+        <input type="hidden" id="cqlfilter" />
+        <input type="hidden" id="departmentlist" />
+        <input type="hidden" id="categorylist" />
+
+        <div class="row m-0">
+          <div class="col-md-12 p-0">
+            <div class="map-card card">
+              <div
+                class="d-none card-header text-center d-flex align-items-center justify-content-between"
+              >
+                <h5 class="text-center m-0">MAP</h5>
+                <div class="map-btn-wrapper">
+                 
+                </div>
+              </div>
+              <div class="card-body map-body">
+                <div id="map" style="background-color: rgb(235, 237, 248)" >
+                  <div class="tool-btn">
+                    <button value="pan" class="maptype" title="Default Map"><i class="bi bi-globe2"></i></button>
+                    <button value="jk" class="maptype" title="Jammu & Kashmir"><i class="bi bi-geo-alt-fill"></i></button>
+                  </div>
+
+                </div>
+                <div id="legend"></div>
+                <div id="identify_feature"></div>
+                <div id="popup" class="ol-popup">
+                  <a
+                    href="#"
+                    id="popup-closer"
+                    class="ol-popup-closer"
+                    style="font-size: 14px; right: 5px; top: 2px"
+                  ></a>
+                  <div id="popup-content"></div>
+                </div>
+              </div>
+            </div>
+            
+            
+            
+            <div
+              class="heatmap-table table-header-section px-3 py-2 heatmapTbl d-none"
+            >
+              <div class="heading-part">
+                <h4 class="text-center">District Report</h4>
+                <div class="close-icon" onclick="$('.heatmapTbl').addClass('d-none')"><i class="bi bi-x"></i></div>
+              </div> 
+              <table
+              class="m-0 table-responsive table-bordered dt-responsive w-100"
+              id="grievancetable"
+            ></table>
+            </div>
+            
+
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+    <script th:src="@{/js/heatmap.js}"></script>
+    <!-- <script th:src="@{/openlayer/js/ol.js}"></script> -->
+    <script th:src="@{/openlayer/js/main.js}"></script>
+    <script src="../vendor/datatable/js/jquery.dataTables.min.js"></script>
+    <script src="../vendor/datatable/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../vendor/datatable/js/dataTables.buttons.min.js"></script>
+    <script src="../vendor/datatable/js/buttons.bootstrap5.min.js"></script>
+    <script src="../vendor/datatable/js/jszip.min.js"></script>
+    <script src="../vendor/datatable/js/pdfmake.min.js"></script>
+    <script src="../vendor/datatable/js/vfs_fonts.js"></script>
+    <script src="../vendor/datatable/js/buttons.html5.min.js"></script>
+    <script src="../vendor/datatable/js/buttons.print.min.js"></script>
+    <script src="../vendor/datatable/js/buttons.colVis.min.js"></script>
+  </body>
+</html>

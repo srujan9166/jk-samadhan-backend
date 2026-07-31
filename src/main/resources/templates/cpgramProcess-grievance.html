@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<title>GRIEVANCE - Process</title>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+	<input type="hidden" class="usrT" th:value="${usrT}" />
+
+
+	<main id="main" class="main">
+		<div class="pagetitle">
+			<h1>Grievance Dashboard</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Dashboard</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<div class="row">
+				<!-- Left side columns -->
+				<div class="col-lg-12">
+					<h5 class="alert alert-primary">Grievances Processing for <span class="spanDetails"
+							th:each="g : ${grevMaster}" th:text="${g.registration_no}"></span></h5>
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">Citizen Details</h5>
+									<div class="row" th:each="g : ${grevMaster}">
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">User Name:</div>
+											<div class="col-lg-8 col-md-8 dFname" th:text="${g.name}"></div>
+										</div>
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Email:</div>
+											<div class="col-lg-8 col-md-8" th:text="${g.email_address}"></div>
+										</div>
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Phone Number:</div>
+											<div class="col-lg-8 col-md-8" th:text="${g.mobile_no}"></div>
+										</div>
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Address:</div>
+											<div class="col-lg-8 col-md-8" th:text="${g.address1}"></div>
+										</div>
+										<!-- <div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Location:</div>
+											<div class="col-lg-8 col-md-8"
+												th:text="${g.latitude} + ' , ' + ${g.longitude}"></div>
+										</div> -->
+
+
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-lg-6">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">Grievance Details</h5>
+									<div class="row" th:each="g : ${grevMaster}">
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Grievance Id:</div>
+											<div class="col-lg-8 col-md-8 dFname gGrevId" th:text="${g.registration_no}"></div>
+										</div>
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Department:</div>
+											<div class="col-lg-8 col-md-8 dFname" th:text="${g.from_Org_Name}"></div>
+										</div>
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Category:</div>
+											<div class="col-lg-8 col-md-8 dFname" th:text="${g.category}"></div>
+										</div>
+									<!-- 	<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Sub Cateogry:</div>
+											<div class="col-lg-8 col-md-8 dFname" th:text="${g.sub_category}"></div>
+										</div> -->
+										<div class="py-2 row border-bottom">
+											<div class="col-lg-4 col-md-4 fw-bold">Recieved On:</div>
+											<div class="col-lg-8 col-md-8 dFname" th:text="${#dates.format(g.created_date, 'dd-MM-yyyy HH:mm:ss')}"></div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card my-3">
+						<div class="card-body">
+							<h5 class="card-title">Grievance Description</h5>
+							<div class="col-12 sentToConPer">
+								<div class="row" th:each="g : ${grevMaster}">
+									<div class="col-12 mb-3">
+										<div th:text="${g.subject_content}"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card mb-3">
+						<div class="card-body">
+							<h5 class="card-title">Grievance/Appeal Documents</h5>
+							<div class="d-flex align-items-center">
+								<div class="sentToConPer d-inline-block" th:each="grevH : ${grevMaster}">
+									
+											<a th:href="@{'/download1?d=' + ${grevH.file_path}}">
+												<button class="btn btn-sm btn-success"
+													th:if="${grevH.file_name!=null && grevH.file_name!=''}"
+													th:text="${grevH.file_name}"></button>
+											</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="card mb-4">
+						<div class="card-body">
+
+							<h5 class="fw-bold">Forwarded Details</h5>
+							<hr>
+
+							<div class="yr-Rtable ">
+								<table class="table datatable table-bordered" id="cpgramUserTable">
+									<thead>
+										<tr>
+											<th>S. No.</th>
+											<th>Forwarded To</th>
+											<th>Forwarded Date</th>
+											<th>Action Allotted</th>
+											<!-- <th>Details</th> -->
+											<th>Action Taken</th>
+											<!-- <th>Pending since(days)</th> -->
+											<th>Remark Given</th>
+											<th>Pending since</th>
+											<!-- 											<th>Document/Attachment</th>
+ -->
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="t,stat : ${FwdList}">
+											<th scope="row" th:text="${stat.index+1}"></th>
+											<td th:text="${t.assigned_to}"></td>
+											<td th:text="${t.created_date}"></td>
+											<td th:text="${t.authority}"></td>
+											<!-- <td th:text="${t.description}"></td>  -->
+											<td th:text="${t.action}"></td>
+											<!-- <td th:text="${t.pending_since}"></td> -->
+											<td th:text="${t.rmark}"></td>
+											<td th:if="${t.action=='Pending'}" th:text="${t.pending_since}"></td>
+											<td th:if="${t.action!='Pending'}"></td>
+
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<!-- 26 Feb 2024 - When DNP Status = changeDepartment - start - SKY -->
+				<!-- 	<div th:if="${dnpStatus == 'changeDepartment'}"> -->
+					<div th:if="${dnpStatus == 'dnpToOffice'}">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Previous Details</h5>
+								<h1 th:value="${previousRemarks}"></h1>
+								<div class="col-12">
+									<div class="row mb-4">
+										<div class="col-lg-3 col-md-4 col-sm-6 col-12">
+											<input th:text="${previousStatus}" name="actionCheckBox" class="statusRes"
+												th:value="${previousStatus}" type="radio" checked disabled>
+										</div>
+										<div class="col-12 mt-3" style="">
+											<div class="row">
+												<div class="col-lg-6 col-md-4 col-sm-6 col-12">
+													<label for="">Remarks: </label>
+													<textarea th:text="${previousRemarks}" th:value="${previousRemarks}" name="" id="decc"
+														cols="1" rows="1" class="stRemarks form-control" maxlength="3000" disabled></textarea>
+												</div>
+												<!-- <div class="col-lg-6 col-md-4 col-sm-6 col-12">
+													<label for="">Date & Time</label>
+													<input type="text" name="" id="" class="stDateTime form-control "
+														style="pointer-events: none;" readonly>
+												</div> -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Edit / Change Mis-Matched Department
+									<span style="display: block; color: red; font-size: 1rem;">* Note if suitable
+										department is not available in the below drop-down, then kindly create new
+										department as per convience.</span>
+								</h5>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-floating mb-3">
+											<input class="form-control" type="text" name="" th:value="${deptName}" id="deptName" disabled>
+											<label for="departName">Current Department</label>
+										</div>
+									</div>
+					
+									<div class="col-md-4">
+										<div class="form-floating">
+											<select class="form-select" id="dpList">
+												<option value="0">Select</option>
+												<option th:each="dpList : ${deptList}" th:value="${dpList.id}"
+													th:text="${dpList.department_name}"></option>
+											</select> <label for="dpList">Change Department:</label>
+										</div>
+									</div>
+<!-- 
+									<div class="col-md-4">
+										<div class="form-floating">
+											<select class="form-select" id="cLselDept" disabled>
+												<option value="0">Select</option>
+											</select> <label for="cLselDept">Select Category:</label>
+										</div>
+									</div> -->
+					
+								</div>
+								<!-- Change / Create  Department Button -->
+								<div class=" col-12">
+									<div class="row justify-content-center">
+										<button class="btn btn-warning m-2 col-2 changeDeptBtn">Change / Edit Department</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- 26 Feb 2024 - When DNP Status = changeDepartment - end - SKY -->
+
+
+					<!-- th:if="${dnpStatus != 'catMisMatch' || dnpStatus != 'changeDepartment'}" -->
+					<div th:if="${dnpStatus != 'dnpToOffice'}"
+						class="">
+						<div class="card" >
+							<div class="card-body">
+								<h5 class="card-title">Action on Grievance</h5>
+								<div class="col-12">
+								<div class="row mb-4" th:if="${auth=='Remark'}">
+								<div class="col-lg-3 col-md-4 col-sm-6 col-12">
+								<h6 style="color:red">Please give remark for this grievance</h6>
+											<label class="invisible"><input name="actionCheckBox" class="statusRes" value="Remark Added"
+													type="radio" checked>
+												Add Remark</label>
+										</div>
+								</div>
+									<div class="row mb-4" th:if="${auth!='Remark'}">
+										<div class="col-lg-3 col-md-4 col-sm-6 col-12">
+											<label><input name="actionCheckBox" class="statusRes" value="Resolved"
+													type="radio">
+												Resolved</label>
+										</div>
+										<!-- <div class="col-lg-2 col-md-4 col-sm-6 col-12">
+																				<label><input name="actionCheckBox" type="radio" value="Acknowledge" class="statusAck"> Acknowledged</label>
+																			</div> -->
+										<div class="col-lg-3 col-md-4 col-sm-6 col-12">
+											<label><input name="actionCheckBox" type="radio" value="Under Process"
+													class="statusUProc">
+												Under Process</label>
+										</div>
+
+										<div class="col-lg-3 col-md-4 col-sm-6 col-12">
+											<label><input name="actionCheckBox" type="radio" value="Rejected"
+													class="statusUProc">Reject</label>
+										</div>
+										<div class="col-lg-3 col-md-4 col-sm-6 col-12 doesNperDiv">
+											<label><!-- <input name="actionCheckBox" type="radio"
+													value="Does not pertain to this division"
+													class="toggle-input1 statusConPer">
+													 -->
+													 <input name="actionCheckBox" type="radio"
+													value="dnpToOffice"
+													class="toggle-input1 dnpToOffice">
+													 Does not pertain</label>
+										</div>
+										<div class="col-lg-3 col-md-4 col-sm-6 col-12 doesNper"
+											style="display: none; margin-left: auto;">
+											<div class="form-floating mt-3 mb-3">
+												<select class="form-select" id="pGrevVal">
+													<option value="0">Select</option>
+													<!-- <option value="catMisMatch">Category Mis-Match</option> -->
+													<option value="changeOffice">Does Not Belong to Office</option>
+													<option value="changeDepartment">Does Not Belong to Department
+													</option>
+													<option value="addDepartment">Also pertain to other department
+													</option>
+												</select> <label for="pGrevVal">Select Suitable Option:</label>
+											</div>
+											<button type="button" class="btn btn-danger reset-Div">Reset</button>
+										</div>
+										<!-- <div class="col-lg-3 col-md-4 col-sm-6 col-12"
+																				style="display: flex; place-content: space-evenly;">
+																				<label><input name="actionCheckBox" type="radio" value="Others" class="toggle-input2 statusOthers"> Other </label>
+																				<input class="form-control input-field h-75 w-50 statusOthersInput" style="display: none;" type="text"
+																					placeholder="Enter others ...">
+																			</div> -->
+									</div>
+									<div class="col-12 mt-3" style="">
+										<div class="row">
+											<div class="col-12 mb-3">
+												<label for="">Remarks: </label>
+												<textarea name="" id="decc" cols="20" rows="5"
+													class="stRemarks form-control" maxlength="2000"></textarea>
+											</div>
+											<!-- <div class="col-md-6 mb-3">
+												<label for="">Date & Time</label>
+												<input type="text" name="" id="" class="stDateTime form-control "
+													style="pointer-events: none;" readonly>
+											</div> -->
+											<div class=" col-md-6 mb-3">
+												<label for="">Upload File</label>
+												<input type="file" name="" id="stUploadPhoto1"
+													class="stUploadPhoto form-control"
+													accept="application/pdf, image/png, image/jpeg, image/jpg">
+												<p class="small">PDF file only (2MB)</p>
+											</div>
+										</div>
+									</div>
+									<!-- Griveance Process Button -->
+									<div class="col-12 button-part" th:each="g:${grevMaster}">
+									<div class=" col-12">
+										<div class="row justify-content-center">
+											<button class="btn btn-primary m-2 col-2 procGrev" th:if="${auth=='Process'}">Process
+												Grievance</button>
+												<button class="btn btn-primary m-2 col-2 procGrev" th:if="${auth=='Remark'}">Add Remark</button>
+												<!-- <button class="btn btn-purple m-2 col-2 forward" th:value="${g.registration_no}" th:if="${auth=='Process'}">Forward Grievance</button> -->
+
+										</div>
+									</div>
+								</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Left side columns -->
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<script th:src="@{/js/cpgramprocessGrievance.js}"></script>
+
+</body>
+
+</html>

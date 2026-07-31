@@ -73,9 +73,13 @@ SELECT
     gm.cpgram_reg_no,
     gm.created_at as createddate,
     gm.updated_at as updated_on,
-    u_up.username as updated_by
+    u_up.username as updated_by,
+    dept.name as department,
+    0 as forward_hlg,
+    CASE WHEN gm.origin = 'JKSAMADHAN' THEN 'webapp' ELSE 'mobileapp' END as application
 FROM jks_3nf.grievance_master gm
 LEFT JOIN jks_3nf.categories cat ON cat.id = gm.category_id
+LEFT JOIN jks_3nf.departments dept ON dept.id = cat.department_id
 LEFT JOIN jks_3nf.subcategory_level1 sub1 ON sub1.id = gm.sub_cat_l1_id
 LEFT JOIN jks_3nf.subcategory_level2 sub2 ON sub2.id = gm.sub_cat_l2_id
 LEFT JOIN jks_3nf.subcategory_level3 sub3 ON sub3.id = gm.sub_cat_l3_id
@@ -92,12 +96,17 @@ SELECT
     u_by.username as created_by,
     au.action,
     au.remark as rmark,
+    au.remark,
     au.reminder_in_days as reminderindays,
     CASE WHEN au.enabled THEN 1 ELSE 0 END as enabled,
     au.created_at as created_date,
-    au.updated_at as updated_date
+    au.updated_at as updated_date,
+    dept.name as department,
+    gm.origin as appflag
 FROM jks_3nf.assigned_users au
 JOIN jks_3nf.grievance_master gm ON gm.id = au.grievance_id
+LEFT JOIN jks_3nf.categories cat ON cat.id = gm.category_id
+LEFT JOIN jks_3nf.departments dept ON dept.id = cat.department_id
 LEFT JOIN jks_3nf.users u_to ON u_to.id = au.assigned_to_user_id
 LEFT JOIN jks_3nf.users u_by ON u_by.id = au.assigned_by_user_id;
 

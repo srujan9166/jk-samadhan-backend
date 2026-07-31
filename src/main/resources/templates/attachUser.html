@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+    <style>
+.select2-container {
+    z-index: 9999; /* Ensure this is higher than your modal's z-index */
+}
+
+.select2-dropdown {
+    z-index: 9999; /* Ensure this is higher than your modal's z-index */
+}
+
+.select2-selection .select2-selection--multiple{width: 9.75rem !important;}
+
+
+    </style>
+</head>
+<title>NODAL ADMIN - Attach user</title>
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+    <main id="main" class="main">
+
+    
+
+        <!-- End Page Title -->
+
+        <section class="section dashboard">
+
+            <div class="row">
+                <input type="hidden" th:value="${userType}" id="ussTp">
+        
+                <!-- Left side columns -->
+
+                <div class="col-lg-12 yrTab mt-4">
+                    <div class="card">
+                        <div class="card-body visibility-hidden">
+                            <h5 class="fw-bold ">Attach
+                                User</h5>
+                            <hr>
+                            <div class="yr-Rtable ">
+                                <table class="table table-bordered display" id="attachUser" style="width: 100%;">
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- End Left side columns -->
+
+
+
+
+
+            </div>
+
+        </section>
+
+
+        <div class="modal fade" id="attachUserList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalAttachUser">
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+    </main>
+
+    <!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+
+    <script th:src="@{/js/attachUser.js}"></script>
+
+
+</body>
+
+</html>

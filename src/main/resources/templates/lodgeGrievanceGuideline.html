@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+	<head lang="en" th:include="head :: head"> </head>
+
+<body>
+      
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+        <div id="lodgecontent" style="display: none;">
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Lodge Grievance</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<!--  -->
+			<form th:action="@{forwarTolodgeGrievance}" method="get" >
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12 yrTab">
+					<div class="card">
+						<div class="card-body p-4">
+							
+								<h5 class="fw-bold"> List of subjects/topics which can not be treated as grievance.</h5>
+								<ol>
+								<li>RTI Matters</li>
+								<li>Court related / Subjudice matters</li>
+								<li>Religious matters</li>
+								<li>Suggestions</li>
+								<li>Grievances of Government employees concerning their service matters including disciplinary proceedings etc.</li>
+								</ol>
+								<input type="checkbox" id="checkval">
+								<span>I agree that my grievance does not fall in any of the above listed categories</span>
+								
+								<div class="col-md-12 mt-3">
+									<div class="button-part ">
+										<button type="submit" class="btn btn-purple"
+											id="subCheckval" disabled>Submit</button>
+									</div>
+								</div>
+						</div>
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+			</form>
+		</section>
+
+	</main>
+</div>
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+</body>
+
+</html>

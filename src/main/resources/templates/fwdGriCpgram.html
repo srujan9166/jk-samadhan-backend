@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+<title>NODAL ADMIN - User Mapping</title>
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Forward Grievance To CPGRAM</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+		<section class="section dashboard yrTab">
+
+			<input type="hidden" th:value="${userType}" id="ussTp">
+
+			<div class="row">
+				<div class="col-lg-12">
+					<h5 class="fw-bold">Grievance Detail</h5>
+					<hr>
+
+
+					<div th:each="gd : ${griData}">
+
+						<div class=" card overflow-auto mb-4">
+							<div class="card-body p-4">
+								<div class="row">
+									<h5 class="fw-bold">Personal Information</h5>
+									<hr>
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Name <span class="text-danger">*</span></label>
+											<input type="text" class="form-control input-f" id="name"
+												th:value="${gd.name}" readonly>
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Gender <span class="text-danger">*</span></label>
+											<input type="text" class="form-control input-f" id="gender"
+												th:value="${gd.gender}" readonly>
+
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Address1 <span class="text-danger">*</span></label>
+											<input type="text" class="form-control " placeholder="Address1"
+												id="address1" th:value="${gd.address}">
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Address2</label>
+											<input type="text" class="form-control" placeholder="Address2"
+												id="address2">
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Address3</label>
+											<input type="text" class="form-control " placeholder="Address3"
+												id="address3">
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Pincode </label>
+											<input type="text" class="form-control input-f" placeholder="Pincode"
+												th:value="${gd.pincode}" id="pincode" maxlength="6">
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label>Country <span class="text-danger">*</span></label>
+											<select id="country" class="form-select">
+												<option th:value="0">--Select Country--</option>
+												<option th:each="dL : ${countryData}" th:value="${dL.countryCode}"
+													th:text="${dL.countryName}"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label>State</label>
+											<select id="state" class="form-select" disabled>
+												<option th:value="0">--Select State--</option>
+												<option th:each="dL : ${stateData}" th:value="${dL.stateCode}"
+													th:text="${dL.stateName}"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label>District</label>
+											<select id="district" class="form-select" disabled>
+												<option th:value="0">--Select District--</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Email </label>
+											<input type="email" class="form-control" placeholder="Email" id="email"
+												maxlength="50" th:value="${gd.email}">
+
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Phone No.</label>
+											<input type="text" class="form-control" placeholder="Phone No." id="phNo">
+											<span id="lblError1" style="color:red"></span>
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Mobile </label>
+											<input type="text" class="form-control" placeholder="Mobile" id="mobile"
+												maxlength="10" th:value="${gd.mobile}" readonly>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class=" card overflow-auto mb-4">
+							<div class="card-body p-4">
+								<div class="row">
+									<h5 class="fw-bold">Forward Grievance to</h5>
+									<hr>
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label>Ministry Department Name <span class="text-danger">*</span></label>
+											<select id="minDep" class="form-select">
+												<option th:value="0">--Select Ministry--</option>
+												<option th:each="dL : ${minData}" th:value="${dL.MinDepCode}"
+													th:text="${dL.MinDepName}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class=" card overflow-auto mb-4">
+							<div class="card-body">
+								<div class="row">
+									<h5 class="fw-bold">Grievance Detail</h5>
+									<hr>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Grievance Reference Number <span
+													class="text-danger">*</span></label>
+											<input type="text" class="form-control input-f" th:value="${gd.uniqid}"
+												id="griRefNo" readonly>
+
+										</div>
+									</div>
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label>Select Language <span class="text-danger">*</span></label>
+											<select id="lang" class="form-select">
+												<option value="0">--Select Language--</option>
+												<option value="E">English</option>
+												<option value="H">Hindi</option>
+												<option value="O">Other</option>
+											</select>
+										</div>
+									</div>
+
+
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Document Name</label>
+											<input type="text" class="form-control" id="docName"
+												th:value="${gd.file_name}" readonly>
+										</div>
+
+										<a th:if="${gd.file_path!=null && gd.file_path!=''}"
+											th:href="@{'/fileViewer?filename=' + ${gd.file_path} + '&name=' + ${gd.file_name}}"
+											target="_blank" title="View">view</a>
+									</div>
+
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Date Of Receipt<span
+													class="text-danger">*</span></label>
+											<input type="text" class="form-control" id="DOR"
+												th:value="${gd.createddate}" readonly>
+										</div>
+									</div>
+
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Subject Content<span
+													class="text-danger">*</span></label>
+											<textarea class="form-control" id="subCont" th:text="${gd.description}"
+												readonly></textarea>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+						<div class=" card overflow-auto mb-4">
+							<div class="card-body p-4">
+								<div class="row">
+									<h5 class="fw-bold">Other Detail</h5>
+									<hr>
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Complainant Ip Address</label>
+											<input type="text" class="form-control" placeholder="Complainant Ip Address"
+												id="CIA">
+
+										</div>
+									</div>
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">ExServicemen <span
+													class="text-danger">*</span></label>
+											<select id="exSer" class="form-select">
+												<option value="0">--Select--</option>
+												<option value="Y">Yes</option>
+												<option value="N">No</option>
+											</select>
+										</div>
+									</div>
+
+
+									<div class="col-md-4 mt-3" id="defSerDiv" style="display:none">
+										<div class="form-group">
+											<label for="floatingZip">DefenceServices</label>
+											<select id="defSer" class="form-select">
+												<option value="0">--Select--</option>
+												<option value="1">Indian Air Force</option>
+												<option value="2">Indian Army</option>
+												<option value="3">Indian Navy</option>
+											</select>
+										</div>
+									</div>
+
+
+									<div class="col-md-4 mt-3" id="serNoDiv" style="display:none">
+										<div class="form-group">
+											<label for="floatingZip">Service Number</label>
+											<input type="text" class="form-control" placeholder="Service Number"
+												id="serNo">
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Auto Forward Org. Code</label>
+
+											<input type="text" class="form-control"
+												placeholder="Auto Forward Organisation Code" id="AFOC">
+											<span id="lblError2" style="color:red"></span>
+										</div>
+									</div>
+
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Additional Field1</label>
+											<input type="text" class="form-control" placeholder="Additional Field1"
+												id="additionalField1">
+										</div>
+									</div>
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Additional Field2</label>
+											<input type="text" class="form-control" placeholder="Additional Field2"
+												id="AdditionalField2">
+										</div>
+									</div>
+									<div class="col-md-4 mt-3">
+										<div class="form-group">
+											<label for="floatingZip">Additional Field3</label>
+											<input type="text" class="form-control" placeholder="AdditionalField3"
+												id="AdditionalField3">
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- </div> -->
+						</div>
+
+						<div class="col-md-4 mt-3">
+							<div class="button-part">
+								<button type="submit" class="btn btn-purple" id="fwdGri">Forward</button>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+
+
+		</section>
+
+	</main>
+
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+	<script th:src="@{/js/fwdGriCPGRAM.js}"></script>
+
+
+</body>
+
+</html>

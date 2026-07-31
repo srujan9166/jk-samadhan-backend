@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<!--	favicon -->
+	<link rel="apple-touch-icon" sizes="76x76" href="img/favicon/apple-icon-76x76.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="img/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="img/favicon/favicon-512x512.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png">
+	<link rel="icon" href="img/favicon/favicon.ico">
+
+	<style>
+		.content-body {
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+		}
+
+		.content-body .faqs {
+			flex-grow: 1;
+		}
+
+		.content-body footer {
+			margin-top: auto;
+		}
+
+		@media screen and (max-width:767px) {
+			.status-card span {
+				font-size: 14px !important;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Spinner Start -->
+	<!--<div id="spinner"
+		class="show position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+		<div class="spinner-grow text-primary" role="status"></div>
+	</div>-->
+	<!-- Spinner End -->
+	<div class="content-body">
+		<div lang="en" th:include="mainHeader :: mainHeader"></div>
+		<!--- New header -->
+
+		<!-- Topbar Start -->
+
+
+		<!-- Navbar End -->
+
+
+		<!-- Faqs Start -->
+		<div class="faqs py-5">
+			<div class="container pb-5">
+
+				<div class="row g-5 justify-content-center">
+					<div class="col-lg-10 wow fadeIn" data-wow-delay=".3s">
+						<!-- Default Accordion -->
+						<div class="accordion accordion-flush" id="">
+
+
+
+							<div class="main-content">
+
+								<div class="card card-info status-card">
+									<div
+										class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+										<h4 class="fw-bold">View Status</h4>
+										<span class="text-primary"><strong>Fields marked with <b
+													class="text-danger">*</b> are mandatory.</strong></span>
+									</div>
+									<div class="card-body">
+
+
+										<form action="" method="post" novalidate="novalidate" th:object="${user}">
+											<div class="row gy-3">
+												<div class="col-md-6">
+													<div class="form-input-block">
+														<label for="RegistrationNo">Grievance ID<span
+																class="text-danger">*</span></label>
+														<input class="form-control text-box single-line"
+															id="RegistrationNo" placeholder="Enter Grievance ID"
+															required="required" type="text"
+															oninput="this.value = this.value.toUpperCase()"> <span
+															class="field-validation-valid text-danger"
+															data-valmsg-for="RegistrationNo"
+															data-valmsg-replace="true"></span>
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-input-block">
+														<label class="eitherOrRequired" for="EmailOrMobileno">Mobile
+															No.<span class="text-dange">*</span></label>
+														<div class="input-group">
+
+															<input type="text" class="form-control" id="EmailOrMobileno"
+																placeholder="Mobile no*" required="required"
+																name="mobile1" maxlength="10">
+															<button type="button"
+																class="input-group-text btn btn-primary verify-idbtn"
+																id="sendOTPButtonchkSt">Send OTP</button>
+														</div>
+														<span id="lblErroremailtrackapp" style="color: red"></span>
+													</div>
+												</div>
+
+												<div class="col-md-6">
+													<div class="input-group">
+														<input type="password" class="form-control"
+															placeholder="Mobile OTP*" maxlength="4" required="required"
+															name="mobileOTP" value="" id="OTPValueChkSt" disabled>
+														<button type="button"
+															class="input-group-text btn btn-primary verify-idbtn afterVer"
+															id="verifyOTPButtonChkSt" disabled>Verify</button>
+													</div>
+												</div>
+
+												<!-- <div class="col-4 mb-3" id="verifyMDiv">
+							<div class="input-group" id="verifyDiv">
+								<input type="password" class="form-control" placeholder="Mobile OTP*" maxlength="4" required="required" name="mobileOTP" value="" id="OTPValueM">
+								<button type="button" class="input-group-text btn btn-primary verify-idbtn afterVer text-success bi bi-check-all" id="verifyOTPButtonM"></button>
+							</div>
+						</div> -->
+
+
+											</div>
+
+
+											<div class="col-12">
+												<label for="registerCaptchaInput" class="form-label fw-bold">Enter
+													Captcha</label>
+												<div class="input-group has-validation">
+													<input type="hidden" id="registerCaptchaId"
+														name="registerCaptchaId" />
+													<input type="search" name="captcha" class="form-control m-0 stopsql"
+														maxlength="10" id="registerCaptchaInput"
+														placeholder="Enter Captcha" required />
+													<span class="text-center">
+														<img id="registerCaptchaImage123"
+															class="captchaImage registerCaptchaImage123"
+															style="max-height: 40px;" alt="Captcha" />
+														<i class="fas fa-sync-alt px-2 resetCap"
+															style="cursor: pointer;"></i>
+													</span>
+												</div>
+											</div>
+
+											<hr class="hidden"
+												style="height: 1px; border: none; color: #467cbf; background-color: #467cbf;">
+											<!-- <div class="form-group">
+                        <div class="row">
+                            <label class="col-md-4 required text-right" for="Security_Code">Captcha<span style="color:red">*</span></label>
+                            <div class="col-md-6">
+                               <div class="col-12 mb-2" id="caDiv">
+							<div class="row yr-eCap">
+								<div class="col">
+									<label for="enterCaptcha" class="form-label fw-bold">Enter
+										Captcha</label> <input type="hidden" th:field="*{hiddenCaptcha}"
+										id="hiddenCaptcha" /> <input type="text" th:field="*{captcha}"
+										class="form-control form-label fw-bold" id="captchaU"
+										placeholder="Enter Captcha" required />
+								</div>
+								<div class="col">
+									<div class="mt-3 text-center">
+										<img th:src="*{'data:realCaptcha/jpg;base64,'+ realCaptcha}"
+											id="captchaImage"
+											style="border-radius: 30px; max-height: 65px;" /> <i
+											class="h3 bi bi-arrow-clockwise" id="resetCap"></i>
+									</div>
+								</div>
+							</div>
+							<div id="appendStatus">
+							</div>
+						</div>
+                            </div>
+                        </div>
+                    </div> -->
+											<button class="common-btn" type="button" id="btnpop">
+												Submit
+											</button>
+									</div>
+									</form>
+								</div>
+
+								<!-- <script src="/bundles/jqueryval?v=1ON0tpNTKhSLKT-sGXfWjxFCyNQEX7h30W2uB664x2c1"></script> -->
+
+
+							</div>
+
+						</div>
+
+					</div>
+					<!-- End Default Accordion Example -->
+
+				</div>
+			</div>
+		</div>
+
+		<!-- Faqs End -->
+
+
+		<!-- Footer Start -->
+		<div lang="en" th:include="mainFooter :: mainFooter"></div>
+		<!-- <script src="/js/trackApp.js"></script> -->
+
+	</div>
+
+
+
+
+</body>
+
+</html>

@@ -2,6 +2,9 @@ package com.example.jk_samadhan_backend.services;
 
 import java.security.Principal;
 import java.util.Optional;
+import java.util.List;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.stereotype.Service;
 
@@ -69,5 +72,42 @@ public class GrievanceService {
         grievanceMaster.setPsga("NA");
         
         return grievanceMasterRepository.save(grievanceMaster);
+    }
+
+    public List<GrievanceMaster> getGrievancesForUser(Principal principal, String search) {
+        String identifier = principal.getName();
+        Users user = userRepository.findByIdentifier(identifier)
+                .orElseThrow(() -> new RuntimeException("User not found: " + identifier));
+
+        String role = "ROLE_Individual";
+        if (user.getUserType() != null) {
+            role = user.getUserType().getTypeName();
+        } else if (user.getRole() != null) {
+            role = user.getRole();
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, 100, Sort.by("id").descending());
+
+        if (search != null && !search.trim().isEmpty()) {
+            return grievanceMasterRepository.findBySearchWithAssociations(search.trim(), pageRequest);
+        }
+
+        if (role.equalsIgnoreCase("ROLE_SuperAdmin") || role.equalsIgnoreCase("ROLE_Admin") 
+                || role.toUpperCase().contains("SUPERADMIN") || role.toUpperCase().contains("ADMIN")) {
+            return grievanceMasterRepository.findAllWithAssociations(pageRequest);
+        } else if (role.equalsIgnoreCase("ROLE_Secretary") || role.equalsIgnoreCase("ROLE_Department") 
+                || role.toUpperCase().contains("DEPARTMENT") || role.toUpperCase().contains("SECRETARY")) {
+            return user.getDepartment() != null 
+                    ? grievanceMasterRepository.findByDepartmentIdWithAssociations(user.getDepartment().getId(), pageRequest) 
+                    : List.of();
+        } else if (role.equalsIgnoreCase("ROLE_DM") || role.toUpperCase().contains("DM")) {
+            return user.getDistrictEntity() != null 
+                    ? grievanceMasterRepository.findByDistrictIdWithAssociations(user.getDistrictEntity().getId(), pageRequest) 
+                    : List.of();
+        } else if (role.equalsIgnoreCase("ROLE_DealingHand") || role.toUpperCase().contains("DEALINGHAND")) {
+            return grievanceMasterRepository.findAssignedGrievancesWithAssociations(user.getId(), pageRequest);
+        }
+
+        return grievanceMasterRepository.findBySubmittedByIdWithAssociations(user.getId(), pageRequest);
     }
 }

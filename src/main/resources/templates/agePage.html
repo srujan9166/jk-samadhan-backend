@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+	<meta charset="utf-8">
+</head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<!-- <div lang="en" th:include="left_sidebar :: returnToDashboard"></div> -->
+
+	<main id="main" style="margin-left: 0px !important; overflow-x: hidden;" class="main position-relative">
+		<div class="pagetitle mb-3">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Age Analysis Report</li>
+				</ol>
+			</nav>
+		</div>
+
+		<!-- End Page Title -->
+
+		<section class="section dashboard yrTab">
+
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12 yrTab">
+					<div class="card">
+						<div class="card-body ">
+							<div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+
+								<div th:if="${userType == 'ROLE_SuperAdmin' || userType == 'ROLE_Secretary' || userType == 'ROLE_DM'}"
+									class="search-part">
+									<h4>Filter</h4>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input data-whichWise" type="radio"
+											name="radio-whichWise" id="userwise-search" value="userwise" checked> <label
+											class="form-check-label" for="userwise-search"> User Wise </label>
+									</div>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input data-whichWise" type="radio"
+											name="radio-whichWise" id="deptwise-search" value="deptwise">
+										<label class="form-check-label" for="deptwise-search"> Overall Department Wise
+										</label>
+									</div>
+									<!-- <div th:if="${userType == 'ROLE_SuperAdmin'}" class="form-check form-check-inline">
+										<input class="form-check-input data-whichWise" type="radio"
+											name="radio-whichWise" id="deptmentalwise-search" value="deptmentalwise">
+										<label class="form-check-label" for="deptmentalwise-search"> Departmental Wise
+										</label>
+									</div> -->
+								</div>
+
+								<div class="heading-part me-5">
+									<h5 class="fw-bold mb-0 whichWiseHeading" th:if="${reportType=='ageAnalysis'}">User
+										Wise Age Analysis</h5>
+									<h5 class="fw-bold mb-0 whichWiseHeading"
+										th:if="${reportType=='agePendingAnalysis'}">User Wise Pending Age Analysis</h5>
+
+									<input type="hidden" th:value="${reportType}" class="reportType">
+								</div>
+
+
+								<div class="button-part btn-wrapper ms-2">
+									<button class="btn btn-purple btnAA-customBtn" title="Download Excel"
+										value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+									<button class="btn btn-black btnAA-customBtn" title="Download PDF"
+										value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+
+									<button type="button" class="btn btn-warning filter-btn" title="Filter"
+										data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas"
+										aria-controls="filterOffcanvas">
+										<i class="bi bi-funnel"></i>
+									</button>
+								</div>
+
+							</div>
+							<hr>
+
+
+							<!-- <ul class="nav nav-pills mb-3" id="pills-tab-AA" role="tablist">
+								<li class="nav-item" role="presentation">
+									<button class="nav-link active" data-bs-toggle="pill" type="button" role="tab"
+										data-value="JKSAMADHAN">JKSAMADHAN</button>
+								</li>
+								<li class="nav-item" role="presentation">
+									<button class="nav-link" data-bs-toggle="pill" type="button" role="tab" data-value="RAABITA">RAABITA</button>
+								</li>
+								<li class="nav-item" role="presentation">
+									<button class="nav-link" data-bs-toggle="pill" type="button" role="tab" data-value="CPGRAM">CPGRAM</button>
+								</li>
+							</ul> -->
+
+							<div class="yr-Rtable ">
+								<table class="common-table table datatable table-bordered" id="dhltbl"
+									style="width: 100%;"></table>
+							</div>
+							<!--  CHANGE: added overflow: hidden to prevent scroll on offcanvas -->
+							<div class="offcanvas offcanvas-end" tabindex="-1" id="filterOffcanvas"
+								aria-labelledby="filterOffcanvasLabel"
+								style="position: absolute; width: 350px; height: fit-content; overflow: hidden; border-radius: 20px;">
+								<div class="offcanvas-header"
+									style="padding: 5px 1rem !important; background: #116efd; border-radius: 50px; ">
+									<h5 class="offcanvas-title" id="filterOffcanvasLabel"
+										style="color: white !important;">Filter</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+										aria-label="Close"></button>
+								</div>
+								<!--  CHANGE: added overflow-y: auto to keep body scrollable if needed but no forced scrollbar -->
+								<div class="offcanvas-body" style="overflow-y: auto;">
+									<div class="mb-3">
+										<label for="ageFilterDistrict" class="form-label fw-bold">District</label>
+										<select class="form-select" id="ageFilterDistrict">
+											<option value="">Districts</option>
+										</select>
+									</div>
+									<div class="mb-3">
+										<label for="ageFilterDept" class="form-label fw-bold">Department</label>
+										<select class="form-select" id="ageFilterDept">
+											<option value="">Departments</option>
+										</select>
+									</div>
+									<div class="d-flex gap-2">
+										<button class="btn btn-primary w-50" id="applyAgeFilter">Apply</button>
+										<button class="btn btn-secondary w-50" id="resetAgeFilter">Reset</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- Modal -->
+	<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <h3 class="card-title text-center">Grievance/s Pending With Result</h3>
+            <div class="modal-body">
+                <div class="advPendingWithDiv yr-Rtable p-4 visually-hidden">
+                    <table class="table table-bordered stripe" id="filteredDHList" style="width: 100%;"></table>
+                </div>
+            </div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div> -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer2"></div>
+
+
+</body>
+
+</html>

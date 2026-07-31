@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+
+<body>
+
+
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+	<div>
+		<aside id="sidebar" class="sidebar">
+			<ul class="sidebar-nav" id="sidebar-nav">
+				<li class="nav-item cBb"><a class="nav-link collapsed cBb">
+						<span class="icon_span"><i class="bi bi-arrow-left-circle-fill"></i></span> <span
+							style="cursor: pointer;">Back</span>
+					</a></li>
+			</ul>
+		</aside>
+	</div>
+
+	<main id="main" class="main" style="margin-top: 60px;">
+		<section class="section mt-4">
+			<div class="container-fluid">
+				<div class="accordion" id="accordionPanelsStayOpenExample">
+					<!-- Query Builder Accordion - start -->
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="panelsStayOpen-headingOne">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+								aria-controls="panelsStayOpen-collapseOne">
+								<h3 class="card-title text-center">Query Builder</h3>
+							</button>
+						</h2>
+						<div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+							aria-labelledby="panelsStayOpen-headingOne">
+							<div class="accordion-body">
+								<!-- Query Builder Accordion Body - start -->
+
+								<div class="card info-card customers-card border-top border-3 border-warning">
+
+									<div class="card-body">
+										<h3 class="card-title text-center mb-4">Advance Query Builder</h3>
+										<!-- ggj -->
+										<!-- reference link https://iis.ncog.gov.in/parks/searchLandPublic -->
+
+										<div class="panel panelQuery" style="max-height: 100%;">
+
+											<div class="">
+												<table class="table table-bordered customSearchTable">
+													<thead>
+														<tr>
+															<th class="">Geographic details</th>
+															<th class="">Demographic information</th>
+															<th class="w-25">Organizational/Categories details</th>
+															<th class="">Process metrics / Conditions</th>
+															<th class="">Operator</th>
+															<!-- <th class="thDistance">Operator</th> -->
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="regionJammu">
+                                                                    <label class="form-check-label" for="regionJammu">
+                                                                        JAMMU
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="regionKashmir">
+                                                                    <label class="form-check-label" for="regionKashmir">
+                                                                        KASHMIR
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="regionUT">
+                                                                    <label class="form-check-label" for="regionUT">
+                                                                        UT (J&K)
+                                                                    </label>
+                                                                  </div>
+
+                                                                 <div class="mt-4">
+                                                                    <select class="selectpicker" data-max-options="2" data-live-search="true" multiple>
+                                                                        <option>One</option>
+                                                                        <option>Two</option>
+                                                                        <option>Three</option>
+                                                                        <option>Four</option>
+                                                                      </select>
+                                                                 </div> 
+                                                                  
+                                                                  
+                                                                  
+																<!-- <div class="input-box">
+																	<div class="form-floating mb-3">
+																		<select id="inputRegion1" class="form-select">
+																			<option value="0">Select Region</option>
+																			<option th:each="c : ${regiontList}"
+																				th:value="${c.region}"
+																				th:text="${c.region}">
+																			</option>
+																		</select> <label
+																			for="floatingSelect">Region</label>
+																	</div>
+																</div> -->
+																<!-- <div class="input-box mt-3">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="inputDistrict"
+																			disabled>
+																			<option value="0">Select District</option>
+																		</select> <label for="floatingSelect">
+																			District</label>
+																	</div>
+																</div> -->
+															</td>
+															<td>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="genderMale">
+                                                                    <label class="form-check-label" for="genderMale">
+                                                                        Male
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="genderFemale">
+                                                                    <label class="form-check-label" for="genderFemale">
+                                                                        Female
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="genderOther">
+                                                                    <label class="form-check-label" for="genderOther">
+                                                                        Other
+                                                                    </label>
+                                                                  </div>
+																<!-- <div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="gender">
+																			<option value="0">Select Gender</option>
+																			<option value="Male">Male</option>
+																			<option value="Female">Female</option>
+																			<option value="Other">Other</option>
+																		</select> <label
+																			for="floatingSelect">Gender</label>
+																	</div>
+																</div> -->
+															</td>
+															<td>
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label">Department</label>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" value="" id="departGIS">
+                                                                        <label class="form-check-label" for="departGIS">
+                                                                            GIS DEPARTMENT
+                                                                        </label>
+                                                                      </div>
+                                                                      <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" value="" id="departSoft">
+                                                                        <label class="form-check-label" for="departSoft">
+                                                                            SOFTWARE DEPARTMENT
+                                                                        </label>
+                                                                      </div>                                                                     
+                                                                </div>
+
+                                                                <div class="form-group mb-3">
+                                                                    <div class="form-label">Main Category</div>
+                                                                        <select class="selectpicker" data-max-options="2" data-live-search="true" multiple>
+                                                                            <option>One</option>
+                                                                            <option>Two</option>
+                                                                            <option>Three</option>
+                                                                            <option>Four</option>
+                                                                        </select>
+                                                                </div>
+                                                                
+																<div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="dept">
+																			<option value="0">Select Department</option>
+																			<option th:each="c : ${deptListName}"
+																				th:value="${c.deptname}"
+																				th:text="${c.deptname}">
+																			</option>
+																		</select> <label
+																			for="floatingSelect">Department</label>
+																	</div>
+																</div>
+																<!-- User Type - 01 April 2024 - SKY -->
+																<div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="userTypee">
+																			<option value="0">Select User Type</option>
+																			<option value="HoD">HoD</option>
+																			<option value="District">District</option>
+																		</option>
+																	</select> <label
+																	for="floatingSelect">User Type</label>
+																</div>
+															</div>
+															<!-- User Type - 01 April 2024 - SKY -->
+
+																<div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="categ">
+																			<option value="0">Select Main Category
+																			</option>
+																		</select> <label for="floatingSelect">Main
+																			Category</label>
+																	</div>
+																</div>
+																<div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="subcateg">
+																			<option value="0">Select Sub Category
+																			</option>
+																		</select> <label for="floatingSelect">Sub
+																			Category</label>
+																	</div>
+																</div>
+																<div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="subcategL2">
+																			<option value="0">Select Sub Next L2
+																			</option>
+																		</select> <label for="floatingSelect">Sub
+																			Category Next
+																			L2</label>
+																	</div>
+																</div>
+																<div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="subcategL3">
+																			<option value="0">Select Sub Next L3
+																			</option>
+																		</select> <label for="floatingSelect">Sub
+																			Category Next
+																			L3</label>
+																	</div>
+																</div>
+																<div class="input-box ">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="subcategL4">
+																			<option value="0">Select Sub Next L4
+																			</option>
+																		</select> <label for="floatingSelect">Sub
+																			Category Next
+																			L4</label>
+																	</div>
+																</div>
+															</td>
+															<td>
+                                                                <label class="form-label">Grievance Status</label>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                                                                    <label class="form-check-label" for="flexRadioDefault1">
+                                                                        Resolved
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                                                                    <label class="form-check-label" for="flexRadioDefault2">
+                                                                        Pending
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                                                                    <label class="form-check-label" for="flexRadioDefault2">
+                                                                        Pending / Acknowledged / Under Process
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                                                                    <label class="form-check-label" for="flexRadioDefault2">
+                                                                        Rejected
+                                                                    </label>
+                                                                  </div>
+                                                                  <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                                                                    <label class="form-check-label" for="flexRadioDefault2">
+                                                                        Appealed
+                                                                    </label>
+                                                                  </div>
+
+																<div class="input-box">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="appStatus">
+																			<option value="0">Select Grievance Status
+																			</option>
+																			<option value="Resolved">Resolved</option>
+																			<option value="Pending">Pending /
+																				Acknowledged / Under Process</option>
+																			<option value="Rejected">Rejected</option>
+																			<option value="Appealed">Appealed</option>
+																		</select> <label for="floatingSelect">Grievance
+																			Status</label>
+																	</div>
+																</div>
+
+
+																<div class="input-box">
+																	<div class="form-floating mb-3">
+																		<input id="penEoF" type="text" maxlength="2"
+																			class="form-control input-num">
+																		<label for="floatingSelect">Pending Since
+																			(days)</label>
+																	</div>
+																</div>
+																<div class="input-box">
+																	<div class="form-floating mb-3">
+																		<input id="penTo" type="text" maxlength="2"
+																			class="form-control input-num">
+																		<label for="floatingSelect">Pending To
+																			(days)</label>
+																	</div>
+																</div>
+
+
+															</td>
+
+															<td>
+																<div class="input-box" style="margin-top: 4.6rem;">
+																	<div class="form-floating mb-3">
+																		<select class="form-select" id="opVal1"
+																			disabled="disabled">
+																			<option value="0">Select</option>
+																			<option value="=">Is equal to</option>
+																			<option value="<">Is less than</option>
+																			<option value=">">Is greater than</option>
+																			<option value="BETWEEN">Is between</option>
+																		</select> <label for="floatingSelect">Select
+																			Operator</label>
+																	</div>
+																</div>
+
+															</td>
+
+															<!--<td>
+																TEMP
+															</td> -->
+
+														</tr>
+													</tbody>
+													<tfoot>
+														<tr>
+															<td colspan="7" align="center" class="backColorGray">
+																<div class="col-md-4">
+																	<button class="btn btn-success"
+																		style="margin-top: 1%;" type="button"
+																		id="submit"><i
+																			class="bi bi-file-earmark"></i>Generate
+																		Report</button>
+																	<button class="btn btn-primary"
+																		style="margin-top: 1%;" type="button"
+																		id="reset"><i
+																			class="bi bi-arrow-clockwise"></i>Reset
+																		Values</button>
+																</div>
+															</td>
+														</tr>
+													</tfoot>
+												</table>
+											</div>
+											<button class="text-white btn-secondary">QUERY RESULT : <span
+													id="advQueryCount">(0)</span></button>
+										</div>
+										<!-- ggj -->
+									</div>
+								</div>
+								<!-- Query Builder Accordion Body - end -->
+							</div>
+						</div>
+					</div>
+					<!-- Query Builder Accordion - end -->
+
+					<!-- Query Result Accordion - start -->
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
+								aria-controls="panelsStayOpen-collapseTwo">
+								<h3 class="card-title text-center">Query Result</h3>
+							</button>
+						</h2>
+
+						<div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show"
+							aria-labelledby="panelsStayOpen-headingTwo">
+							<div class="accordion-body">
+								<!-- Query Result Accordion Body - start-->
+								<div
+									class="advQueryDiv card info-card customers-card border-top border-3 border-warning visually-hidden">
+									<div class="card-body">
+										<h3 class="card-title text-center mb-4">Query Result</h3>
+
+										
+										<div style="border: 1px solid #ccc; padding: 10px; float: right;">
+											<label style="display: inline-block; margin-right: 10px;">Total Count: <span id = "totalCount">(0)</span></label>
+											|
+											<label style="display: inline-block; margin-right: 10px;">Average Count: <span id = "averageCount">(0)</span></label>
+											
+										</div>
+
+									    <div style="border: 1px solid #ccc; padding: 10px; display: inline-block;">
+											<label for="startDate" style="display: inline-block; margin-right: 10px;">Start Date:</label>
+											<input class="form-control" type="date" id="fromDateInput" name="fromDate" style="display: inline-block; width: 26% !important">
+											<label for="endDate" style="display: inline-block; margin-right: 10px;">End Date:</label>
+											<input class="form-control" type="date" id="toDateInput" name="toDate" style="display: inline-block; width: 26% !important;">
+											<button type="button" id="filterBtn" class="btn btn-primary" style="display: inline-block;">Submit</button>
+										</div>
+
+										<ul class="nav nav-tabs justify-content-end" role="tablist">
+											<li class="nav-item" role="presentation"><button class="nav-link active"
+													href="#tab-table1" data-bs-toggle="tab" data-bs-target="#tab-table1"
+													aria-selected="true" role="tab">
+													<i class="bx bx-table"></i>
+												</button></li>
+											<li><button class="nav-link" href="#tab-table2" data-bs-toggle="tab"
+													data-bs-target="#tab-table2" aria-selected="false" tabindex="-1"
+													role="tab">
+													<i class="bx bx-bar-chart-alt-2"></i>
+
+												</button></li>
+										</ul>
+										<div class="tab-content pt-2">
+											<div class="tab-pane show active" id="tab-table1" role="tabpanel">
+
+												<div class="yr-Rtable p-4 ">
+													<table class="table table-bordered stripe" id="advDetailsTbl"
+														style="width: 100%;">
+													</table>
+												</div>
+
+												<!-- <div class="advPendingWithDiv yr-Rtable p-4 visually-hidden">
+													<h3 class="card-title text-center mb-4">Grievance/s Pending With Result</h3>
+													<table class="table table-bordered stripe" id="advPendingWithTbl"
+														style="width: 100%;">
+													</table>
+												</div> -->
+											</div>
+											<div class="tab-pane" id="tab-table2" role="tabpanel">
+												<!-- <div id="chartdiv"><div style="position: relative; width: 100%; height: 100%;"><div aria-hidden="true" style="position: absolute; width: 733px; height: 500px;"><div><canvas class="am5-layer-0" width="733" height="500" style="position: absolute; top: 0px; left: 0px; width: 733px; height: 500px;"></canvas><canvas class="am5-layer-30" width="733" height="500" style="position: absolute; top: 0px; left: 0px; width: 733px; height: 500px;"></canvas></div></div><div class="am5-html-container" style="position: absolute; pointer-events: none; overflow: hidden; width: 733px; height: 500px;"></div><div class="am5-reader-container" role="alert" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);"></div><div class="am5-focus-container" role="graphics-document" style="position: absolute; pointer-events: none; top: 0px; left: 0px; overflow: hidden; width: 733px; height: 500px;"><div role="button" aria-label="Zoom Out" aria-hidden="true" style="position: absolute; pointer-events: none; top: -2px; left: -2px; width: 4px; height: 4px;"></div></div><div class="am5-tooltip-container"><div role="tooltip" aria-hidden="true" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); pointer-events: none;">Pending</div></div></div></div> -->
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<!-- Query Result Accordion Body - end-->
+							</div>
+						</div>
+					</div>
+					<!-- Query Result Accordion - end -->
+				</div>
+
+			</div>
+		</section>
+	</main>
+
+
+
+
+
+
+
+	<!-- Modal -->
+	<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<h3 class="card-title text-center">Grievance/s Pending With Result</h3>
+				<div class="modal-body">
+					<div class="advPendingWithDiv yr-Rtable p-4 visually-hidden">
+						<table class="table table-bordered stripe" id="advPendingWithTbl" style="width: 100%;"></table>
+					</div>
+				</div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div> -->
+
+
+
+
+
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>    
+	<script th:src="@{/queryBuilder/advanced_search.js}"></script>
+
+   
+</body>
+
+</html>

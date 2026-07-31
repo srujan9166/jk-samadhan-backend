@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+	<head lang="en" th:include="head :: head"> </head>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+					<li class="breadcrumb-item active">Appealed Grievances</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+		
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12 yrTab">
+					<div class="card">
+						<div class="card-body">
+							
+							<h5 class="fw-bold">Appealed Grievances</h5>
+							<hr>
+							<div class="yr-Rtable">
+								<table class="table datatable text-center" id="YRreport">
+									<thead>
+										<tr>
+										<th>S. No.</th>
+											<th>Grievance ID</th>
+											<th>Appeal ID</th>
+											<th>Category</th>
+											<th>Submitted By</th>
+											<th>Date</th>
+											<th>Status</th>
+											<!-- <th>Resolved By</th>
+											<th>Appealed To</th> -->
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody th:if="${flaggedApps.size > 0}">
+										<tr th:each="t,stat : ${flaggedApps}">
+										<th scope="row" th:text="${stat.index+1}"></th>
+										<td th:text="${t.grievance_id}"></td>
+											<td th:text="${t.appeal_id}"></td>
+											<td th:text="${t.category}"></td>
+											<td th:text="${t.submitted_by}"></td>
+											<td th:text="${t.createddate}"></td>
+											<td th:text="${t.status}"></td>
+											<!-- <td th:text="${t.resolved_by}"></td>
+											<td th:text="${t.appealed_to}"></td> -->
+											
+											<td>
+												<button class="btn btn-sm btn-primary vDetails" th:value="${t.grievance_id}" data-appflag = "JKSAMADHAN">Grievace Detail</button>
+												<!-- <button th:if="${t.appealRecieved=='yes' && userType=='ROLE_SuperAdmin'}" class="btn btn-sm btn-warning appP" th:value = "${t.grievance_id}" id="grevP">Action On Appeal</button> -->
+												<!-- <button th:if="${t.appealRecieved=='yes' && t.status=='Appeal Forwarded'}" class="btn btn-sm btn-warning appP" th:value = "${t.appeal_id}" id="grevP">Process</button> -->
+											  </td>
+										</tr>
+									</tbody>
+									<tbody th:if="${flaggedApps.size eq 0}">
+										<td class="text-center" colspan="10">No Data Found!</td>
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+
+
+
+</body>
+
+</html>

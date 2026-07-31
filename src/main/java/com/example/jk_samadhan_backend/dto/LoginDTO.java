@@ -12,10 +12,25 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class LoginDTO {
-    @NotBlank
     private String mobile;
-    @NotBlank
+    private String username;
+    private String email;
+
+    @NotBlank(message = "Password is required")
     private String password;
 
     private String otpCode;
+
+    public String getIdentifier() {
+        if (this.username != null && !this.username.trim().isEmpty()) {
+            return this.username.trim();
+        }
+        if (this.email != null && !this.email.trim().isEmpty()) {
+            return this.email.trim();
+        }
+        if (this.mobile != null && !this.mobile.trim().isEmpty()) {
+            return this.mobile.trim();
+        }
+        return null;
+    }
 }

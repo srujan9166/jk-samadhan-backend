@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+    <meta charset="utf-8">
+</head>
+
+
+<body>
+
+    <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+    <div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Feedback Analysis</li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Naitik Changes on Radio Buttons -->
+
+        <!-- <div th:if="${userType=='ROLE_SuperAdmin'}"> -->
+        <!-- Naitik - changes -->
+        <div th:if="${userType=='ROLE_SuperAdmin' || userType=='ROLE_Admin' || userType=='ROLE_DM'}">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input report-toggle-main" type="radio" name="mainReportType" id="main-feedback"
+                    value="feedback" checked>
+                <label class="form-check-label" for="main-feedback">Feedback Analysis Section</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input class="form-check-input report-toggle-main" type="radio" name="mainReportType" id="main-mis"
+                    value="mis">
+                <label class="form-check-label" for="main-mis">NEW MIS REPORT</label>
+            </div>
+        </div>
+
+
+
+        <!-- Naitik Changes End -->
+
+
+        <input type="hidden" th:value="${userType}" id="usrType">
+        <section id="filterDiv" class="yrTab">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="fw-bold">Feedback Analysis</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-input-block mb-2">
+                                <label for="departmentss">List of Departments:</label>
+                                <select class="form-select" id="departmentss">
+                                    <option value="0">Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-input-block mb-2">
+                                <label for="catGraph">Category</label>
+                                <select class="form-select" id="catGraph" disabled>
+                                    <option value="0">Select</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-input-block mb-3">
+                                <label for="selGender">Gender</label>
+                                <select class="form-select" id="selGender">
+                                    <option value="0">Select</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="TRANSGENDER">Transgender</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-input-block mb-2">
+                                <label for="dateFrom"><i class="bi bi-calendar-date"></i> From/on</label>
+                                <input type="date" id="dateFrom" class="form-control futuristic-input">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-input-block mb-2">
+                                <label for="dateTo"><i class="bi bi-calendar-date"></i> To</label>
+                                <input type="date" class="form-control futuristic-input" id="dateTo">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-input-block mb-2">
+                                <label for="districtss">District:</label>
+                                <select class="form-select" id="districtss">
+                                    <option value="0">Select</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-input-block mb-2">
+                                <label for="Ratings">Disposal Satisfaction:</label>
+                                <select class="form-select" id="Ratings">
+                                    <option value="0">Select</option>
+                                    <option value="Excellent">Excellent</option>
+                                    <option value="Good">Good</option>
+                                    <option value="Average">Average</option>
+                                    <option value="Poor">Poor</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!--  <div class="col-md-2">
+                    <div class="form-floating mb-3">
+                        <input type="date" id="dateFrom" class="form-control"> <label for="dateFrom">From/on</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="dateTo" disabled>
+                        <label for="dateTo">To</label>
+                    </div>
+                </div> -->
+                    </div>
+                    <button type="button" class="common-btn ms-0" id="reset">Reset</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="section dashboard">
+            <div class="row">
+                <div class="col-lg-12 yrTab">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+                                <div class="heading-part">
+                                    <h5 class="fw-bold mb-0">Feedback Analysis Section</h5>
+                                </div>
+
+                                <div class="button-part btn-wrapper ms-2">
+                                    <button class="btn btn-purple btnFD-customBtn" title="Download Excel"
+                                        value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+                                    <button class="btn btn-black btnFD-customBtn" title="Download PDF"
+                                        value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+                                </div>
+                            </div>
+                            <div class="yr-Rtable p-4 ">
+                                <table class="table table-bordered stripe" id="NewfeedBackTbl" style="width: 100%;">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="feedbackGraphPieDiv" class="yrTab">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0">Overall Experience of Grievance Disposal</h6>
+                            <hr>
+                            <div class="">
+                                <div class="tab-content pt-2">
+                                    <div class="tab-pane show active" id="tab-table1">
+                                        <div class="amPieDiv" id="pieDiv1" style="height: 280px;"></div>
+                                    </div>
+                                    <div class="tab-pane" id="tab-table2">
+                                        <div class="yr-Rtable">
+                                            <table id="YRreport223" class="table table-striped table-bordered"
+                                                cellspacing="0" width="100%">
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0">How Satisfied are you with the time taken for disposal of your
+                                grievance?</h6>
+                            <hr>
+                            <div class="">
+                                <div class="tab-content pt-2">
+                                    <div class="tab-pane show active" id="tab-table3">
+                                        <div class="amPieDiv" id="pieDiv2" style="height: 280px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0">Will you prefer to use JK Samadhan again for submitting grievances
+                                in future?</h6>
+                            <hr>
+                            <div class="">
+                                <div class="tab-content pt-2">
+                                    <div class="tab-pane show active" id="tab-table3">
+                                        <div class="amPieDiv" id="pieDiv3" style="height: 280px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </section>
+
+        <!-- <section id="feedbackGraphBarDiv" class="yrTab">
+            <div class="row">
+                 <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                        	<h6 class="fw-bold">message from Department</h6>
+                        	<hr>
+                            <div class="">
+                                <div class="tab-content pt-2">
+                                    <div class="tab-pane show active" id="tab-table5">
+                                        <div class="amBarDiv" id="barDiv1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+
+                 <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="fw-bold">Will you prefer to use JK Samadhan again for submitting grievances
+                                in future?</h6>
+                            <hr>
+                            <div class="">
+                                <div class="tab-content pt-2">
+                                    <div class="tab-pane show active" id="tab-table5">
+                                        <div class="amBarDiv" id="barDiv2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>  -->
+
+
+        <!-- MIS Report Start Naitik -->
+
+
+        <!-- MIS Report on Individual level Start Naitik -->
+
+        <div class="row" th:if="${userType=='ROLE_SuperAdmin'|| userType=='ROLE_DM'}">
+            <div class="col-lg-12 yrTab">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+                            <div class="heading-part">
+                                <h5 class="fw-bold mb-0">MIS REPORT INDIVIDUAL</h5>
+                            </div>
+
+
+                            <div class="button-part btn-wrapper ms-2">
+                                <button class="btn btn-purple dwd-customBtn" title="Download Excel"
+                                    value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+                                <button class="btn btn-black dwd-customBtn" title="Download PDF" value="buttons-pdf">
+                                    <i class="bi bi-filetype-pdf"></i></button>
+                            </div>
+
+
+                            <div class="yr-Rtable p-4" style="overflow-x:auto;">
+                                <table class="table table-bordered stripe" id="misReportTable" style="width: 100%;">
+
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">S. No.</th>
+                                            <th rowspan="2">Name of the Department</th>
+                                            <th rowspan="2">Grievance ID </th>
+
+                                            <th rowspan="2">Name of Complainant</th>
+                                            <th rowspan="2">Contact No. of the Complainant</th>
+                                            <th rowspan="2">Grievance closed by (Name/Office Name of User)</th>
+                                            <th colspan="4">Overall Experience of Grievance Disposal?</th>
+
+
+                                            <th colspan="3">How satisfied are you with the time taken for disposal of
+                                                your grievance?</th>
+                                            <th colspan="3"> Will you prefer to use JK Samadhan again for submitting
+                                                grievances in future?</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Excellent(%)</th>
+                                            <th>Good(%)</th>
+                                            <th>Average(%)</th>
+                                            <th>Poor(%)</th>
+                                            <th>Very Satisfied (%)</th>
+                                            <th>Satisfied (%)</th>
+                                            <th>Dissatisfied (%)</th>
+                                            <th>Yes (%)</th>
+                                            <th>Maybe (%)</th>
+                                            <th>No (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- MIS Report End Naitik -->
+
+        <!-- Mis Report Department Wise Start  -->
+
+        <!-- <div class="row" th:if="${userType=='ROLE_SuperAdmin'}"> -->
+        <!-- Naitik - changes -->
+        <div class="row" th:if="${userType=='ROLE_SuperAdmin' || userType=='ROLE_Admin' || userType=='ROLE_DM'}">
+            <div class="col-lg-12 yrTab">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="table-header-section d-flex justify-content-between align-items-center mb-3">
+                            <div class="heading-part">
+                                <h5 class="fw-bold mb-0">MIS REPORT DEPARTMENT WISE</h5>
+                            </div>
+
+
+                            <div class="button-part btn-wrapper ms-2">
+                                <button class="btn btn-purple dwd-customBtnDept" title="Download Excel"
+                                    value="buttons-excel"> <i class="bi bi-filetype-xls"></i></button>
+                                <button class="btn btn-black dwd-customBtnDept" title="Download PDF"
+                                    value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+                            </div>
+
+
+                            <div class="yr-Rtable p-4" style="overflow-x:auto;">
+                                <!-- <table class="table table-bordered stripe" id="misReportTableDepartment" style="width: 100%;"> </table> -->
+                                <table id="misReportTableDepartment" class="table table-bordered stripe"
+                                    style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">S. No.</th>
+                                            <th rowspan="2">Name of the Department</th>
+                                            <th rowspan="2">No. of Grievances on which Feedback has been
+                                                Received</th>
+                                            <th colspan="4">Overall Experience of Grievance Disposal?</th>
+
+
+                                            <th colspan="3">How satisfied are you with the time taken for disposal of
+                                                your grievance?</th>
+                                            <th colspan="3"> Will you prefer to use JK Samadhan again for submitting
+                                                grievances in future?</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Excellent(%)</th>
+                                            <th>Good(%)</th>
+                                            <th>Average(%)</th>
+                                            <th>Poor(%)</th>
+                                            <th>Very Satisfied (%)</th>
+                                            <th>Satisfied (%)</th>
+                                            <th>Dissatisfied (%)</th>
+                                            <th>Yes (%)</th>
+                                            <th>Maybe (%)</th>
+                                            <th>No (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 04 June 2024 - modal for previewing prefilled feedback form - start -->
+        <div class="modal fade" id="NewfbFormPreview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Feedback Start -->
+                        <div class="py-2" id="Feedback">
+                            <div class="container">
+                                <div class="row g-5 justify-content-center">
+                                    <div class="col-md-12 right-side-content">
+                                        <div class="card mb-0">
+                                            <div class="card-body">
+                                                <div class="row g-3 align-items-center">
+                                                    <div class="col-md-6">
+                                                        <div class="col-auto fw-bold">
+                                                            <label for="uniqueID" class="col-form-label">Grievance
+                                                                ID:</label>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <span class="uniqueIDClass" id="uniqueID"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="col-auto fw-bold">
+                                                            <label for="uniqueID" class="col-form-label">Grievance
+                                                                Status:</label>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <span class="uniqueIDClass" id="Grevstatus"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-3 align-items-center">
+                                                    <div class="col-md-6">
+                                                        <div class="col-auto fw-bold">
+                                                            <label for="uniqueID"
+                                                                class="col-form-label">Department:</label>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <span class="uniqueIDClass" id="departmentId">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="col-auto fw-bold">
+                                                            <label for="uniqueID" class="col-form-label">Updated
+                                                                On:</label>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <span class="uniqueIDClass" id="last_updated_on">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <hr class="mt-1">
+                                                <div class="form-group mb-3">
+                                                    <label class="fw-bold mb-3">
+                                                        Overall Experience of Grievance Disposal?
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+
+                                                    <div class="form-check form-check-inline ps-0">
+                                                        <input class="form-check-input" type="radio" id="expExcellent"
+                                                            name="experience" value="Excellent">
+                                                        <label class="form-check-label"
+                                                            for="expExcellent">Excellent</label>
+                                                    </div>
+
+                                                    <div class="form-check form-check-inline ps-0">
+                                                        <input class="form-check-input" type="radio" id="expGood"
+                                                            name="experience" value="Good">
+                                                        <label class="form-check-label" for="expGood">Good</label>
+                                                    </div>
+
+                                                    <div class="form-check form-check-inline ps-0">
+                                                        <input class="form-check-input" type="radio" id="expAverage"
+                                                            name="experience" value="Average">
+                                                        <label class="form-check-label" for="expAverage">Average</label>
+                                                    </div>
+
+                                                    <div class="form-check form-check-inline ps-0">
+                                                        <input class="form-check-input" type="radio" id="expPoor"
+                                                            name="experience" value="Poor">
+                                                        <label class="form-check-label" for="expPoor">Poor</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group mb-3 noDiv visually-hidden">
+                                                    <label class="fw-bold mb-3">
+                                                        If poor, specify reason.
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <textarea placeholder="Type here..." class="form-control"
+                                                        id="Newdescription-box" rows="2" maxlength="255"
+                                                        style="overflow-y: auto; resize: none; max-height: 120px;"></textarea>
+                                                </div>
+
+                                                <!-- Q2 -->
+                                                <div class="form-group mb-3">
+                                                    <label class="fw-bold mb-3">
+                                                        How satisfied are you with the time taken for disposal of your
+                                                        grievance?
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+
+                                                    <div class="form-check ps-0">
+                                                        <input class="form-check-input" type="radio"
+                                                            id="timeVerySatisfied" name="time-satisfaction"
+                                                            value="Very Satisfied">
+                                                        <label class="form-check-label" for="timeVerySatisfied">Very
+                                                            Satisfied</label>
+                                                    </div>
+
+                                                    <div class="form-check ps-0">
+                                                        <input class="form-check-input" type="radio" id="timeSatisfied"
+                                                            name="time-satisfaction" value="Satisfied">
+                                                        <label class="form-check-label"
+                                                            for="timeSatisfied">Satisfied</label>
+                                                    </div>
+
+                                                    <div class="form-check ps-0">
+                                                        <input class="form-check-input" type="radio"
+                                                            id="timeDissatisfied" name="time-satisfaction"
+                                                            value="Dissatisfied">
+                                                        <label class="form-check-label"
+                                                            for="timeDissatisfied">Dissatisfied</label>
+                                                    </div>
+                                                </div>
+
+
+                                                <!-- Q3 -->
+                                                <div class="form-group mb-3">
+                                                    <label class="fw-bold mb-3">
+                                                        Will you prefer to use JK Samadhan again for submitting
+                                                        grievances in future?
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+
+                                                    <div class="form-check ps-0">
+                                                        <input class="form-check-input" type="radio" id="reuseYes"
+                                                            name="reuse-portal" value="Yes">
+                                                        <label class="form-check-label" for="reuseYes">Yes</label>
+                                                    </div>
+
+                                                    <div class="form-check ps-0">
+                                                        <input class="form-check-input" type="radio" id="reuseMaybe"
+                                                            name="reuse-portal" value="Maybe">
+                                                        <label class="form-check-label" for="reuseMaybe">Maybe</label>
+                                                    </div>
+
+                                                    <div class="form-check ps-0">
+                                                        <input class="form-check-input" type="radio" id="reuseNo"
+                                                            name="reuse-portal" value="No">
+                                                        <label class="form-check-label" for="reuseNo">No</label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Feedback End -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+
+
+    <!-- ======= Footer ======= -->
+    <div lang="en" th:include="footer :: footer1"></div>
+    <div lang="en" th:include="chart_fragment :: chartScript"></div>
+    <script th:src="@{/js/NewfeedbackAnalysis.js}"></script>
+
+
+</body>
+
+</html>

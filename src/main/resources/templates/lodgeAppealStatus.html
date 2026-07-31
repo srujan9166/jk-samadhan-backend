@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+	<link rel="apple-touch-icon" sizes="76x76" href="img/favicon/apple-icon-76x76.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="img/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="img/favicon/favicon-512x512.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png">
+	<link rel="icon" href="img/favicon/favicon.ico">
+
+</head>
+
+<body>
+	<!-- Spinner Start -->
+	<!--<div id="spinner"
+		class="show position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+		<div class="spinner-grow text-primary" role="status"></div>
+	</div>-->
+	<!-- Spinner End -->
+
+	<!--- New header -->
+
+	<!-- Topbar Start -->
+
+	<div lang="en" th:include="mainHeader :: mainHeader"></div>
+	<!-- Navbar End -->
+
+	<!-- Right bottom side sticky button div start -->
+
+
+	<!-- Right bottom side sticky button div end -->
+
+	<!-- Carousel Start -->
+
+	<!-- Carousel End -->
+
+
+
+	<!-- Fact Start -->
+
+	<!-- Fact End -->
+
+	<!-- About Start -->
+
+
+	<!-- Home Video Modal -->
+
+
+	<!-- About End -->
+
+	<!-- Services Start -->
+
+	<!-- Services End -->
+
+	<!--- Steps to follow new section starts -->
+
+
+
+	<!-- Faqs Start -->
+	<div class="container-fluid faqs py-5">
+		<div class="container pb-5">
+
+			<div class="row g-5 justify-content-center">
+				<div class="col-lg-12 col-xl-12 wow fadeIn" data-wow-delay=".3s">
+					<!-- Default Accordion -->
+					<div class="accordion accordion-flush" id="">
+
+						<div class="main-content">
+							<div class="container-fluid">
+
+
+
+								<div class="card card-primary">
+									<div class="card-header with-border">
+										<h3 class="card-title">
+											Grievance appeal can now be lodged only by registered users.
+										</h3>
+									</div>
+									<div class="card-body">
+
+										<div class="text-center">
+											<h3 class="text-danger">
+												<strong>Grievance appeal can now be lodged only by registered
+													users.</strong>
+											</h3>
+											<div class="text-left">
+												<p class="text-info">
+													<i class="fa fa-circle-o"></i> <strong>If you are a registered user,
+														then login to JK Samadhan Jammu
+														Kashmir Unified Grievance Redressal &amp; Monitoring System by
+														providing Username and Password in <a href="#"
+															class="newCitiLogin" data-bs-toggle="modal"
+															data-bs-target="#newLoginModal" data-login="CITIZEN">User
+															Login</a>
+														section.</strong>
+												</p>
+												<p class="text-dark">
+													<i class="fa fa-circle-o"></i><strong> Not yet registered!
+														<a href="#" data-bs-toggle="modal"
+															data-bs-target="#formRegister">Click here to
+															register.</a></strong>
+												</p>
+											</div>
+										</div>
+										<br>
+										<br>
+										<div class="text-center">
+											<a href="login" class="btn btn-social btn-primary">
+												<i class="fa fa-arrow-circle-left"></i>
+												Home
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!-- End Default Accordion Example -->
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Faqs End -->
+
+
+	<!-- Footer Start -->
+	<div lang="en" th:include="mainFooter :: mainFooter"></div>
+
+	<!-- Include Auth Modals -->
+	<div th:replace="authModal :: authModal"></div>
+
+</body>
+
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+<style>
+.flashing-label {
+    animation: flash 1s infinite;
+}
+
+@keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+  </style>
+<title>GRIEVANCE - History</title>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+	<!-- <div lang="en" th:include="left_sidebar :: returnToDashboard"></div> -->
+
+
+	<main id="main" style="margin-left: 0px !important;" class="main">
+
+		<div class="pagetitle">
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">Grievance History</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard yrTab1">
+
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12 yrTab">
+				</div>
+				<div class="card">
+					<div class="card-body ">
+						<div
+																		class="table-header-section d-flex justify-content-between align-items-center mb-3">
+																		<div class="heading-part">
+																			<h4 class="fw-bold mb-0">Grievances History - <span class="text-dark" th:text="${grevId}"
+																											style="display: inline-block;"></span></h4>
+																		</div> 
+																		<div class="button-part btn-wrapper ms-2">
+																			<button class="btn btn-purple btn-customBtn" title="Download Excel"
+																				value="buttons-excel"> <i
+																					class="bi bi-filetype-xls"></i></button>
+																			<button class="btn btn-black btn-customBtn" title="Download PDF"
+																				value="buttons-pdf"> <i class="bi bi-filetype-pdf"></i></button>
+																		</div>
+																	</div>
+					
+						<hr>
+						<!-- visually-hidden -->
+						<div class="yr-Rtable pt-3">
+							<div class=" table-responsive">
+								<table class="table w-100" id="MyTable1">
+									<thead>
+										<tr>
+											<th>S.No</th>
+											<th>Grievance ID</th>
+											<th>Action Taken</th>
+											<th>Status</th>
+											<th>Date / Time Of Action</th>
+											<!-- 	<th>Pulled By</th>
+											<th>Pulled From</th> -->
+											<th>Submitted By</th>
+											<th>Remarks</th>
+											<th>Action Taken By</th>
+											<th>Action Taken Time(days)</th>
+											<th>User File</th>
+											<th>Dept File</th>
+											<!-- <th>DM Remark</th> -->
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="grevH,stat : ${grevHistory}">
+											<th scope="row" th:text="${stat.index+1}"></th>
+											<td>
+												<span th:text="${grevH.uniqid}"></span>
+												<span th:if="${grevH.userflag == 'JKIGRAMS'}">
+													<div class="text-danger mt-2" role="alert">JK-IGRAMS</div>
+												</span>
+											</td>
+											<td th:text="${grevH.action_taken}"></td>
+											<td th:text="${grevH.status}"></td>
+
+											<td
+												th:text="${#dates.format(grevH.updated_on, 'dd-MM-yyyy HH:mm:ss')}">
+											</td>
+
+											<!-- <td th:text="${grevH.pulled_by}"></td>
+											<td th:text="${grevH.pulled_from}"></td> -->
+											<td th:text="${grevH.submitted_by}"></td>
+											<td th:text="${grevH.remarks}"></td>
+											<td th:text="${grevH.action_taken_by}"></td>
+											<td th:text="${grevH.app_processing_time}"></td>
+											<td><a th:href="@{'/download1?d=' + ${grevH.file_path}}">
+													<button class="btn btn-sm btn-success"
+														th:if="${grevH.file_name!=null && grevH.file_name!=''}"
+														th:text="${grevH.file_name}"></button>
+											</a></td>
+
+											<td><a
+												th:href="@{'/download1?d=' + ${grevH.depdocument}}">
+													<button class="btn btn-sm btn-success"
+														th:if="${grevH.dept_file_name!=null && grevH.dept_file_name!= ''}"
+														th:text="${grevH.dept_file_name}"></button>
+											</a></td>
+
+											<!-- <td style="width: 100%;"><button class="btn btn-sm btn-success"
+													th:if="${grevH.dept_file_name!=null && grevH.dept_file_name!= ''}"
+													th:text="${grevH.dept_file_name}" th:value="${grevH.depdocument}"
+													id="doccc2"></button>
+											</td> -->
+											<!-- <td th:text="${grevH.dm_remark}"></td> -->
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+			<!-- End Left side columns -->
+
+			<!-- For Edit Grievance Form -->
+			<div th:if="${editData == 'yes'}" class="col-lg-12 yrTab">
+				<div class="card">
+					<div class="card-body p-0 border border-3 rounded-3">
+						<h5 class="card-title px-3 py-2 text-dark">
+							Edit Grievance Form -
+							<p class="text-dark grevId12" th:text="${grevId}"
+								th:value="${grevId}" style="display: inline-block;"></p>
+							<span style="display: block; color: red; font-size: 1rem;">*
+								Note Grievance can be updated within 1 hour only.</span>
+						</h5>
+						<div class="yr-Rtable p-4">
+							<div class="col-12">
+								<div class="row mb-4">
+									<div class="col-lg-3 col-md-4 col-sm-6 col-12">
+										<input th:text="${previousStatus}" name="actionCheckBox"
+											class="statusRes" th:value="${previousStatus}" type="radio"
+											checked disabled>
+									</div>
+									<div class="col-12 mt-3" style="">
+										<div class="row">
+											<div class="col-lg-6 col-md-4 col-sm-6 col-12">
+												<label for="">Remarks: </label>
+												<textarea th:text="${previousRemarks}"
+													th:value="${previousRemarks}" name="" id="decc" cols="1"
+													rows="1" maxlength="3000" class="stRemarks form-control"></textarea>
+											</div>
+											<div class="col-lg-6 col-md-4 col-sm-6 col-12">
+												<label for="">Date & Time</label> <input type="text" name=""
+													id="" class="stDateTime form-control "
+													style="pointer-events: none;" readonly>
+											</div>
+
+											<div class=" col-md-6 mb-3">
+												<label for="">Upload File</label> <input type="file" name=""
+													id="stUploadPhoto1" class="stUploadPhoto form-control"
+													accept="application/pdf, image/png, image/jpeg, image/jpg">
+												<p class="small">JPEG,JPG,PNG,PDF only (2MB)</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- Update / Edit Grievance Button -->
+							<div class="row justify-content-center">
+								<button class="btn btn-warning m-2 col-2 updateGrvBtn">Update
+									Grievance</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- For Edit Grievance Form -->
+
+
+
+			</div>
+		</section>
+
+		<!-- SKY offcanvs - start -->
+
+		<!-- Trigger button with tooltip -->
+		<!-- <div class="container mt-5">
+	<button type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="View and Download">
+		Hover me for options
+	</button>
+</div> -->
+
+		<div class="offcanvas offcanvas-end" data-bs-scroll="true"
+			tabindex="-1" id="offcanvasWithBothOptions"
+			aria-labelledby="offcanvasWithBothOptionsLabel">
+			<div class="offcanvas-header">
+				<h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Backdrop
+					with scrolling</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+					aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<p>Try scrolling the rest of the page to see this option in
+					action.</p>
+			</div>
+		</div>
+		<!-- SKY offcanvs - end -->
+
+	</main>
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer2"></div>
+	<script th:src="@{/js/historyGrievance.js}"></script>
+
+</body>
+
+</html>

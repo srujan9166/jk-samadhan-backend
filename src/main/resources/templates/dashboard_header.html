@@ -1,0 +1,448 @@
+<div th:fragment="dashboard_header">
+
+	<header id="header" class="header fixed-top d-flex align-items-center">
+
+		<div class="d-flex align-items-center justify-content-between">
+			<a href="#" class="logo d-flex align-items-center">
+				<img th:src="@{/img/both-logo-wbg.png}" alt="Samadhan logo">
+			</a> <i th:if="${!globalContextPath.contains('heatmapview')}" class="bi bi-list toggle-sidebar-btn"></i>
+		</div>
+
+		<nav class="header-nav ms-auto">
+
+			<ul class="d-flex align-items-center">
+
+
+				<!-- Notification li - start -->
+				<li th:if="${userType=='ROLE_Superssssss'}" class="nav-item dropdown" style="background-color: #fff;">
+					<a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="bi bi-bell" style="font-size: 1.5rem;"></i>
+						<span class="badge bg-primary badge-number">4</span>
+					</a><!-- End Notification Icon -->
+
+					<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications"
+						style="background-color: #fff; border-radius: 10px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);">
+						<li class="dropdown-header" style="font-size: 1.0rem;">Compose Notification
+							<button class="btn btn-success badge rounded-pill p-2 ms-2 composeCustNotification">
+								<i class="bi bi-send-plus"></i> Compose
+							</button>
+						</li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li class="dropdown-header text-dark"
+							style="font-weight: bold; font-size: 1.1rem; padding: 15px;">Notification's
+						</li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<div style="max-height: 300px; overflow-y: auto; padding: 0 15px;">
+							<li class="notification-item d-flex align-items-start" style="padding: 10px;">
+								<i class="bi bi-exclamation-circle text-warning"
+									style="font-size: 1.2rem; margin-right: 10px;"></i>
+								<div>
+									<h6 style="margin: 0; font-size: 1rem;">Lorem Ipsum</h6>
+									<p style="margin: 0; font-size: 0.85rem;">Quae dolorem earum veritatis oditseno</p>
+									<p style="margin: 0; font-size: 0.75rem; color: gray;">30 min. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item d-flex align-items-start" style="padding: 10px;">
+								<i class="bi bi-x-circle text-danger"
+									style="font-size: 1.2rem; margin-right: 10px;"></i>
+								<div>
+									<h6 style="margin: 0; font-size: 1rem;">Atque rerum nesciunt</h6>
+									<p style="margin: 0; font-size: 0.85rem;">Quae dolorem earum veritatis oditseno</p>
+									<p style="margin: 0; font-size: 0.75rem; color: gray;">1 hr. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item d-flex align-items-start" style="padding: 10px;">
+								<i class="bi bi-x-circle text-danger"
+									style="font-size: 1.2rem; margin-right: 10px;"></i>
+								<div>
+									<h6 style="margin: 0; font-size: 1rem;">Atque rerum nesciunt</h6>
+									<p style="margin: 0; font-size: 0.85rem;">Quae dolorem earum veritatis oditseno</p>
+									<p style="margin: 0; font-size: 0.75rem; color: gray;">1 hr. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item d-flex align-items-start" style="padding: 10px;">
+								<i class="bi bi-x-circle text-danger"
+									style="font-size: 1.2rem; margin-right: 10px;"></i>
+								<div>
+									<h6 style="margin: 0; font-size: 1rem;">Atque rerum nesciunt</h6>
+									<p style="margin: 0; font-size: 0.85rem;">Quae dolorem earum veritatis oditseno</p>
+									<p style="margin: 0; font-size: 0.75rem; color: gray;">1 hr. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item d-flex align-items-start" style="padding: 10px;">
+								<i class="bi bi-x-circle text-danger"
+									style="font-size: 1.2rem; margin-right: 10px;"></i>
+								<div>
+									<h6 style="margin: 0; font-size: 1rem;">Atque rerum nesciunt</h6>
+									<p style="margin: 0; font-size: 0.85rem;">Quae dolorem earum veritatis oditseno</p>
+									<p style="margin: 0; font-size: 0.75rem; color: gray;">1 hr. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+
+							<li class="notification-item d-flex align-items-start" style="padding: 10px;">
+								<i class="bi bi-check-circle text-success"
+									style="font-size: 1.2rem; margin-right: 10px;"></i>
+								<div>
+									<h6 style="margin: 0; font-size: 1rem;">Sit rerum fuga</h6>
+									<p style="margin: 0; font-size: 0.85rem;">Quae dolorem earum veritatis oditseno</p>
+									<p style="margin: 0; font-size: 0.75rem; color: gray;">2 hrs. ago</p>
+								</div>
+							</li>
+
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+
+							<li class="notification-item d-flex align-items-start" style="padding: 10px;">
+								<i class="bi bi-info-circle text-primary"
+									style="font-size: 1.2rem; margin-right: 10px;"></i>
+								<div>
+									<h6 style="margin: 0; font-size: 1rem;">Dicta reprehenderit</h6>
+									<p style="margin: 0; font-size: 0.85rem;">Quae dolorem earum veritatis oditseno</p>
+									<p style="margin: 0; font-size: 0.75rem; color: gray;">4 hrs. ago</p>
+								</div>
+							</li>
+						</div>
+
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li class="dropdown-footer" style="padding: 10px;">
+							<a href="#" style="color: #007bff;">Show all notifications</a>
+						</li>
+					</ul><!-- End Notification Dropdown Items -->
+				</li>
+				<!-- Notification li - end -->
+
+
+				<!-- Language li -->
+				<div class="lang-box">
+
+
+
+
+
+
+					<!-- LMS Videos - start -->
+					<div class="nav-item dropdown lms-dd align-items-center d-flex pe-1"
+						th:if="${userType=='ROLE_Individual' || userType=='ROLE_Admin' || userType=='ROLE_Department' || userType=='ROLE_SuperAdmin'}">
+						<a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+							aria-expanded="false">
+							<div class="video-play-button">
+								<span></span>
+							</div>
+							LMS Videos
+						</a>
+						<!-- For Citizen -->
+						<ul class="vidDropdown dropdown-menu" th:if="${userType=='ROLE_Individual'}">
+							<li data-value="lodgeGrievance.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Lodge grievance</a></li>
+						</ul>
+						<!-- For Admin (Dept Nodal) -->
+						<ul class="vidDropdown dropdown-menu" th:if="${userType=='ROLE_Admin'}">
+							<li data-value="nodalInterProcessing.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Forward Inter-Department</a></li>
+							<li data-value="nodalForwardViewHistory.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Forward and view History of Grievance</a></li>
+							<li data-value="nodalAnalyticalDashboard.mp4"><a class="dropdown-item"
+									data-bs-toggle="modal" data-bs-target="#videoViewer">Analytical Dashboard</a></li>
+							<li data-value="createUsers.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Create User</a></li>
+							<li data-value="mapUpdateCategories.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Map,Updated the Category</a></li>
+							<li data-value="cpgramForwardReverse.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to process the CPGRAM Grievance</a></li>
+							<li data-value="nodalInterProcessing.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to process the Inter Dept Grievance</a></li>
+							<li data-value="processGrievanceAtAllLevel.mp4"><a class="dropdown-item"
+									data-bs-toggle="modal" data-bs-target="#videoViewer">How to process the
+									grievance</a></li>
+						</ul>
+						<!-- For Department Users -->
+						<ul class="vidDropdown dropdown-menu" th:if="${userType=='ROLE_Department'}">
+							<li data-value="processGrievanceAtAllLevel.mp4"><a class="dropdown-item"
+									data-bs-toggle="modal" data-bs-target="#videoViewer">How to process the
+									grievance</a></li>
+						</ul>
+
+						<!-- As per the document dated 31st July 2024 - All LMS videos will be available for SuperAdmin - SKY -->
+						<!-- For Super Admin -->
+						<ul class="vidDropdown dropdown-menu" th:if="${userType=='ROLE_SuperAdmin'}">
+							<li data-value="DoPGLogin.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">DOPG Dashboard</a></li>
+							<li data-value="cpgramForwardReverse.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Fetch & Forward CPGRAM Grievance</a></li>
+							<li data-value="nodalInterProcessing.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Forward Inter-Department</a></li>
+							<li data-value="nodalForwardViewHistory.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Forward and view History of Grievance</a></li>
+							<li data-value="nodalAnalyticalDashboard.mp4"><a class="dropdown-item"
+									data-bs-toggle="modal" data-bs-target="#videoViewer">Analytical Dashboard</a></li>
+							<li data-value="createUsers.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Create User</a></li>
+							<li data-value="mapUpdateCategories.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Map,Updated the Category</a></li>
+							<li data-value="cpgramForwardReverse.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to process the CPGRAM Grievance</a></li>
+							<li data-value="nodalInterProcessing.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to process the Inter Dept Grievance</a></li>
+							<li data-value="processGrievanceAtAllLevel.mp4"><a class="dropdown-item"
+									data-bs-toggle="modal" data-bs-target="#videoViewer">How to process the
+									grievance</a></li>
+							<li data-value="processGrievanceAtAllLevel.mp4"><a class="dropdown-item"
+									data-bs-toggle="modal" data-bs-target="#videoViewer">How to process the
+									grievance</a></li>
+							<li data-value="lodgeGrievance.mp4"><a class="dropdown-item" data-bs-toggle="modal"
+									data-bs-target="#videoViewer">How to Lodge grievance</a></li>
+						</ul>
+
+					</div>
+					<!-- LMS Videos - end -->
+
+					<!-- user manuals - start -->
+					<div class="nav-item dropdown lms-dd align-items-center d-flex pe-1">
+						<a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+							aria-expanded="false">
+							User Manual
+						</a>
+
+						<!-- As per the document dated 31st July 2024 - All manuals will be available for SuperAdmin - SKY -->
+						<ul th:if="${userType=='ROLE_SuperAdmin'}" class="pdfDropdown dropdown-menu">
+							<li data-value="SUPER_ADMIN.pdf"><a class="dropdown-item" href="#">Super Admin</a></li>
+							<li data-value="NODAL.pdf"><a class="dropdown-item" href="#">Department NODAL</a></li>
+							<li data-value="Dealing_Hand.pdf"><a class="dropdown-item" href="#">Dealing Hand - HLG RMC
+									Office</a></li>
+							<li data-value="District_Magistrate.pdf"><a class="dropdown-item" href="#">District
+									Magistrate</a></li>
+							<li data-value="Citizen.pdf"><a class="dropdown-item" href="#">Citizen</a></li>
+						</ul>
+
+						<!-- Role Based Manuals - SKY -->
+						<ul class="pdfDropdown dropdown-menu">
+							<!-- <li th:if="${userType=='ROLE_SuperAdmin'}" data-value="SUPER_ADMIN.pdf"><a
+									class="dropdown-item" href="#">Super Admin</a></li> -->
+							<li th:if="${userType=='ROLE_Admin'}" data-value="NODAL.pdf"><a class="dropdown-item"
+									href="#">Department NODAL</a></li>
+							<li th:if="${userType=='ROLE_DealingHand'}" data-value="Dealing_Hand.pdf"><a
+									class="dropdown-item" href="#">Dealing Hand - HLG RMC Office</a></li>
+							<li th:if="${userType=='ROLE_DM'}" data-value="District_Magistrate.pdf"><a
+									class="dropdown-item" href="#">District Magistrate</a></li>
+							<li th:if="${userType=='ROLE_Individual'}" data-value="Citizen.pdf"><a class="dropdown-item"
+									href="#">Citizen</a></li>
+						</ul>
+					</div>
+					<!-- user manuals - end -->
+
+
+					<div id="customBhas" class="lang-switcher-block nodtranslate">
+
+					</div>
+				</div>
+
+
+				<!-- User li -->
+				<li class=" dropdown pe-3"><a class="nav-link nav-profile d-flex align-items-center " href="#"
+						data-bs-toggle="dropdown">
+						<img th:src="@{/img/user_icon.png}" alt="Profile" class="rounded-circle">
+
+						<span class="d-none d-md-block dropdown-toggle ps-2" th:text="${usr}"></span>
+
+					</a>
+
+					<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+
+						<li class="dropdown-header">
+							<h6 id="randomVal2" th:text="${usr}"></h6> <span th:text="${dsn}"></span>
+							<h6 th:text="${designation}"></h6></span>
+						</li>
+						<li>
+							<hr class="dropdown-divider">
+
+						</li>
+
+						<li>
+							<a class="dropdown-item d-flex align-items-center" th:href="@{
+								${(userType == 'ROLE_Appellate') 
+								? '/appellant/userProfile' 
+								: (globalUri.contains('/analytics') 
+								? '/analytics/userProfile' 
+								: 'userProfile')}
+							}" target="_blank">
+								<i class="bi bi-gear"></i>
+								<span>Account Settings</span>
+							</a>
+						</li>
+
+						<!-- <li>
+							<a class="dropdown-item d-flex align-items-center" href="samadhanDiscussion">
+								<i class="bi bi-chat-dots"></i>
+								<span>Samadhan Chat</span>
+							</a>
+						</li> -->
+
+
+
+						<li>
+							<form id="logoutForm" th:action="@{/logout}" method="POST">
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+								<a class="dropdown-item d-flex align-items-center closeLogout" href="#"
+									onclick="document.getElementById('logoutForm').submit(); return false;">
+									<i class="bi bi-box-arrow-right"></i> Logout
+								</a>
+							</form>
+						</li>
+
+					</ul>
+
+
+				</li>
+
+			</ul>
+		</nav>
+
+	</header>
+
+
+	<!-- End Header -->
+
+
+	<div class="modal fade" id="videoViewer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content yr-video-modal">
+				<button type="button" class="yr-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+				<div class="modal-body">
+
+					<div class="embed-responsive embed-responsive-16by9">
+						<video id="resVid" width="100%" height="440" controls>
+							<source id="videoSource" src="" type="video/mp4">
+						</video>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Compose Notification Modal -->
+	<div class="modal fade" id="composeNotificationModal" tabindex="-1" aria-labelledby="composeNotificationLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="border-radius: 10px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);">
+				<div class="modal-header" style="background: var(--purple) !important; color: white;">
+					<h5 class="modal-title" id="composeNotificationLabel">Compose Notification</h5>
+					<button type="button" class="btn-close" style="background-color: #fff;" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body" style="padding: 20px;">
+					<form id="composeNotificationForm">
+						<div class="mb-4">
+							<label for="recipient" class="form-label">Composing To</label>
+							<select class="form-select" id="recipient" required>
+								<option value="" disabled selected>Select recipient</option>
+								<option value="allUsers">All Users</option>
+								<option value="allDept">All Department Users</option>
+								<option value="specificDept">Specific Department Users</option>
+							</select>
+						</div>
+
+						<div class="mb-3" id="departmentDropdown" style="display:none;">
+							<label for="deptListforNotification" class="form-label">Select Department</label>
+							<select class="form-select" id="deptListforNotification">
+								<option value="" disabled selected>Select department</option>
+								<option value="hr">HR</option>
+								<option value="sales">Sales</option>
+								<option value="it">IT</option>
+								<option value="marketing">Marketing</option>
+							</select>
+						</div>
+
+						<div class="grid-container"
+							style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+							<div class="mb-3">
+								<label for="compositionType" class="form-label">Composition Type</label>
+								<select class="form-select" id="compositionType" required>
+									<option value="" disabled selected>Select type</option>
+									<option value="alert">Alert</option>
+									<option value="warning">Warning</option>
+									<option value="urgent">Urgent</option>
+									<option value="reminder">Reminder</option>
+									<option value="info">Info</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="priority" class="form-label">Priority Level</label>
+								<select class="form-select" id="priority">
+									<option value="" disabled selected>Select level</option>
+									<option value="normal">Normal</option>
+									<option value="high">High</option>
+									<option value="low">Low</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="mb-4">
+							<label for="attachment" class="form-label">Attach File (Optional)</label>
+							<input type="file" class="form-control" id="attachment">
+						</div>
+
+						<div class="mb-3" style="margin-top: 20px;">
+							<label for="notificationMessage" class="form-label">Message</label>
+							<textarea class="form-control" id="notificationMessage" rows="3" style="resize: none;"
+								required></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer" style="border-top: none;">
+					<button type="reset" class="btn btn-light" id="resetButton">Reset</button>
+					<button type="submit" class="btn text-white" style="background: var(--purple) !important;"
+						form="composeNotificationForm">Send
+						Notification</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Compose Notification Modal -->
+
+
+
+
+</div>

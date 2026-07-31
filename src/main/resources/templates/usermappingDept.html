@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head">
+</head>
+<title>USER MAPPING - DEPARTMENT</title>
+
+
+<body>
+
+	<div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+
+	<div lang="en" th:include="left_sidebar :: returnToDashboard"></div>
+
+	<main id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>User Mapping</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+					<li class="breadcrumb-item active">User Mapping</li>
+				</ol>
+			</nav>
+		</div>
+		<!-- End Page Title -->
+
+		<section class="section dashboard">
+			<input type="hidden" th:value="${usrL}" id="usl">
+			<div class="row" th:if="${usrL != 3}">
+				<div class="col-md-6">
+					<h5 class="card-title">Select/Create new User</h5>
+					<div class="form-floating mb-3 wrap_multiselect">
+						<select class="form-select" id="selUser" aria-label="usser">
+							<option value="0">Select</option>
+							<option value="add">Create new User</option>
+							<option th:each="dept : ${deptUser}" th:value="${dept.username}"
+								th:text="${dept.username}"></option>
+						</select> <label for="departName">User</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="row" th:if="${usrL == 3}">
+				<div class="col-md-6">
+					<h5 class="card-title">Select/Create new User</h5>
+					<div class="form-floating mb-3 wrap_multiselect">
+						<select class="form-select" id="selDist" aria-label="usser">
+							<option value="0">Select</option>
+							<option th:each="dept : ${districts}" th:value="${dept.district}"
+								th:text="${dept.district}"></option>
+						</select> <label for="departName">District</label>
+					</div>
+				</div>
+			</div>
+			<div class="row" th:if="${usrL == 3}">
+				<div class="col-md-6">
+					<div class="form-floating mb-3 wrap_multiselect">
+						<select class="form-select" id="selUser2" aria-label="usser"
+							disabled="disabled">
+							<option value="0">Select</option>
+						</select> <label for="departName">User</label>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- <div th:if="${assignCateg == 'yes'}" class="row"> -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 th:if="${#lists.size(categL)} > 0" class="card-title">Assign
+								Categories</h5>
+							<h5 th:if="${#lists.size(categL)} == 0" class="card-title">No more categories available.</h5>
+
+							<div class="form-floating mb-3 wrap_multiselect">
+								<div th:each="t : ${categL}" class="form-check">
+									<input class="form-check-input flexCheckChecked"
+										type="checkbox" th:value="${t.id}" name="flexCheckChecked">
+									<label class="form-check-label" for="flexCheckChecked"
+										th:text="${t.category_name}"></label>
+								</div>
+
+							</div>
+							<div class="row" id="assignDiv" style="display: none">
+								<div class="col-md-6 mt-3">
+									<div>
+										<button type="submit" class="btn btn-primary" id="assignUser">Submit</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<!--  -->
+			<div class="col-lg-12" th:if="${chk == 'no'}" id="newUserDiv"
+				style="display: none">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Create new User</h5>
+						<div>
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-floating">
+										<input type="text" class="form-control input-f"
+											placeholder="First name" id="fn"> <label
+											for="floatingZip">First name </label>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-floating">
+										<input type="text" class="form-control input-f"
+											placeholder="Middle name" id="mn"> <label
+											for="floatingZip">Middle name </label>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-floating">
+										<input type="text" class="form-control input-f"
+											placeholder="Last name" id="ln"> <label
+											for="floatingZip">Last name </label>
+									</div>
+								</div>
+								<div class="col-md-6 mt-3">
+									<div class="form-floating">
+										<input type="text" class="form-control" placeholder="Mobile"
+											id="mobile" maxlength="10"> <label for="floatingZip">Mobile
+										</label>
+									</div>
+								</div>
+								<div class="col-md-6 mt-3">
+									<div class="form-floating">
+										<input type="email" class="form-control" placeholder="Email"
+											id="email" maxlength="50"> <label for="floatingZip">Email
+										</label>
+									</div>
+								</div>
+								<div class="col-md-6 mt-3">
+									<div class="form-floating">
+										<input type="text" class="form-control input-field"
+											placeholder="Designation" id="designation"> <label
+											for="floatingZip">Designation </label>
+									</div>
+								</div>
+								<div class="col-md-6 mt-3">
+									<div class="form-floating">
+										<input  type="password" class="form-control"
+											placeholder="Password" id="password"> <label
+											for="floatingZip">Password </label>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-6 mt-3">
+								<div>
+									<button type="submit" class="btn btn-primary" id="submitUser">Create</button>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+			<div class="row" id="cUsers" style="display: none;">
+
+				<!-- Left side columns -->
+				<div class="col-lg-12 yrTab">
+					<div class="card">
+						<div class="card-body p-0 border border-3 rounded-3">
+							<h5 class="card-title px-3 py-2 text-dark">Created Users</h5>
+							<div class="yr-Rtable p-4">
+								<table class="table table-bordered" id="YRreport"
+									style="width: 100%;"></table>
+								<!-- <table class="table datatable table-bordered" id="YRreport">
+									<thead>
+										<tr>
+										<th>S. No.</th>
+											<th>Username</th>
+											<th>Created on</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="t,stat : ${deptUser}">
+										<th scope="row" th:text="${stat.index+1}"></th>
+											<td class="idForvHis" th:text="${t.username}"></td>
+											<td th:text="${t.created_date}"></td>
+											<td>
+												<button th:value="${t.username}"
+													class="btn btn-sm btn-primary dtl-btn">Details</button>
+											</td>
+										</tr>
+									</tbody>
+								</table> -->
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				<!-- End Left side columns -->
+			</div>
+		</section>
+
+	</main>
+	<!-- Button trigger modal -->
+	<!-- Modal -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<table class="table datatable table-bordered" id="rtb"
+						style="width: 100%">
+						<thead>
+							<tr>
+
+								<th>Username</th>
+								<th>Assigned Category</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- End #main -->
+
+	<!-- ======= Footer ======= -->
+	<div lang="en" th:include="footer :: footer1"></div>
+	<script th:src="@{/js/usermappingDept.js}"></script>
+
+</body>
+
+</html>

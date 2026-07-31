@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html th:fragment="header" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head lang="en" th:include="head :: head"> </head>
+<style>
+
+</style>
+
+<body>
+  <div lang="en" th:include="dashboard_header :: dashboard_header"></div>
+
+  <!-- <div lang="en" th:include="left_sidebar :: returnToDashboard"></div> -->
+
+  <main id="main" style="margin-left: 0px !important" class="main">
+    <div class="pagetitle">
+      <nav>
+        <ol class="breadcrumb">
+          <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+          <li class="breadcrumb-item active">Grievance Details</li>
+        </ol>
+      </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <section class="section dashboard">
+      <!--  -->
+      <div class="row">
+        <!-- Left side columns -->
+        <div class="btn-wrapper button-part">
+          <button class="grievancepdf2 btn btn-purple ms-auto mb-3" data-value="downloadgrpdf2"
+            data-value1="Grievance Detail">
+            <i class="bx bx-download"></i>
+          </button>
+        </div>
+        <div class="col-lg-12 yrTab">
+          <div class="card" id="downloadgrpdf2">
+            <div class="card-body py-3">
+              <div th:each="dt : ${dataList}">
+                <div class="alert alert-primary fw-bold">
+                  Application Id:
+
+                  <span th:text="${dt.uniqid}" id="dec"></span>
+                </div>
+                <div class="py-2 bg-light-purple row m-0" style="border-radius: 25px 25px 0px 0px">
+                  <div class="col-lg-3 col-md-4 fw-bold">Name:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.name}" id="usrName"></div>
+                </div>
+                <div class="py-2 row bg-light-pink m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Mobile No.:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.mobile}" id="mobNo"></div>
+                </div>
+
+                <div class="py-2 row bg-light-purple m-0" th:if="${dt.email!=''}">
+                  <div class="col-lg-3 col-md-4 fw-bold">Email Id:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.email}" id="emailId"></div>
+                </div>
+                <div class="py-2 row bg-light-pink m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Address:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.address}" id="add"></div>
+                </div>
+                <div class="py-2 row bg-light-purple m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Pincode:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.pincode}" id="add"></div>
+                </div>
+                <!-- 26 JAN 2024 - SKY -->
+                <!-- <div class="py-2 row border-bottom">
+									<div class="col-lg-3 col-md-4 fw-bold">Division:</div>
+									<div class="col-lg-9 col-md-8" th:text="${dt.divison}" id="divison"></div>
+								</div>
+								<div class="py-2 row border-bottom">
+									<div class="col-lg-3 col-md-4 fw-bold">District:</div>
+									<div class="col-lg-9 col-md-8" th:text="${dt.district}" id="district"></div>
+								</div> -->
+                <!-- 26 JAN 2024 - SKY -->
+                <div class="py-2 row bg-light-pink m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Department:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.department}" id="dep"></div>
+                </div>
+                <div class="py-2 row bg-light-purple m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Category:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.category}" id="cat"></div>
+                </div>
+
+                <div class="py-2 row bg-light-pink m-0" th:if="${dt.sub_category!=''}">
+                  <div class="col-lg-3 col-md-4 fw-bold">
+                    Next Level Category:
+                  </div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.sub_category}" id="nxt1"></div>
+                </div>
+
+                <div class="py-2 row bg-light-purple m-0"
+                  th:if="${dt.sub_Cat_Next_Level2!='' and dt.sub_Cat_Next_Level2!=null}">
+                  <div class="col-lg-3 col-md-4 fw-bold">
+                    Next Level Category:
+                  </div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.sub_Cat_Next_Level2}" id="nxt2"></div>
+                </div>
+
+                <div class="py-2 row bg-light-pink m-0"
+                  th:if="${dt.sub_Cat_Next_Level3!='' and dt.sub_Cat_Next_Level3!=null}">
+                  <div class="col-lg-3 col-md-4 fw-bold">
+                    Next Level Category:
+                  </div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.sub_Cat_Next_Level3}" id="nxt3"></div>
+                </div>
+
+                <div class="py-2 row bg-light-purple m-0"
+                  th:if="${dt.sub_Cat_Next_Level4!='' and dt.sub_Cat_Next_Level4!=null}">
+                  <div class="col-lg-3 col-md-4 fw-bold">
+                    Next Level Category:
+                  </div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.sub_Cat_Next_Level4}" id="nxt4"></div>
+                </div>
+
+                <div class="py-2 row bg-light-pink m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Description:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.description}" id="dec"></div>
+                </div>
+                <div class="py-2 row bg-light-purple m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Submitted On:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.createddate}" id="crdate"></div>
+                </div>
+                <div class="py-2 row bg-light-pink m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Latitude:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.latitude}" id="lat"></div>
+                </div>
+                <div class="py-2 row bg-light-purple m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Longitude:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.longitude}" id="lon"></div>
+                </div>
+
+                <!-- Naitik changes on view application 08/01/2026 -->
+                <div class="py-2 row bg-light-purple m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Pertain Divison:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.division_name}" id="divison"></div>
+                </div>
+                <div class="py-2 row bg-light-purple m-0">
+                  <div class="col-lg-3 col-md-4 fw-bold">Pertain District:</div>
+                  <div class="col-lg-9 col-md-8" th:text="${dt.district_name}" id="district"></div>
+                </div>
+
+                <div th:if="${dt.municipality_name != null or dt.ward_name != null}">
+                  <div class="py-2 row bg-light-purple m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Municipality:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.municipality_name}" id="municipality"></div>
+                  </div>
+                  <div class="py-2 row bg-light-purple m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Ward:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.ward_name}" id="ward"></div>
+                  </div>
+                </div>
+
+                <div th:if="${dt.block_name != null or dt.panchayat_name != null}">
+                  <div class="py-2 row bg-light-purple m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Block:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.block_name}" id="block"></div>
+                  </div>
+                  <div class="py-2 row bg-light-purple m-0">
+                    <div class="col-lg-3 col-md-4 fw-bold">Panchayat:</div>
+                    <div class="col-lg-9 col-md-8" th:text="${dt.panchayat_name}" id="panchayat"></div>
+                  </div>
+                </div>
+                <!-- Naitik Changes End on View Application 08/01/2026 -->
+
+
+                <div class="py-2 row bg-light-pink m-0 align-items-center">
+                  <div class="col-lg-3 col-md-4 fw-bold">
+                    Acknowledgement Slip:
+                  </div>
+                  <div class="col-lg-9 col-md-8">
+                    <div class="view-btn-wrapper">
+                      <a class="btn-view btn-pur ackSlip" href="#" data-status="false" th:data-value="${dt.uniqid}"
+                        title="View"><i class="bi bi-eye-fill"></i></a>
+                      <a class="btn-view btn-blue ackSlip" href="#" data-status="true" th:data-value="${dt.uniqid}"
+                        title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="py-2 row bg-light-purple m-0 align-items-center no-print">
+                  <div class="col-lg-3 col-md-4 fw-bold">Document:</div>
+                  <div th:if="${dt.file_path != '' && dt.file_path!=null}" class="col-lg-9 col-md-8">
+                    <div class="view-btn-wrapper">
+                      <a class="btn-view btn-pur"
+                        th:href="@{'/fileViewer?filename=' + ${dt.file_path} + '&name=' + ${dt.file_name}}"
+                        target="_blank" title="View"><i class="bi bi-eye-fill"></i></a>
+                      <a class="btn-view btn-blue fileDownloader" th:href="@{'/download1?d=' + ${dt.file_path}}"
+                        title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a>
+                    </div>
+                    <!-- <button class="btn btn-sm btn-primary fileViewer" th:href="@{'/download1?d=' + ${dt.file_path}}" type="button">View</button> -->
+                  </div>
+                  <!-- 									<a th:if="${dt.file_path != ''}" class="col-lg-9 col-md-8" th:text="${dt.file_path}" th:val="${dt.file_path}" id='doccss'>	</a>-->
+                  <!-- <a th:if="${dt.file_path != '' && dt.file_path!=null}" class="col-lg-9 col-md-8" th:href="@{'/download1?d=' + ${dt.file_path}}" th:text="${dt.file_name}"></a> -->
+                </div>
+
+                <div class="py-2 row bg-light-pink m-0 align-items-center no-print"
+                  style="border-radius: 0px 0px 25px 25px">
+                  <div class="col-lg-3 col-md-4 fw-bold">Audio/Video:</div>
+                  <div th:if="${dt.second_file_path != '' && dt.second_file_path!=null}" class="col-lg-9 col-md-8">
+                    <div class="view-btn-wrapper">
+                      <a class="btn-view btn-pur fileViewer"
+                        th:href="@{'/fileViewer?filename=' + ${dt.second_file_path} + '&name=' + ${dt.second_file_name}}"
+                        target="_blank" title="View"><i class="bi bi-eye-fill"></i></a>
+                      <a class="btn-view btn-blue fileDownloader" th:href="@{'/download1?d=' + ${dt.second_file_path}}"
+                        title="Download"><i class="bi bi-cloud-arrow-down-fill"></i></a>
+                    </div>
+                    <!-- <button class="btn btn-sm btn-primary fileViewer" th:href="@{'/download1?d=' + ${dt.file_path}}" type="button">View</button> -->
+                  </div>
+                  <!-- 									<a th:if="${dt.file_path != ''}" class="col-lg-9 col-md-8" th:text="${dt.file_path}" th:val="${dt.file_path}" id='doccss'>	</a>-->
+                  <!-- <a th:if="${dt.file_path != '' && dt.file_path!=null}" class="col-lg-9 col-md-8" th:href="@{'/download1?d=' + ${dt.file_path}}" th:text="${dt.file_name}"></a> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Left side columns -->
+    </section>
+    <section class="section dashboard my-2"
+      th:if="${clarificationRequested} and ${dataList[0].final_status ne 'Final Disposed'}">
+      <div class="card" style="border-radius: 25px">
+        <div class="card-body">
+          <div class="alert alert-primary fw-bold mt-3">Clarification</div>
+          <div class="row mx-2 gap-2">
+            <div class="col-12">
+              <textarea id="userClarificationMessage" class="form-control" rows="3"
+                placeholder="Type a message"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="userClarificationMessageFile">Select file (if required)</label>
+              <input id="userClarificationMessageFile" class="form-control" type="file"
+                accept="image/*, application/pdf" />
+            </div>
+            <div class="col-6">
+              <button class="btn text-white border-0 px-3" style="background: #8c39f9" id="userClarificationBtn"
+                th:each="dt : ${dataList}" th:value="${dt.uniqid}">
+                Post
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section dashboard my-2" th:if="${clarificationRequested}">
+      <div class="card" style="border-radius: 25px">
+        <div class="card-body">
+          <div class="alert alert-primary fw-bold mt-3">Message History</div>
+          <div class="row mx-3" th:if="${#lists.size(grevHistoryRev) eq 0}">No records found.</div>
+          <div class="clarification-box">
+            <div th:each="history : ${grevHistoryRev}"
+              th:if="${history.action_taken ne null && #strings.contains(history.action_taken, 'Clarification')}"
+              class="card my-2 clarificationMessageCard"
+              th:classappend="${usr eq history.action_taken_by ? 'right' : 'left'} ">
+              <div class="card-body">
+                <div class="clarification-head">
+                  <h5 th:text="${history.action_taken_by}">Message from</h5>
+                  <span th:text="${#dates.format(history.date_and_time_of_action, 'dd MMM yyyy, hh:mm:ss a')}">Time
+                    Stamp</span>
+                </div>
+                <div class="clarification-body">
+                  <p th:text="${history.remarks}"></p>
+                  <a class="btn-view btn-pur" th:if="${history.file_name ne null}"
+                    th:href="@{'/download1?d=' + ${history.file_path}}" title="Download"><i
+                      class="bi bi-cloud-arrow-down-fill"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======= Footer ======= -->
+  <div lang="en" th:include="footer :: footer2"></div>
+  <script th:src="@{/js/userClarification.js}"></script>
+</body>
+
+</html>
