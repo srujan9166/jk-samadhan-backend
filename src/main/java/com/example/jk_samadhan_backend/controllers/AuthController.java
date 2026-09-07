@@ -15,7 +15,7 @@ import com.example.jk_samadhan_backend.services.CaptchaService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping({"/auth", "/api/auth"})
 public class AuthController {
 
     private final AuthService authService;
@@ -48,6 +48,15 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody com.example.jk_samadhan_backend.dto.ChangePasswordDTO changePasswordDTO, java.security.Principal principal) {
+        try {
+            return ResponseEntity.ok().body(authService.changePassword(changePasswordDTO, principal));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Collections.singletonMap("error", e.getMessage()));
         }
     }
 

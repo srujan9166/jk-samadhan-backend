@@ -38,6 +38,18 @@ public class AssignedUsers {
     @Column(columnDefinition = "TEXT")
     private String remark;
 
+    @Column(name = "authority", length = 50)
+    private String authority;
+
+    @Column(name = "forward_type", length = 50)
+    private String forwardType;
+
+    @Column(name = "user_level")
+    private Integer userLevel;
+
+    @Column(name = "department", length = 100)
+    private String department;
+
     @Column(name = "reminder_in_days")
     private Integer reminderInDays = 28;
 

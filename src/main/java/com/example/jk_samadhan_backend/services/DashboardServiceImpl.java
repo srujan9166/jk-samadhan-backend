@@ -75,7 +75,7 @@ public class DashboardServiceImpl implements DashboardService {
         long jkTotal = 0, jkPending = 0, jkResolved = 0, jkRejected = 0, jkForwarded = 0, jkClosed = 0, jkPriority = 0, jkNormal = 0, jkUrgent = 0, jkInProgress = 0, jkDoesNotPertain = 0;
         long cpTotal = 0, cpPending = 0, cpResolved = 0, cpRejected = 0, cpClosed = 0;
 
-        List<GrievanceMaster> jkGrievancesList = new ArrayList<>();
+        List<GrievanceProjection> jkGrievancesList = new ArrayList<>();
         List<CpgramGrievanceMaster> cpGrievancesList = new ArrayList<>();
         List<AppealMaster> appealList = new ArrayList<>();
         List<GrievanceHistory> historyList = new ArrayList<>();
@@ -101,8 +101,8 @@ public class DashboardServiceImpl implements DashboardService {
             cpRejected = cpgramGrievanceMasterRepository.countByStatus("Rejected");
             cpClosed = cpResolved;
 
-            PageRequest pageRequest = PageRequest.of(0, 100, Sort.by("id").descending());
-            jkGrievancesList = grievanceMasterRepository.findAllWithAssociations(pageRequest);
+            PageRequest pageRequest = PageRequest.of(0, 150000, Sort.by("id").descending());
+            jkGrievancesList = grievanceMasterRepository.findAllProjections(pageRequest);
             cpGrievancesList = cpgramGrievanceMasterRepository.findAll();
             appealList = appealMasterRepository.findAll();
             historyList = grievanceHistoryRepository.findTop10ByOrderByCreatedAtDesc();
@@ -131,8 +131,8 @@ public class DashboardServiceImpl implements DashboardService {
                 cpRejected = cpgramGrievanceMasterRepository.countByForwardedDepartmentAndStatus(deptName, "Rejected");
                 cpClosed = cpResolved;
 
-                PageRequest pageRequest = PageRequest.of(0, 100, Sort.by("id").descending());
-                jkGrievancesList = grievanceMasterRepository.findByDepartmentIdWithAssociations(deptId, pageRequest);
+                PageRequest pageRequest = PageRequest.of(0, 2000, Sort.by("id").descending());
+                jkGrievancesList = grievanceMasterRepository.findProjectionsByDepartmentId(deptId, pageRequest);
                 cpGrievancesList = cpgramGrievanceMasterRepository.findByForwardedDepartment(deptName);
                 appealList = appealMasterRepository.findByDepartmentId(deptId);
                 historyList = grievanceHistoryRepository.findTop10ByGrievanceCategoryDepartmentIdOrderByCreatedAtDesc(deptId);
@@ -162,8 +162,8 @@ public class DashboardServiceImpl implements DashboardService {
                 cpRejected = cpgramGrievanceMasterRepository.countByDistrictAndStatus(distName, "Rejected");
                 cpClosed = cpResolved;
 
-                PageRequest pageRequest = PageRequest.of(0, 100, Sort.by("id").descending());
-                jkGrievancesList = grievanceMasterRepository.findByDistrictIdWithAssociations(distId, pageRequest);
+                PageRequest pageRequest = PageRequest.of(0, 2000, Sort.by("id").descending());
+                jkGrievancesList = grievanceMasterRepository.findProjectionsByDistrictId(distId, pageRequest);
                 cpGrievancesList = cpgramGrievanceMasterRepository.findByDistrict(distName);
                 appealList = appealMasterRepository.findByDistrictId(distId);
                 historyList = grievanceHistoryRepository.findTop10ByGrievanceDistrictIdOrderByCreatedAtDesc(distId);
@@ -183,8 +183,8 @@ public class DashboardServiceImpl implements DashboardService {
             jkInProgress = grievanceMasterRepository.countAssignedGrievancesByStatus(user.getId(), "In Progress");
             jkDoesNotPertain = grievanceMasterRepository.countAssignedGrievancesByStatus(user.getId(), "Does Not Pertain");
 
-            PageRequest pageRequest = PageRequest.of(0, 100, Sort.by("id").descending());
-            jkGrievancesList = grievanceMasterRepository.findAssignedGrievancesWithAssociations(user.getId(), pageRequest);
+            PageRequest pageRequest = PageRequest.of(0, 2000, Sort.by("id").descending());
+            jkGrievancesList = grievanceMasterRepository.findAssignedProjectionsByUserId(user.getId(), pageRequest);
             historyList = grievanceHistoryRepository.findTop10ByOrderByCreatedAtDesc(); // global fallback
 
         } else if (role.equalsIgnoreCase("ROLE_Appellate")) {
@@ -206,8 +206,8 @@ public class DashboardServiceImpl implements DashboardService {
             jkInProgress = grievanceMasterRepository.countBySubmittedByIdAndStatus(user.getId(), "In Progress");
             jkDoesNotPertain = grievanceMasterRepository.countBySubmittedByIdAndStatus(user.getId(), "Does Not Pertain");
 
-            PageRequest pageRequest = PageRequest.of(0, 100, Sort.by("id").descending());
-            jkGrievancesList = grievanceMasterRepository.findBySubmittedByIdWithAssociations(user.getId(), pageRequest);
+            PageRequest pageRequest = PageRequest.of(0, 2000, Sort.by("id").descending());
+            jkGrievancesList = grievanceMasterRepository.findProjectionsBySubmittedById(user.getId(), pageRequest);
             appealList = appealMasterRepository.findBySubmittedById(user.getId());
             historyList = grievanceHistoryRepository.findTop10ByGrievanceSubmittedByIdOrderByCreatedAtDesc(user.getId());
         }
@@ -278,7 +278,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<GrievanceSummaryDTO> grievancesTable = new ArrayList<>();
 
         // Add local grievances
-        for (GrievanceMaster g : jkGrievancesList) {
+        for (GrievanceProjection g : jkGrievancesList) {
             grievancesTable.add(GrievanceSummaryDTO.builder()
                     .id(g.getId())
                     .uniqId(g.getUniqId())
@@ -286,10 +286,10 @@ public class DashboardServiceImpl implements DashboardService {
                     .status(g.getStatus())
                     .finalStatus(g.getFinalStatus())
                     .origin(g.getOrigin())
-                    .category(g.getCategory() != null ? g.getCategory().getName() : "NA")
-                    .department(g.getCategory() != null && g.getCategory().getDepartment() != null ? g.getCategory().getDepartment().getName() : "NA")
-                    .district(g.getDistrict() != null ? g.getDistrict().getName() : "NA")
-                    .submittedBy(g.getSubmittedBy() != null ? g.getSubmittedBy().getName() : "NA")
+                    .category(g.getCategoryName() != null ? g.getCategoryName() : "NA")
+                    .department(g.getDeptName() != null ? g.getDeptName() : "NA")
+                    .district(g.getDistrictName() != null ? g.getDistrictName() : "NA")
+                    .submittedBy(g.getSubmitterFullName() != null ? g.getSubmitterFullName() : "NA")
                     .createdAt(g.getCreatedAt() != null ? g.getCreatedAt().toString() : "")
                     .updatedAt(g.getUpdatedAt() != null ? g.getUpdatedAt().toString() : "")
                     .keyFlag(g.getKeyFlag())

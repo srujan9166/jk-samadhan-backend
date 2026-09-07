@@ -40,19 +40,24 @@ public class SecurityConfiguration {
                     ));
                     config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(java.util.List.of("*"));
+                    config.setExposedHeaders(java.util.List.of("Content-Disposition", "content-disposition"));
                     config.setAllowCredentials(true);
                     return config;
                 }))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/api/geo/**", "/api/v1/masters/**", "/api/masters/**", "/error").permitAll()
+                        .requestMatchers("/auth/login", "/auth/signup", "/auth/forgot-password", "/auth/captcha",
+                                         "/api/auth/login", "/api/auth/signup", "/api/auth/forgot-password", "/api/auth/captcha",
+                                         "/api/geo/**", "/api/v1/masters/**", "/api/masters/**", "/api/announcements/**", "/error").permitAll()
+                        .requestMatchers("/auth/change-password", "/api/auth/change-password").authenticated()
+                        .requestMatchers("/api/super-admin/**", "/api/superadmin/**").hasAnyAuthority("ROLE_SuperAdmin", "SUPERADMIN", "ROLE_SUPER_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_SuperAdmin", "ROLE_Admin", "SUPERADMIN", "ADMIN")
                         .requestMatchers("/api/dept/**").hasAnyAuthority("ROLE_Department", "DEPARTMENT")
                         .requestMatchers("/api/dm/**").hasAnyAuthority("ROLE_DM", "DM")
                         .requestMatchers("/api/appellate/**").hasAnyAuthority("ROLE_Appellate", "APPELLATE")
                         .requestMatchers("/api/dealingHand/**").hasAnyAuthority("ROLE_DealingHand", "DEALING_HAND")
-                        .requestMatchers("/api/user/**", "/api/users/**", "/api/grievances/**", "/api/dashboard/**").authenticated()
+                        .requestMatchers("/api/user/**", "/api/users/**", "/api/grievances/**", "/api/dashboard/**", "/api/appeals/**").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

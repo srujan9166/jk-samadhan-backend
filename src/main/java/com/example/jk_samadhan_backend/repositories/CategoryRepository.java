@@ -1,6 +1,7 @@
 package com.example.jk_samadhan_backend.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 import com.example.jk_samadhan_backend.models.Category;
 import java.util.List;
@@ -11,5 +12,11 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> findByDepartmentId(Integer departmentId);
     Optional<Category> findByNameIgnoreCase(String name);
     Optional<Category> findByNameIgnoreCaseAndDepartmentId(String name, Integer departmentId);
+    
+    @EntityGraph(attributePaths = {"department"})
+    List<Category> findAllByNameIgnoreCase(String name);
+
+    @EntityGraph(attributePaths = {"department"})
+    List<Category> findAllByNameIgnoreCaseAndDepartmentId(String name, Integer departmentId);
 }
 

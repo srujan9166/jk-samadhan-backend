@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface MunicipalityRepository extends JpaRepository<Municipality, Integer> {
     List<Municipality> findByDistrictId(Integer districtId);
+    java.util.Optional<Municipality> findByNameIgnoreCaseAndDistrictId(String name, Integer districtId);
+    List<Municipality> findAllByNameIgnoreCaseAndDistrictId(String name, Integer districtId);
 }

@@ -2,6 +2,7 @@ package com.example.jk_samadhan_backend.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "user_types", schema = "jks_3nf", uniqueConstraints = {
@@ -24,6 +25,7 @@ public class UserType {
     @Column(name = "user_level", nullable = false)
     private Integer userLevel;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;

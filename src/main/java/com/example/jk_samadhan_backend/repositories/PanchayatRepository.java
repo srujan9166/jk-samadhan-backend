@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface PanchayatRepository extends JpaRepository<Panchayat, Integer> {
     List<Panchayat> findByBlockId(Integer blockId);
+    java.util.Optional<Panchayat> findByNameIgnoreCaseAndBlockId(String name, Integer blockId);
+    List<Panchayat> findAllByNameIgnoreCaseAndBlockId(String name, Integer blockId);
 }

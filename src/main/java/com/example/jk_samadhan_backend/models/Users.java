@@ -45,7 +45,7 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private boolean enabled = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_type_id", nullable = false)
     private UserType userType;
 
@@ -87,7 +87,7 @@ public class Users implements UserDetails {
     @Column(name = "pincode")
     private String pincode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "district_id")
     private District districtEntity;
 
@@ -128,7 +128,7 @@ public class Users implements UserDetails {
     @Transient
     private String state;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "state_id")
     private State stateEntity;
 
@@ -227,12 +227,17 @@ public class Users implements UserDetails {
         profile.put("email", this.email != null ? this.email : "");
         profile.put("phone", this.mobile != null ? this.mobile : "");
         profile.put("address", this.address != null ? this.address : "");
+        profile.put("department", this.department != null ? this.department.getName() : "");
         
         String dist = getDistrict();
         if (dist == null || dist.isBlank()) {
-            dist = getState();
+            dist = "Other";
         }
-        profile.put("district", dist != null ? dist : "");
+        profile.put("district", dist);
+        profile.put("gender", this.gender != null ? this.gender : "");
+        profile.put("dateOfBirth", this.dateOfBirth != null ? this.dateOfBirth : (this.dob != null ? this.dob.toString() : ""));
+        profile.put("pincode", this.pincode != null ? this.pincode : "");
+        profile.put("state", (getState() != null && !getState().isBlank()) ? getState() : "Other");
         
         String activeRole = null;
         try {

@@ -65,14 +65,29 @@ public class JWTUtil {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String subject = extractUsername(token);
-        if (getTokenDetails(token).getExpiration().before(new Date())) {
+        Claims claims = getTokenDetails(token);
+        if (claims.getExpiration().before(new Date())) {
             return false;
         }
         if (userDetails instanceof com.example.jk_samadhan_backend.models.Users u) {
-            return (u.getUuid() != null && subject.equalsIgnoreCase(u.getUuid().toString()))
+            boolean matchesSubject = (u.getUuid() != null && subject.equalsIgnoreCase(u.getUuid().toString()))
                 || (u.getUsername() != null && subject.equalsIgnoreCase(u.getUsername()))
                 || (u.getMobile() != null && subject.equalsIgnoreCase(u.getMobile()))
                 || (u.getEmail() != null && subject.equalsIgnoreCase(u.getEmail()));
+
+            if (!matchesSubject) {
+                return false;
+            }
+
+            if (u.getUpdatedAt() != null && claims.getIssuedAt() != null) {
+                long issuedAtSeconds = claims.getIssuedAt().getTime() / 1000;
+                long updatedAtSeconds = u.getUpdatedAt().atZone(java.time.ZoneId.systemDefault()).toEpochSecond();
+                if (updatedAtSeconds > (issuedAtSeconds + 2)) {
+                    return false;
+                }
+            }
+
+            return true;
         }
         return subject.equalsIgnoreCase(userDetails.getUsername());
     }

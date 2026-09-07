@@ -28,6 +28,7 @@ public class MasterDataService {
     private final DesignationRepository designationRepository;
     private final UserTypeRepository userTypeRepository;
     private final UserRepository userRepository;
+    private final RoleDesignationRepository roleDesignationRepository;
 
     public MasterDataService(DepartmentRepository departmentRepository,
                              CategoryRepository categoryRepository,
@@ -40,7 +41,8 @@ public class MasterDataService {
                              WardRepository wardRepository,
                              DesignationRepository designationRepository,
                              UserTypeRepository userTypeRepository,
-                             UserRepository userRepository) {
+                             UserRepository userRepository,
+                             RoleDesignationRepository roleDesignationRepository) {
         this.departmentRepository = departmentRepository;
         this.categoryRepository = categoryRepository;
         this.subCategoryLevel1Repository = subCategoryLevel1Repository;
@@ -53,6 +55,7 @@ public class MasterDataService {
         this.designationRepository = designationRepository;
         this.userTypeRepository = userTypeRepository;
         this.userRepository = userRepository;
+        this.roleDesignationRepository = roleDesignationRepository;
     }
 
     // ==========================================
@@ -157,7 +160,14 @@ public class MasterDataService {
                 ? categoryRepository.findByDepartmentId(deptId)
                 : categoryRepository.findAll();
 
-        return list.stream().map(c -> CategoryDTO.builder()
+        java.util.Map<String, Category> uniqueMap = new java.util.LinkedHashMap<>();
+        for (Category c : list) {
+            if (c.getName() != null) {
+                uniqueMap.putIfAbsent(c.getName().trim().toUpperCase(), c);
+            }
+        }
+
+        return uniqueMap.values().stream().map(c -> CategoryDTO.builder()
                 .id(c.getId())
                 .departmentId(c.getDepartment() != null ? c.getDepartment().getId() : null)
                 .departmentName(c.getDepartment() != null ? c.getDepartment().getName() : null)
@@ -197,7 +207,14 @@ public class MasterDataService {
                 ? subCategoryLevel1Repository.findByCategoryId(categoryId)
                 : subCategoryLevel1Repository.findAll();
 
-        return list.stream().map(sc -> SubCategoryDTO.builder()
+        java.util.Map<String, SubCategoryLevel1> uniqueMap = new java.util.LinkedHashMap<>();
+        for (SubCategoryLevel1 sc : list) {
+            if (sc.getName() != null) {
+                uniqueMap.putIfAbsent(sc.getName().trim().toUpperCase(), sc);
+            }
+        }
+
+        return uniqueMap.values().stream().map(sc -> SubCategoryDTO.builder()
                 .id(sc.getId())
                 .categoryId(sc.getCategory() != null ? sc.getCategory().getId() : null)
                 .categoryName(sc.getCategory() != null ? sc.getCategory().getName() : null)
@@ -316,9 +333,116 @@ public class MasterDataService {
         return new DesignationDTO(saved.getId(), saved.getName());
     }
 
+    @CacheEvict(value = "designations", allEntries = true)
+    public DesignationDTO updateDesignation(Integer id, String name) {
+        Designation designation = designationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Designation not found with ID: " + id));
+        designation.setName(name);
+        Designation saved = designationRepository.save(designation);
+        return new DesignationDTO(saved.getId(), saved.getName());
+    }
+
+    @CacheEvict(value = {"designations", "roleDesignations"}, allEntries = true)
+    public void deleteDesignation(Integer id) {
+        if (!designationRepository.existsById(id)) {
+            throw new RuntimeException("Designation not found with ID: " + id);
+        }
+        if (roleDesignationRepository.existsByDesignationId(id)) {
+            throw new RuntimeException("Cannot delete designation as it is mapped in Role-Designation configurations.");
+        }
+        if (userRepository.existsByDesignationId(id)) {
+            throw new RuntimeException("Cannot delete designation as it is currently assigned to one or more users.");
+        }
+        designationRepository.deleteById(id);
+    }
+
     @Cacheable(value = "userTypes")
     @Transactional(readOnly = true)
     public List<UserType> getAllUserTypes() {
         return userTypeRepository.findAll();
+    }
+
+    @Cacheable(value = "roleDesignations")
+    @Transactional(readOnly = true)
+    public List<RoleDesignationDTO> getAllRoleDesignations() {
+        return roleDesignationRepository.findAll().stream()
+                .map(rd -> RoleDesignationDTO.builder()
+                        .id(rd.getId())
+                        .roleId(rd.getRole() != null ? rd.getRole().getId() : null)
+                        .roleName(rd.getRole() != null ? rd.getRole().getTypeName() : null)
+                        .designationId(rd.getDesignation() != null ? rd.getDesignation().getId() : null)
+                        .designationName(rd.getDesignation() != null ? rd.getDesignation().getName() : null)
+                        .createdBy(rd.getCreatedBy())
+                        .createdAt(rd.getCreatedAt() != null ? rd.getCreatedAt().toString() : null)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @CacheEvict(value = "roleDesignations", allEntries = true)
+    public RoleDesignationDTO createRoleDesignation(Integer roleId, Integer designationId, String createdBy) {
+        UserType role = userTypeRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found with ID: " + roleId));
+        Designation designation = designationRepository.findById(designationId)
+                .orElseThrow(() -> new RuntimeException("Designation not found with ID: " + designationId));
+
+        if (roleDesignationRepository.findByRoleIdAndDesignationId(roleId, designationId).isPresent()) {
+            throw new RuntimeException("Mapping already exists for this role and designation.");
+        }
+
+        RoleDesignation rd = RoleDesignation.builder()
+                .role(role)
+                .designation(designation)
+                .createdBy(createdBy != null ? createdBy : "system")
+                .build();
+        RoleDesignation saved = roleDesignationRepository.save(rd);
+
+        return RoleDesignationDTO.builder()
+                .id(saved.getId())
+                .roleId(role.getId())
+                .roleName(role.getTypeName())
+                .designationId(designation.getId())
+                .designationName(designation.getName())
+                .createdBy(saved.getCreatedBy())
+                .createdAt(saved.getCreatedAt() != null ? saved.getCreatedAt().toString() : null)
+                .build();
+    }
+
+    @CacheEvict(value = "roleDesignations", allEntries = true)
+    public RoleDesignationDTO updateRoleDesignation(Integer id, Integer roleId, Integer designationId) {
+        RoleDesignation rd = roleDesignationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role designation mapping not found with ID: " + id));
+        UserType role = userTypeRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found with ID: " + roleId));
+        Designation designation = designationRepository.findById(designationId)
+                .orElseThrow(() -> new RuntimeException("Designation not found with ID: " + designationId));
+
+        // Check uniqueness if changed
+        if (!rd.getRole().getId().equals(roleId) || !rd.getDesignation().getId().equals(designationId)) {
+            if (roleDesignationRepository.findByRoleIdAndDesignationId(roleId, designationId).isPresent()) {
+                throw new RuntimeException("Mapping already exists for this role and designation.");
+            }
+        }
+
+        rd.setRole(role);
+        rd.setDesignation(designation);
+        RoleDesignation saved = roleDesignationRepository.save(rd);
+
+        return RoleDesignationDTO.builder()
+                .id(saved.getId())
+                .roleId(role.getId())
+                .roleName(role.getTypeName())
+                .designationId(designation.getId())
+                .designationName(designation.getName())
+                .createdBy(saved.getCreatedBy())
+                .createdAt(saved.getCreatedAt() != null ? saved.getCreatedAt().toString() : null)
+                .build();
+    }
+
+    @CacheEvict(value = "roleDesignations", allEntries = true)
+    public void deleteRoleDesignation(Integer id) {
+        if (!roleDesignationRepository.existsById(id)) {
+            throw new RuntimeException("Role designation mapping not found with ID: " + id);
+        }
+        roleDesignationRepository.deleteById(id);
     }
 }

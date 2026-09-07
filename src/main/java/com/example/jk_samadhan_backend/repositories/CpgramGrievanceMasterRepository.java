@@ -8,8 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.util.Optional;
+
 @Repository
-public interface CpgramGrievanceMasterRepository extends JpaRepository<CpgramGrievanceMaster, Integer> {
+public interface CpgramGrievanceMasterRepository extends JpaRepository<CpgramGrievanceMaster, Integer>, JpaSpecificationExecutor<CpgramGrievanceMaster> {
+
+    Optional<CpgramGrievanceMaster> findByRegistrationNo(String registrationNo);
 
     @Query("SELECT COUNT(c) FROM CpgramGrievanceMaster c")
     long countAll();

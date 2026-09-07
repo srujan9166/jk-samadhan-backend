@@ -239,10 +239,14 @@ public class AuthService {
         userProfile.put("username", user.getUsername() != null ? user.getUsername() : "");
         userProfile.put("email", user.getEmail() != null ? user.getEmail() : "");
         userProfile.put("phone", user.getMobile() != null ? user.getMobile() : "");
-        userProfile.put("district", user.getDistrict() != null ? user.getDistrict() : "");
+        userProfile.put("district", (user.getDistrict() != null && !user.getDistrict().isBlank()) ? user.getDistrict() : "Other");
         userProfile.put("address", user.getAddress() != null ? user.getAddress() : "");
         userProfile.put("role", activeRole);
         userProfile.put("userType", user.getUserType() != null ? user.getUserType().getTypeName() : activeRole);
+        userProfile.put("gender", user.getGender() != null ? user.getGender() : "");
+        userProfile.put("dateOfBirth", user.getDateOfBirth() != null ? user.getDateOfBirth() : (user.getDob() != null ? user.getDob().toString() : ""));
+        userProfile.put("pincode", user.getPincode() != null ? user.getPincode() : "");
+        userProfile.put("state", (user.getState() != null && !user.getState().isBlank()) ? user.getState() : "Other");
 
         response.put("user", userProfile);
         return response;
@@ -261,6 +265,73 @@ public class AuthService {
         userRepository.save(user);
         return "Password updated successfully";
 
+    }
+
+    public Map<String, String> changePassword(com.example.jk_samadhan_backend.dto.ChangePasswordDTO changePasswordDTO, java.security.Principal principal) {
+        if (principal == null) {
+            throw new RuntimeException("Unauthenticated request. Please log in first.");
+        }
+
+        Users user = null;
+        if (principal instanceof org.springframework.security.core.Authentication auth && auth.getPrincipal() instanceof Users authUser) {
+            user = authUser;
+        } else {
+            String identifier = principal.getName();
+            user = userRepository.findByIdentifier(identifier)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + identifier));
+        }
+
+        if (changePasswordDTO.getCurrentPassword() == null || changePasswordDTO.getCurrentPassword().isBlank()) {
+            throw new RuntimeException("Current password is required");
+        }
+
+        if (!passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("Incorrect current password");
+        }
+
+        String newPassword = changePasswordDTO.getNewPassword();
+        String confirmPassword = changePasswordDTO.getConfirmPassword();
+
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new RuntimeException("New password is required");
+        }
+
+        if (confirmPassword == null || confirmPassword.isBlank()) {
+            throw new RuntimeException("Confirm password is required");
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("New password and confirmation do not match");
+        }
+
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new RuntimeException("New password must be different from current password");
+        }
+
+        if (newPassword.length() < 8) {
+            throw new RuntimeException("New password must be at least 8 characters long");
+        }
+
+        boolean hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
+        for (char c : newPassword.toCharArray()) {
+            if (Character.isUpperCase(c)) hasUpper = true;
+            else if (Character.isLowerCase(c)) hasLower = true;
+            else if (Character.isDigit(c)) hasDigit = true;
+            else hasSpecial = true;
+        }
+
+        if (!hasUpper || !hasLower || !hasDigit || !hasSpecial) {
+            throw new RuntimeException("New password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "SUCCESS");
+        response.put("message", "Password changed successfully. Please log in again with your new password.");
+        return response;
     }
 
 }

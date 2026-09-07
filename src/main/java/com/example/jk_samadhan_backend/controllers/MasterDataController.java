@@ -11,6 +11,7 @@ import com.example.jk_samadhan_backend.services.MasterDataService;
 
 import java.util.List;
 import java.util.Map;
+import java.security.Principal;
 
 @RestController
 @RequestMapping({"/api/v1/masters", "/api/masters"})
@@ -141,8 +142,52 @@ public class MasterDataController {
         return ResponseEntity.status(HttpStatus.CREATED).body(masterDataService.createDesignation(name));
     }
 
+    @PutMapping("/designations/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'ROLE_Admin', 'SUPERADMIN', 'ADMIN')")
+    public ResponseEntity<DesignationDTO> updateDesignation(@PathVariable("id") Integer id, @RequestBody Map<String, String> payload) {
+        String name = payload.get("name");
+        return ResponseEntity.ok(masterDataService.updateDesignation(id, name));
+    }
+
+    @DeleteMapping("/designations/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'ROLE_Admin', 'SUPERADMIN', 'ADMIN')")
+    public ResponseEntity<Map<String, String>> deleteDesignation(@PathVariable("id") Integer id) {
+        masterDataService.deleteDesignation(id);
+        return ResponseEntity.ok(Map.of("message", "Designation deleted successfully"));
+    }
+
     @GetMapping("/user-types")
     public ResponseEntity<List<UserType>> getAllUserTypes() {
         return ResponseEntity.ok(masterDataService.getAllUserTypes());
+    }
+
+    @GetMapping("/role-designations")
+    public ResponseEntity<List<RoleDesignationDTO>> getAllRoleDesignations() {
+        return ResponseEntity.ok(masterDataService.getAllRoleDesignations());
+    }
+
+    @PostMapping("/role-designations")
+    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'ROLE_Admin', 'SUPERADMIN', 'ADMIN')")
+    public ResponseEntity<RoleDesignationDTO> createRoleDesignation(@RequestBody Map<String, Object> payload, Principal principal) {
+        Integer roleId = Integer.parseInt(payload.get("roleId").toString());
+        Integer designationId = Integer.parseInt(payload.get("designationId").toString());
+        String username = principal != null ? principal.getName() : "system";
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(masterDataService.createRoleDesignation(roleId, designationId, username));
+    }
+
+    @PutMapping("/role-designations/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'ROLE_Admin', 'SUPERADMIN', 'ADMIN')")
+    public ResponseEntity<RoleDesignationDTO> updateRoleDesignation(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
+        Integer roleId = Integer.parseInt(payload.get("roleId").toString());
+        Integer designationId = Integer.parseInt(payload.get("designationId").toString());
+        return ResponseEntity.ok(masterDataService.updateRoleDesignation(id, roleId, designationId));
+    }
+
+    @DeleteMapping("/role-designations/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'ROLE_Admin', 'SUPERADMIN', 'ADMIN')")
+    public ResponseEntity<Void> deleteRoleDesignation(@PathVariable Integer id) {
+        masterDataService.deleteRoleDesignation(id);
+        return ResponseEntity.noContent().build();
     }
 }

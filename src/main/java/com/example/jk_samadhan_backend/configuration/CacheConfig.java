@@ -26,7 +26,8 @@ public class CacheConfig {
             "panchayats",
             "wards",
             "designations",
-            "userTypes"
+            "userTypes",
+            "roleDesignations"
         ));
         return cacheManager;
     }

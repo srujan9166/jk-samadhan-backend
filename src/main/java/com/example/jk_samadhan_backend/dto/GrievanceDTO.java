@@ -16,6 +16,12 @@ public class GrievanceDTO {
     private String pertainDivision;
     private String pertainDistrict;
     private String description;
+    private String subCategory;
+    private String blockName;
+    private String panchayatName;
+    private String municipalityName;
+    private String wardName;
+    private String municipalityOrBlock;
     
 
 }

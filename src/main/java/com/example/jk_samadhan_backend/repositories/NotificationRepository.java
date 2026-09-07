@@ -19,4 +19,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
             @Param("allDeptsVal") String allDeptsVal,
             @Param("deptVal") String deptVal
     );
+
+    @Query(value = "SELECT * FROM jks_3nf.notification WHERE isactive = 1 " +
+            "AND (validtill > CURRENT_TIMESTAMP OR validtill IS NULL) " +
+            "ORDER BY id DESC", nativeQuery = true)
+    List<Notification> findAllActiveAnnouncements();
 }
