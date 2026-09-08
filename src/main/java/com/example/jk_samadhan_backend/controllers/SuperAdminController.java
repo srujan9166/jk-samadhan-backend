@@ -249,7 +249,7 @@ public class SuperAdminController {
     // ==========================================
 
     @PostMapping({"/export/excel"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<ExportJobStatusDTO> startExcelExport(Principal principal) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -259,37 +259,37 @@ public class SuperAdminController {
     }
 
     @GetMapping({"/export/excel/{jobId}/status"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<ExportJobStatusDTO> getExportStatus(@PathVariable String jobId, Principal principal, Authentication auth) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         boolean isSuperAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().toUpperCase().contains("SUPERADMIN") || a.getAuthority().toUpperCase().contains("SUPER_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SuperAdmin"));
         ExportJobStatusDTO response = superAdminExportService.getJobStatus(jobId, principal.getName(), isSuperAdmin);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping({"/export/excel/{jobId}/cancel"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<ExportJobStatusDTO> cancelExcelExport(@PathVariable String jobId, Principal principal, Authentication auth) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         boolean isSuperAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().toUpperCase().contains("SUPERADMIN") || a.getAuthority().toUpperCase().contains("SUPER_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SuperAdmin"));
         ExportJobStatusDTO response = superAdminExportService.cancelExportJob(jobId, principal.getName(), isSuperAdmin);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping({"/export/excel/{jobId}/download"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<Resource> downloadExportExcel(@PathVariable String jobId, Principal principal, Authentication auth) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         boolean isSuperAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().toUpperCase().contains("SUPERADMIN") || a.getAuthority().toUpperCase().contains("SUPER_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SuperAdmin"));
         Resource resource = superAdminExportService.getExportFileResource(jobId, principal.getName(), isSuperAdmin);
         String fileName = superAdminExportService.getExportFileName(jobId);
 
@@ -304,7 +304,7 @@ public class SuperAdminController {
     // ==========================================
 
     @PostMapping({"/export/pdf"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<ExportJobStatusDTO> startPdfExport(Principal principal) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -314,37 +314,37 @@ public class SuperAdminController {
     }
 
     @GetMapping({"/export/pdf/{jobId}/status"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<ExportJobStatusDTO> getPdfExportStatus(@PathVariable String jobId, Principal principal, Authentication auth) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         boolean isSuperAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().toUpperCase().contains("SUPERADMIN") || a.getAuthority().toUpperCase().contains("SUPER_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SuperAdmin"));
         ExportJobStatusDTO response = superAdminExportService.getPdfJobStatus(jobId, principal.getName(), isSuperAdmin);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping({"/export/pdf/{jobId}/cancel"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<ExportJobStatusDTO> cancelPdfExport(@PathVariable String jobId, Principal principal, Authentication auth) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         boolean isSuperAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().toUpperCase().contains("SUPERADMIN") || a.getAuthority().toUpperCase().contains("SUPER_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SuperAdmin"));
         ExportJobStatusDTO response = superAdminExportService.cancelPdfExportJob(jobId, principal.getName(), isSuperAdmin);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping({"/export/pdf/{jobId}/download"})
-    @PreAuthorize("hasAnyAuthority('ROLE_SuperAdmin', 'SUPERADMIN', 'ROLE_SUPER_ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SuperAdmin')")
     public ResponseEntity<Resource> downloadExportPdf(@PathVariable String jobId, Principal principal, Authentication auth) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         boolean isSuperAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().toUpperCase().contains("SUPERADMIN") || a.getAuthority().toUpperCase().contains("SUPER_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_SuperAdmin"));
         Resource resource = superAdminExportService.getPdfExportFileResource(jobId, principal.getName(), isSuperAdmin);
         String fileName = superAdminExportService.getPdfExportFileName(jobId);
 

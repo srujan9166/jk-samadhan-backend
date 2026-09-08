@@ -1045,7 +1045,7 @@ public class GrievanceService {
             role = currentUser.getRole();
         }
 
-        boolean isSuperAdmin = "ROLE_SuperAdmin".equalsIgnoreCase(role) || "SUPERADMIN".equalsIgnoreCase(role)
+        boolean isSuperAdmin = "ROLE_SuperAdmin".equalsIgnoreCase(role)
                 || (currentUser.getEmail() != null && currentUser.getEmail().toLowerCase().contains("superadmin"))
                 || (currentUser.getUsername() != null
                         && currentUser.getUsername().toLowerCase().contains("superadmin"));

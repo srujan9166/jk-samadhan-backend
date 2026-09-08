@@ -185,15 +185,10 @@ public class Users implements UserDetails {
         }
 
         String formattedRole = rawRole.trim();
-        authorities.add(new SimpleGrantedAuthority(formattedRole));
-
-        if (formattedRole.startsWith("ROLE_")) {
-            authorities.add(new SimpleGrantedAuthority(formattedRole.substring(5).toUpperCase()));
-            authorities.add(new SimpleGrantedAuthority(formattedRole.toUpperCase()));
-        } else {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + formattedRole.toUpperCase()));
-            authorities.add(new SimpleGrantedAuthority(formattedRole.toUpperCase()));
+        if (!formattedRole.startsWith("ROLE_")) {
+            formattedRole = "ROLE_" + formattedRole;
         }
+        authorities.add(new SimpleGrantedAuthority(formattedRole));
 
         return authorities;
     }
