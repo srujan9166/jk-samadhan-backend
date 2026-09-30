@@ -21,4 +21,6 @@ public class CreateUserReqDTO {
     private String officeName;
     private String designationName;
     private String password;
+    private String division;
+    private String district;
 }

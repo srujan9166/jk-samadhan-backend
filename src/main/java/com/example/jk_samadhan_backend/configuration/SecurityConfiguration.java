@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                                          "/api/auth/login", "/api/auth/signup", "/api/auth/forgot-password", "/api/auth/captcha",
                                          "/api/geo/**", "/api/v1/masters/**", "/api/masters/**", "/api/announcements/**", "/error").permitAll()
                         .requestMatchers("/auth/change-password", "/api/auth/change-password").authenticated()
-                        .requestMatchers("/api/super-admin/**", "/api/superadmin/**").hasAuthority("ROLE_SuperAdmin")
+                        .requestMatchers("/api/super-admin/**", "/api/superadmin/**").hasAnyAuthority("ROLE_SuperAdmin", "SUPERADMIN", "ROLE_DM", "DM", "ROLE_Secretary", "ROLE_MONITORING_CELL", "MONITORING_CELL", "ROLE_RAABITA_HEAD", "RAABITA_HEAD", "ROLE_RMC_HEAD", "RMC_HEAD")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_SuperAdmin", "ROLE_Admin")
                         .requestMatchers("/api/dept/**").hasAnyAuthority("ROLE_Department", "DEPARTMENT")
                         .requestMatchers("/api/dm/**").hasAnyAuthority("ROLE_DM", "DM")

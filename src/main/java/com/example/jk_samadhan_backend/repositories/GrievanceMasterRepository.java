@@ -200,4 +200,113 @@ public interface GrievanceMasterRepository extends JpaRepository<GrievanceMaster
            "LEFT JOIN g.subCatL1 s1 " +
            "WHERE LOWER(g.uniqId) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<GrievanceProjection> findProjectionsBySearch(@Param("search") String search, Pageable pageable);
+
+    // --- STATUS WISE REPORT QUERIES ---
+
+    // Department Wise Status Raw Query
+    @Query(value = "SELECT COALESCE(d.name, 'Unassigned Department') AS dept_name, " +
+           "COUNT(DISTINCT g.id) AS total_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'resolved' THEN g.id END) AS resolved_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'forwarded' THEN g.id END) AS forwarded_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) IN ('dnptoffice', 'does not pertain to this office', 'does not pertain') THEN g.id END) AS dnp_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) IN ('pending', 'under process', 'acknowledged', 'submitted') THEN g.id END) AS pending_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'rejected' THEN g.id END) AS rejected_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'appealed' THEN g.id END) AS appealed_count " +
+           "FROM jks_3nf.grievance_master g " +
+           "LEFT JOIN jks_3nf.categories cat ON cat.id = g.category_id " +
+           "LEFT JOIN jks_3nf.departments d ON d.id = cat.department_id " +
+           "WHERE (:search IS NULL OR :search = '' OR LOWER(COALESCE(d.name, '')) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "GROUP BY COALESCE(d.name, 'Unassigned Department') " +
+           "ORDER BY total_count DESC",
+           nativeQuery = true)
+    List<Object[]> fetchDepartmentWiseStatusRaw(@Param("search") String search, Pageable pageable);
+
+    @Query(value = "SELECT COUNT(DISTINCT COALESCE(d.name, 'Unassigned Department')) " +
+           "FROM jks_3nf.grievance_master g " +
+           "LEFT JOIN jks_3nf.categories cat ON cat.id = g.category_id " +
+           "LEFT JOIN jks_3nf.departments d ON d.id = cat.department_id " +
+           "WHERE (:search IS NULL OR :search = '' OR LOWER(COALESCE(d.name, '')) LIKE LOWER(CONCAT('%', :search, '%')))",
+           nativeQuery = true)
+    long countDepartmentWiseStatusRaw(@Param("search") String search);
+
+    // User Wise Status Raw Query
+    @Query(value = "SELECT u.id, " +
+           "TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.middle_name, ''), ' ', COALESCE(u.last_name, ''))), " +
+           "CONCAT(COALESCE(u.office_name, 'Office'), ' (', COALESCE(desg.name, 'Officer'), ')'), " +
+           "COALESCE(d.name, 'N/A'), " +
+           "COALESCE(ut.type_name, ut.name, u.role, 'Officer'), " +
+           "COALESCE(dist.name, 'District'), " +
+           "u.username, " +
+           "COUNT(DISTINCT g.id) AS total_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'resolved' THEN g.id END) AS resolved_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) IN ('pending', 'under process', 'acknowledged', 'submitted') THEN g.id END) AS pending_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'forwarded' THEN g.id END) AS forwarded_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) IN ('dnptoffice', 'does not pertain to this office', 'does not pertain') THEN g.id END) AS dnp_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'remark added' THEN g.id END) AS remark_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'rejected' THEN g.id END) AS rejected_count, " +
+           "COUNT(DISTINCT CASE WHEN LOWER(g.status) = 'appealed' THEN g.id END) AS appealed_count " +
+           "FROM jks_3nf.users u " +
+           "LEFT JOIN jks_3nf.departments d ON d.id = u.department_id " +
+           "LEFT JOIN jks_3nf.designations desg ON desg.id = u.designation_id " +
+           "LEFT JOIN jks_3nf.districts dist ON dist.id = u.district_id " +
+           "LEFT JOIN jks_3nf.user_types ut ON ut.id = u.user_type_id " +
+           "LEFT JOIN jks_3nf.assigned_users au ON au.assigned_to_user_id = u.id AND au.enabled = true " +
+           "LEFT JOIN jks_3nf.grievance_master g ON (g.id = au.grievance_id OR g.submitted_by_user_id = u.id) " +
+           "WHERE UPPER(u.role) NOT IN ('CITIZEN', 'ROLE_CITIZEN') " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.last_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.office_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(desg.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "GROUP BY u.id, u.first_name, u.middle_name, u.last_name, u.office_name, desg.name, d.name, ut.type_name, ut.name, u.role, dist.name, u.username " +
+           "HAVING COUNT(DISTINCT g.id) > 0 " +
+           "ORDER BY total_count DESC, u.id DESC",
+           nativeQuery = true)
+    List<Object[]> fetchUserWiseStatusRaw(@Param("search") String search, Pageable pageable);
+
+    @Query(value = "SELECT COUNT(DISTINCT u.id) FROM jks_3nf.users u " +
+           "LEFT JOIN jks_3nf.departments d ON d.id = u.department_id " +
+           "LEFT JOIN jks_3nf.designations desg ON desg.id = u.designation_id " +
+           "LEFT JOIN jks_3nf.assigned_users au ON au.assigned_to_user_id = u.id AND au.enabled = true " +
+           "LEFT JOIN jks_3nf.grievance_master g ON (g.id = au.grievance_id OR g.submitted_by_user_id = u.id) " +
+           "WHERE UPPER(u.role) NOT IN ('CITIZEN', 'ROLE_CITIZEN') " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.last_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.office_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(desg.name) LIKE LOWER(CONCAT('%', :search, '%')))",
+           nativeQuery = true)
+    long countUserWiseStatusRaw(@Param("search") String search);
+
+    // Status Wise Modal Grievances Query
+    @Query(value = "SELECT DISTINCT g.id, g.uniq_id, COALESCE(d.name, 'N/A'), COALESCE(cat.name, 'N/A'), " +
+           "TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, ''))), " +
+           "g.created_at, g.status " +
+           "FROM jks_3nf.grievance_master g " +
+           "LEFT JOIN jks_3nf.categories cat ON cat.id = g.category_id " +
+           "LEFT JOIN jks_3nf.departments d ON d.id = cat.department_id " +
+           "LEFT JOIN jks_3nf.users u ON u.id = g.submitted_by_user_id " +
+           "LEFT JOIN jks_3nf.assigned_users au ON au.grievance_id = g.id AND au.enabled = true " +
+           "LEFT JOIN jks_3nf.users assigned_usr ON assigned_usr.id = au.assigned_to_user_id " +
+           "WHERE (:dept IS NULL OR :dept = '' OR LOWER(d.name) = LOWER(:dept)) " +
+           "AND (:username IS NULL OR :username = '' OR LOWER(assigned_usr.username) = LOWER(:username) OR LOWER(u.username) = LOWER(:username)) " +
+           "AND (:status IS NULL OR :status = '' OR :status = 'all' OR LOWER(g.status) LIKE LOWER(CONCAT('%', :status, '%')) OR LOWER(g.final_status) LIKE LOWER(CONCAT('%', :status, '%'))) " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(g.uniq_id) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(g.description) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "ORDER BY g.id DESC",
+           nativeQuery = true)
+    List<Object[]> fetchStatusWiseGrievanceDetailsRaw(
+            @Param("dept") String dept,
+            @Param("username") String username,
+            @Param("status") String status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    @Query(value = "SELECT COUNT(DISTINCT g.id) FROM jks_3nf.grievance_master g " +
+           "LEFT JOIN jks_3nf.categories cat ON cat.id = g.category_id " +
+           "LEFT JOIN jks_3nf.departments d ON d.id = cat.department_id " +
+           "LEFT JOIN jks_3nf.users u ON u.id = g.submitted_by_user_id " +
+           "LEFT JOIN jks_3nf.assigned_users au ON au.grievance_id = g.id AND au.enabled = true " +
+           "LEFT JOIN jks_3nf.users assigned_usr ON assigned_usr.id = au.assigned_to_user_id " +
+           "WHERE (:dept IS NULL OR :dept = '' OR LOWER(d.name) = LOWER(:dept)) " +
+           "AND (:username IS NULL OR :username = '' OR LOWER(assigned_usr.username) = LOWER(:username) OR LOWER(u.username) = LOWER(:username)) " +
+           "AND (:status IS NULL OR :status = '' OR :status = 'all' OR LOWER(g.status) LIKE LOWER(CONCAT('%', :status, '%')) OR LOWER(g.final_status) LIKE LOWER(CONCAT('%', :status, '%'))) " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(g.uniq_id) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(g.description) LIKE LOWER(CONCAT('%', :search, '%')))",
+           nativeQuery = true)
+    long countStatusWiseGrievanceDetailsRaw(
+            @Param("dept") String dept,
+            @Param("username") String username,
+            @Param("status") String status,
+            @Param("search") String search);
 }

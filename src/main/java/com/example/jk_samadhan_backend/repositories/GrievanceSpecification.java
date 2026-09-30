@@ -45,8 +45,8 @@ public class GrievanceSpecification {
             }
 
             // 4. District filter
-            if (district != null && !district.trim().isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.join("district").get("name"), district.trim()));
+            if (district != null && !district.trim().isEmpty() && !"Other".equalsIgnoreCase(district.trim()) && !"All".equalsIgnoreCase(district.trim())) {
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.lower(root.join("district").get("name")), district.trim().toLowerCase()));
             }
 
             // 5. Category filter

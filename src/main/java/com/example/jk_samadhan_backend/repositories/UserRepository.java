@@ -49,4 +49,70 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     List<Users> findNodalByDepartmentName(@Param("deptName") String deptName);
 
     boolean existsByDesignationId(Integer designationId);
+
+    @Query(value = "SELECT u.id, TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.middle_name, ''), ' ', COALESCE(u.last_name, ''))), COALESCE(u.username, ''), COALESCE(u.email, u.username, ''), COALESCE(d.name, 'Dealing Hand User'), COALESCE(u.mobile, 'N/A'), COUNT(DISTINCT g.id) AS total_count " +
+           "FROM jks_3nf.users u " +
+           "LEFT JOIN jks_3nf.designations d ON d.id = u.designation_id " +
+           "LEFT JOIN jks_3nf.user_types ut ON ut.id = u.user_type_id " +
+           "LEFT JOIN jks_3nf.grievance_master g ON (g.submitted_by_user_id = u.id) " +
+           "WHERE (UPPER(u.role) LIKE '%DEALING%' OR UPPER(ut.type_name) LIKE '%DEALING%' OR UPPER(u.role) LIKE '%DH%') " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.last_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.mobile) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "GROUP BY u.id, u.first_name, u.middle_name, u.last_name, u.username, u.email, d.name, u.mobile " +
+           "ORDER BY total_count DESC, u.id DESC",
+           nativeQuery = true)
+    List<Object[]> fetchDealingHandReportRaw(@Param("search") String search, org.springframework.data.domain.Pageable pageable);
+
+    @Query(value = "SELECT COUNT(DISTINCT u.id) FROM jks_3nf.users u " +
+           "LEFT JOIN jks_3nf.user_types ut ON ut.id = u.user_type_id " +
+           "WHERE (UPPER(u.role) LIKE '%DEALING%' OR UPPER(ut.type_name) LIKE '%DEALING%' OR UPPER(u.role) LIKE '%DH%') " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.last_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.mobile) LIKE LOWER(CONCAT('%', :search, '%')))",
+           nativeQuery = true)
+    long countDealingHandReportRaw(@Param("search") String search);
+
+    @Query(value = "SELECT u.id, COALESCE(u.username, ''), COALESCE(u.email, u.username, ''), " +
+           "TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.middle_name, ''), ' ', COALESCE(u.last_name, ''))), " +
+           "COALESCE(dept.name, ''), COALESCE(dept.department_type, 'ADMIN'), COALESCE(dist.name, ''), " +
+           "COALESCE(u.office_name, ''), COALESCE(desg.name, ''), COALESCE(ut.type_name, ut.name, u.role, ''), " +
+           "COALESCE(TRIM(CONCAT(COALESCE(cb.first_name, ''), ' ', COALESCE(cb.last_name, ''))), cb.username, 'System'), " +
+           "u.created_at, COALESCE(u.mobile, 'N/A'), u.enabled " +
+           "FROM jks_3nf.users u " +
+           "LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id " +
+           "LEFT JOIN jks_3nf.designations desg ON desg.id = u.designation_id " +
+           "LEFT JOIN jks_3nf.districts dist ON dist.id = u.district_id " +
+           "LEFT JOIN jks_3nf.user_types ut ON ut.id = u.user_type_id " +
+           "LEFT JOIN jks_3nf.users cb ON cb.id = u.created_by_id " +
+           "WHERE UPPER(u.role) NOT IN ('CITIZEN', 'ROLE_CITIZEN') " +
+           "AND (:dept IS NULL OR :dept = '' OR :dept = '0' OR LOWER(dept.name) = LOWER(:dept)) " +
+           "AND (:deptType IS NULL OR :deptType = '' OR :deptType = '0' OR LOWER(dept.department_type) = LOWER(:deptType)) " +
+           "AND (:usrType IS NULL OR :usrType = '' OR :usrType = '0' OR LOWER(ut.name) = LOWER(:usrType) OR LOWER(ut.type_name) = LOWER(:usrType) OR LOWER(u.role) = LOWER(:usrType)) " +
+           "AND (:dist IS NULL OR :dist = '' OR :dist = '0' OR LOWER(dist.name) = LOWER(:dist)) " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.last_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.mobile) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.office_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(dept.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(desg.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "ORDER BY u.id DESC",
+           nativeQuery = true)
+    List<Object[]> fetchDepartmentUserReportRaw(
+            @Param("search") String search,
+            @Param("dept") String dept,
+            @Param("deptType") String deptType,
+            @Param("usrType") String usrType,
+            @Param("dist") String dist,
+            org.springframework.data.domain.Pageable pageable);
+
+    @Query(value = "SELECT COUNT(u.id) FROM jks_3nf.users u " +
+           "LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id " +
+           "LEFT JOIN jks_3nf.designations desg ON desg.id = u.designation_id " +
+           "LEFT JOIN jks_3nf.districts dist ON dist.id = u.district_id " +
+           "LEFT JOIN jks_3nf.user_types ut ON ut.id = u.user_type_id " +
+           "WHERE UPPER(u.role) NOT IN ('CITIZEN', 'ROLE_CITIZEN') " +
+           "AND (:dept IS NULL OR :dept = '' OR :dept = '0' OR LOWER(dept.name) = LOWER(:dept)) " +
+           "AND (:deptType IS NULL OR :deptType = '' OR :deptType = '0' OR LOWER(dept.department_type) = LOWER(:deptType)) " +
+           "AND (:usrType IS NULL OR :usrType = '' OR :usrType = '0' OR LOWER(ut.name) = LOWER(:usrType) OR LOWER(ut.type_name) = LOWER(:usrType) OR LOWER(u.role) = LOWER(:usrType)) " +
+           "AND (:dist IS NULL OR :dist = '' OR :dist = '0' OR LOWER(dist.name) = LOWER(:dist)) " +
+           "AND (:search IS NULL OR :search = '' OR LOWER(u.first_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.last_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.mobile) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.office_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(dept.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(desg.name) LIKE LOWER(CONCAT('%', :search, '%')))",
+           nativeQuery = true)
+    long countDepartmentUserReportRaw(
+            @Param("search") String search,
+            @Param("dept") String dept,
+            @Param("deptType") String deptType,
+            @Param("usrType") String usrType,
+            @Param("dist") String dist);
 }

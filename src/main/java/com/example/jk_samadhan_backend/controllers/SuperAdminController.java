@@ -103,6 +103,63 @@ public class SuperAdminController {
         return ResponseEntity.ok(summary);
     }
 
+    @GetMapping("/status-wise-report")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedStatusWiseReportDTO> getStatusWiseReport(
+            @RequestParam(defaultValue = "department") String mode,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        com.example.jk_samadhan_backend.dto.PaginatedStatusWiseReportDTO response =
+                grievanceService.getStatusWiseReport(mode, page, size, search);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/status-wise-report/details")
+    public ResponseEntity<PaginatedGrievancesResponseDTO> getStatusWiseGrievanceDetailsModal(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        PaginatedGrievancesResponseDTO response =
+                grievanceService.getStatusWiseGrievanceDetailsModal(department, username, status, page, size, search);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/department-users")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedDepartmentUserReportDTO> getDepartmentUserReport(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String departmentType,
+            @RequestParam(required = false) String userType,
+            @RequestParam(required = false) String district) {
+        com.example.jk_samadhan_backend.dto.PaginatedDepartmentUserReportDTO response = 
+                grievanceService.getDepartmentUserReport(page, size, search, department, departmentType, userType, district);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/dealing-hand-grievances")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedDealingHandReportDTO> getDealingHandReport(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        com.example.jk_samadhan_backend.dto.PaginatedDealingHandReportDTO response = grievanceService.getDealingHandReport(page, size, search);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/dealing-hand-grievances/user-details")
+    public ResponseEntity<PaginatedGrievancesResponseDTO> getDealingHandGrievancesModal(
+            @RequestParam String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        PaginatedGrievancesResponseDTO response = grievanceService.getDealingHandGrievancesModal(username, page, size, search);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/createOfficialUser")
     public ResponseEntity<java.util.Map<String, String>> createOfficialUser(@RequestBody com.example.jk_samadhan_backend.dto.CreateUserReqDTO payload) {
         java.util.Map<String, String> response = new java.util.HashMap<>();
@@ -352,5 +409,55 @@ public class SuperAdminController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                 .body(resource);
+    }
+
+    @GetMapping("/tree/departments")
+    public ResponseEntity<List<Map<String, Object>>> getTreeDepartments() {
+        return ResponseEntity.ok(grievanceService.getTreeDepartments());
+    }
+
+    @GetMapping("/tree/mainCategories")
+    public ResponseEntity<List<Map<String, Object>>> getTreeMainCategories(@RequestParam(required = false) String departmentName) {
+        return ResponseEntity.ok(grievanceService.getTreeMainCategories(departmentName));
+    }
+
+    @GetMapping("/tree/subCategories")
+    public ResponseEntity<List<Map<String, Object>>> getTreeSubCategoriesL1(
+            @RequestParam(required = false) String departmentName,
+            @RequestParam(required = false) String categoryName) {
+        return ResponseEntity.ok(grievanceService.getTreeSubCategoriesL1(departmentName, categoryName));
+    }
+
+    @GetMapping("/tree/grievances")
+    public ResponseEntity<List<Map<String, Object>>> getTreeGrievances(
+            @RequestParam(required = false) String departmentName,
+            @RequestParam(required = false) String categoryName,
+            @RequestParam(required = false) String subCategoryName) {
+        return ResponseEntity.ok(grievanceService.getTreeGrievanceList(departmentName, categoryName, subCategoryName));
+    }
+
+    @GetMapping("/pendency-report")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedStatusWiseReportDTO> getPendencyReport(
+            @RequestParam(defaultValue = "userwise") String mode,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        String normalizedMode = (mode != null && (mode.equalsIgnoreCase("userwise") || mode.equalsIgnoreCase("user"))) ? "user" : "department";
+        com.example.jk_samadhan_backend.dto.PaginatedStatusWiseReportDTO response =
+                grievanceService.getStatusWiseReport(normalizedMode, page, size, search);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/pendency-report/details")
+    public ResponseEntity<PaginatedGrievancesResponseDTO> getPendencyGrievanceDetailsModal(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        PaginatedGrievancesResponseDTO response =
+                grievanceService.getStatusWiseGrievanceDetailsModal(department, username, status != null ? status : "Pending", page, size, search);
+        return ResponseEntity.ok(response);
     }
 }

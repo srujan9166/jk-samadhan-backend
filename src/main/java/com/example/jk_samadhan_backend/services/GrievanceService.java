@@ -75,6 +75,7 @@ public class GrievanceService {
     private final com.example.jk_samadhan_backend.repositories.CpgramGrievanceMasterRepository cpgramGrievanceMasterRepository;
     private final com.example.jk_samadhan_backend.repositories.JkigramsDumpRepository jkigramsDumpRepository;
     private final com.example.jk_samadhan_backend.repositories.JkigramsMovementLogRepository jkigramsMovementLogRepository;
+    private final com.example.jk_samadhan_backend.repositories.AssignedUsersRepository assignedUsersRepository;
 
     public GrievanceService(UserRepository userRepository,
             GrievanceMasterRepository grievanceMasterRepository,
@@ -95,7 +96,8 @@ public class GrievanceService {
             GrievanceHistoryRepository grievanceHistoryRepository,
             com.example.jk_samadhan_backend.repositories.CpgramGrievanceMasterRepository cpgramGrievanceMasterRepository,
             com.example.jk_samadhan_backend.repositories.JkigramsDumpRepository jkigramsDumpRepository,
-            com.example.jk_samadhan_backend.repositories.JkigramsMovementLogRepository jkigramsMovementLogRepository) {
+            com.example.jk_samadhan_backend.repositories.JkigramsMovementLogRepository jkigramsMovementLogRepository,
+            com.example.jk_samadhan_backend.repositories.AssignedUsersRepository assignedUsersRepository) {
         this.userRepository = userRepository;
         this.grievanceMasterRepository = grievanceMasterRepository;
         this.districtRepository = districtRepository;
@@ -116,6 +118,7 @@ public class GrievanceService {
         this.cpgramGrievanceMasterRepository = cpgramGrievanceMasterRepository;
         this.jkigramsDumpRepository = jkigramsDumpRepository;
         this.jkigramsMovementLogRepository = jkigramsMovementLogRepository;
+        this.assignedUsersRepository = assignedUsersRepository;
     }
 
     public GrievanceMaster lodgeGrievance(GrievanceDTO grievanceDTO, Principal principal) {
@@ -263,10 +266,18 @@ public class GrievanceService {
             projections = grievanceMasterRepository.findProjectionsByDepartmentId(user.getDepartment().getId(),
                     pageRequest);
         } else if (role.equalsIgnoreCase("ROLE_DM") || role.toUpperCase().contains("DM")) {
-            projections = user.getDistrictEntity() != null
-                    ? grievanceMasterRepository.findProjectionsByDistrictId(user.getDistrictEntity().getId(),
-                            pageRequest)
-                    : List.of();
+            if (user.getDistrictEntity() != null) {
+                projections = grievanceMasterRepository.findProjectionsByDistrictId(user.getDistrictEntity().getId(), pageRequest);
+            } else if (user.getDistrict() != null && !user.getDistrict().isBlank() && !"Other".equalsIgnoreCase(user.getDistrict())) {
+                District distObj = districtRepository.findByNameIgnoreCase(user.getDistrict().trim()).orElse(null);
+                if (distObj != null) {
+                    projections = grievanceMasterRepository.findProjectionsByDistrictId(distObj.getId(), pageRequest);
+                } else {
+                    projections = grievanceMasterRepository.findAllProjections(pageRequest);
+                }
+            } else {
+                projections = grievanceMasterRepository.findAllProjections(pageRequest);
+            }
         } else if (role.equalsIgnoreCase("ROLE_DealingHand") || role.toUpperCase().contains("DEALINGHAND")) {
             projections = grievanceMasterRepository.findAssignedProjectionsByUserId(user.getId(), pageRequest);
         } else {
@@ -730,29 +741,51 @@ public class GrievanceService {
         user.setEnabled(true);
 
         // Map userType role
-        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType())) {
+        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType()) || "DealingHand".equalsIgnoreCase(req.getUserType())) {
             user.setRole("DealingHand");
+        } else if ("DM".equalsIgnoreCase(req.getUserType()) || "District Magistrate".equalsIgnoreCase(req.getUserType()) || "ROLE_DM".equalsIgnoreCase(req.getUserType())) {
+            user.setRole("DM");
+        } else if ("Monitoring Cell".equalsIgnoreCase(req.getUserType()) || "ROLE_MONITORING_CELL".equalsIgnoreCase(req.getUserType())) {
+            user.setRole("MONITORING_CELL");
+        } else if ("Raabita Head".equalsIgnoreCase(req.getUserType()) || "RMC Head".equalsIgnoreCase(req.getUserType()) || "ROLE_RAABITA_HEAD".equalsIgnoreCase(req.getUserType()) || "ROLE_RMC_HEAD".equalsIgnoreCase(req.getUserType())) {
+            user.setRole("ROLE_RAABITA_HEAD");
         } else {
             user.setRole("ADMIN");
         }
 
         // Set UserType entity
         String typeName = "ROLE_Admin";
-        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType())) {
+        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType()) || "DealingHand".equalsIgnoreCase(req.getUserType())) {
             typeName = "ROLE_DealingHand";
+        } else if ("DM".equalsIgnoreCase(req.getUserType()) || "District Magistrate".equalsIgnoreCase(req.getUserType()) || "ROLE_DM".equalsIgnoreCase(req.getUserType())) {
+            typeName = "ROLE_DM";
+        } else if ("Monitoring Cell".equalsIgnoreCase(req.getUserType()) || "ROLE_MONITORING_CELL".equalsIgnoreCase(req.getUserType())) {
+            typeName = "ROLE_MONITORING_CELL";
+        } else if ("Raabita Head".equalsIgnoreCase(req.getUserType()) || "RMC Head".equalsIgnoreCase(req.getUserType()) || "ROLE_RAABITA_HEAD".equalsIgnoreCase(req.getUserType()) || "ROLE_RMC_HEAD".equalsIgnoreCase(req.getUserType())) {
+            typeName = "ROLE_RAABITA_HEAD";
         }
 
         final String finalTypeName = typeName;
         UserType ut = userTypeRepository.findByTypeName(finalTypeName)
+                .or(() -> userTypeRepository.findByTypeName("ROLE_DM"))
                 .or(() -> userTypeRepository.findByTypeName("ROLE_Admin"))
-                .or(() -> userTypeRepository.findAll().stream()
-                        .filter(t -> t.getTypeName().toUpperCase().contains("ADMIN")).findFirst())
-                .orElseThrow(() -> new RuntimeException("User type not found: " + finalTypeName));
+                .or(() -> userTypeRepository.findAll().stream().findFirst())
+                .orElseGet(() -> {
+                    UserType newUt = UserType.builder().typeName(finalTypeName).build();
+                    return userTypeRepository.save(newUt);
+                });
         user.setUserType(ut);
 
         // Set Office Name
         if (req.getOfficeName() != null && !req.getOfficeName().trim().isEmpty()) {
             user.setOfficeName(req.getOfficeName().trim());
+        }
+
+        // Set District
+        if (req.getDistrict() != null && !req.getDistrict().trim().isEmpty()) {
+            user.setDistrict(req.getDistrict().trim());
+            districtRepository.findByNameIgnoreCase(req.getDistrict().trim())
+                    .ifPresent(user::setDistrictEntity);
         }
 
         // Set Designation
@@ -776,6 +809,143 @@ public class GrievanceService {
                 .dataValue(req.getUserType() != null ? req.getUserType().toUpperCase() : "OFFICIAL USER")
                 .build();
         userExtraDataRepository.save(extra);
+
+        if (req.getDivision() != null && !req.getDivision().trim().isEmpty()) {
+            UserExtraData divExtra = UserExtraData.builder()
+                    .user(savedUser)
+                    .dataKey("division")
+                    .dataValue(req.getDivision().trim().toUpperCase())
+                    .build();
+            userExtraDataRepository.save(divExtra);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public com.example.jk_samadhan_backend.dto.PaginatedDealingHandReportDTO getDealingHandReport(int page, int size, String search) {
+        String cleanSearch = search != null ? search.trim() : "";
+        int pageSize = size > 0 ? size : 10;
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(Math.max(0, page), pageSize);
+        
+        List<Object[]> rawList = userRepository.fetchDealingHandReportRaw(cleanSearch, pageable);
+        long totalElements = userRepository.countDealingHandReportRaw(cleanSearch);
+        
+        List<com.example.jk_samadhan_backend.dto.DealingHandReportDTO> reportItems = new ArrayList<>();
+        if (rawList != null) {
+            for (Object[] row : rawList) {
+                Long userId = row[0] != null ? ((Number) row[0]).longValue() : 0L;
+                String fullName = row[1] != null && !row[1].toString().isBlank() ? row[1].toString() : (row[2] != null ? row[2].toString() : "Dealing Hand");
+                String username = row[2] != null ? row[2].toString() : "";
+                String email = row[3] != null ? row[3].toString() : username;
+                String desig = row[4] != null ? row[4].toString() : "Dealing Hand User";
+                String mobile = row[5] != null ? row[5].toString() : "N/A";
+                long totalCount = row[6] != null ? ((Number) row[6]).longValue() : 0L;
+
+                reportItems.add(com.example.jk_samadhan_backend.dto.DealingHandReportDTO.builder()
+                        .userId(userId)
+                        .fullName(fullName)
+                        .username(username)
+                        .email(email)
+                        .designation(desig)
+                        .mobile(mobile)
+                        .totalGrievances(totalCount)
+                        .build());
+            }
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedDealingHandReportDTO.builder()
+                .content(reportItems)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page + 1)
+                .pageSize(pageSize)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedGrievancesResponseDTO getDealingHandGrievancesModal(String identifier, int page, int size, String search) {
+        Users u = userRepository.findByIdentifier(identifier)
+                .or(() -> userRepository.findByEmail(identifier))
+                .or(() -> userRepository.findByUsername(identifier))
+                .orElse(null);
+
+        if (u == null) {
+            try {
+                Long id = Long.parseLong(identifier);
+                u = userRepository.findById(id).orElse(null);
+            } catch (Exception e) {}
+        }
+
+        if (u == null) {
+            return PaginatedGrievancesResponseDTO.builder()
+                    .content(List.of())
+                    .totalElements(0)
+                    .totalPages(0)
+                    .currentPage(page + 1)
+                    .pageSize(size)
+                    .build();
+        }
+
+        List<GrievanceMaster> submitted = grievanceMasterRepository.findBySubmittedById(u.getId());
+        List<GrievanceMaster> assigned = grievanceMasterRepository.findAssignedGrievances(u.getId());
+
+        Map<Long, GrievanceMaster> map = new HashMap<>();
+        if (submitted != null) {
+            for (GrievanceMaster g : submitted) map.put(g.getId(), g);
+        }
+        if (assigned != null) {
+            for (GrievanceMaster g : assigned) map.put(g.getId(), g);
+        }
+
+        List<GrievanceMaster> allGrievances = new ArrayList<>(map.values());
+
+        if (search != null && !search.trim().isEmpty()) {
+            String q = search.trim().toLowerCase();
+            allGrievances = allGrievances.stream()
+                    .filter(g -> {
+                        String uniq = (g.getUniqId() != null ? g.getUniqId() : "").toLowerCase();
+                        String dept = (g.getCategory() != null && g.getCategory().getDepartment() != null ? g.getCategory().getDepartment().getName() : "").toLowerCase();
+                        String cat = (g.getCategory() != null ? g.getCategory().getName() : "").toLowerCase();
+                        String submitter = (g.getSubmittedBy() != null ? g.getSubmittedBy().getName() : "").toLowerCase();
+                        String status = (g.getStatus() != null ? g.getStatus() : "").toLowerCase();
+                        return uniq.contains(q) || dept.contains(q) || cat.contains(q) || submitter.contains(q) || status.contains(q);
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        allGrievances.sort(java.util.Comparator.comparing(GrievanceMaster::getCreatedAt, java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder())));
+
+        int totalElements = allGrievances.size();
+        int totalPages = size > 0 ? (int) Math.ceil((double) totalElements / size) : 1;
+        int start = Math.min(page * size, totalElements);
+        int end = Math.min(start + size, totalElements);
+        List<GrievanceMaster> pagedList = (start <= end && start < totalElements) ? allGrievances.subList(start, end) : List.of();
+
+        List<GrievanceResponseDTO> dtos = pagedList.stream().map(g -> GrievanceResponseDTO.builder()
+                .id(g.getId())
+                .uniqId(g.getUniqId() != null ? g.getUniqId() : "GRV2026/" + g.getId())
+                .description(g.getDescription())
+                .status(g.getStatus() != null ? g.getStatus() : "Pending")
+                .createdAt(g.getCreatedAt() != null ? g.getCreatedAt().toString() : "")
+                .department(g.getCategory() != null && g.getCategory().getDepartment() != null ? g.getCategory().getDepartment().getName() : "General Administration")
+                .grievanceCategory(g.getCategory() != null ? g.getCategory().getName() : "General Complaints & Petitions")
+                .submittedBy(g.getSubmittedBy() != null ? GrievanceResponseDTO.ComplainantInfo.builder()
+                        .name(g.getSubmittedBy().getName())
+                        .email(g.getSubmittedBy().getEmail())
+                        .mobile(g.getSubmittedBy().getMobile())
+                        .build() : null)
+                .citizenName(g.getSubmittedBy() != null ? g.getSubmittedBy().getName() : "Citizen User")
+                .build()
+        ).collect(Collectors.toList());
+
+        return PaginatedGrievancesResponseDTO.builder()
+                .content(dtos)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page + 1)
+                .pageSize(size)
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -1010,25 +1180,27 @@ public class GrievanceService {
 
         // If not found in grievance_master, check CPGRAMS & JKIGRAMS
         if (g == null) {
-            com.example.jk_samadhan_backend.models.CpgramGrievanceMaster cpgram =
-                    cpgramGrievanceMasterRepository.findByRegistrationNo(idOrUniqId).orElse(null);
+            com.example.jk_samadhan_backend.models.CpgramGrievanceMaster cpgram = cpgramGrievanceMasterRepository
+                    .findByRegistrationNo(idOrUniqId).orElse(null);
             if (cpgram == null) {
                 try {
                     Integer cid = Integer.parseInt(idOrUniqId);
                     cpgram = cpgramGrievanceMasterRepository.findById(cid).orElse(null);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             if (cpgram != null) {
                 return mapCpgramToDetailDTO(cpgram);
             }
 
-            com.example.jk_samadhan_backend.models.JkigramsDump jkd =
-                    jkigramsDumpRepository.findByReferenceId(idOrUniqId).orElse(null);
+            com.example.jk_samadhan_backend.models.JkigramsDump jkd = jkigramsDumpRepository
+                    .findByReferenceId(idOrUniqId).orElse(null);
             if (jkd == null) {
                 try {
                     Long jid = Long.parseLong(idOrUniqId);
                     jkd = jkigramsDumpRepository.findById(jid).orElse(null);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             if (jkd != null) {
                 return mapJkigramsToDetailDTO(jkd);
@@ -1113,7 +1285,8 @@ public class GrievanceService {
                     .build());
         }
 
-        java.util.Optional<AppealMaster> appealOpt = appealMasterRepository.findFirstByGrievanceIdOrderByIdDesc(g.getId());
+        java.util.Optional<AppealMaster> appealOpt = appealMasterRepository
+                .findFirstByGrievanceIdOrderByIdDesc(g.getId());
         String appealDescription = appealOpt.map(AppealMaster::getDescription).orElse("N/A");
 
         return GrievanceResponseDTO.builder()
@@ -1182,23 +1355,36 @@ public class GrievanceService {
         long doesNotPertain = 0;
 
         try {
-            pending = jdbcTemplate.queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Pending'", Long.class);
-        } catch (Exception ignored) {}
+            pending = jdbcTemplate.queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Pending'",
+                    Long.class);
+        } catch (Exception ignored) {
+        }
         try {
-            forwarded = jdbcTemplate.queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Forwarded'", Long.class);
-        } catch (Exception ignored) {}
+            forwarded = jdbcTemplate.queryForObject(
+                    "SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Forwarded'", Long.class);
+        } catch (Exception ignored) {
+        }
         try {
-            remarkAdded = jdbcTemplate.queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Remark Added'", Long.class);
-        } catch (Exception ignored) {}
+            remarkAdded = jdbcTemplate.queryForObject(
+                    "SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Remark Added'", Long.class);
+        } catch (Exception ignored) {
+        }
         try {
-            resolved = jdbcTemplate.queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Resolved'", Long.class);
-        } catch (Exception ignored) {}
+            resolved = jdbcTemplate
+                    .queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Resolved'", Long.class);
+        } catch (Exception ignored) {
+        }
         try {
-            rejected = jdbcTemplate.queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Rejected'", Long.class);
-        } catch (Exception ignored) {}
+            rejected = jdbcTemplate
+                    .queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Rejected'", Long.class);
+        } catch (Exception ignored) {
+        }
         try {
-            doesNotPertain = jdbcTemplate.queryForObject("SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Does Not Pertain' OR status = 'dnpToOffice'", Long.class);
-        } catch (Exception ignored) {}
+            doesNotPertain = jdbcTemplate.queryForObject(
+                    "SELECT count(*) FROM jks_3nf.jkigrams_dump WHERE status = 'Does Not Pertain' OR status = 'dnpToOffice'",
+                    Long.class);
+        } catch (Exception ignored) {
+        }
 
         return com.example.jk_samadhan_backend.dto.JkigramsDTO.Summary.builder()
                 .totalGrievanceReceived(total)
@@ -1212,12 +1398,13 @@ public class GrievanceService {
     }
 
     public com.example.jk_samadhan_backend.dto.JkigramsDTO.PaginatedResponse getJkigramsGrievances(
-            String search, String status, String department, String category, org.springframework.data.domain.PageRequest pageRequest) {
-        org.springframework.data.jpa.domain.Specification<com.example.jk_samadhan_backend.models.JkigramsDump> spec =
-                com.example.jk_samadhan_backend.repositories.JkigramsSpecification.getJkigramsSpec(search, status, department, category);
-        
-        org.springframework.data.domain.Page<com.example.jk_samadhan_backend.models.JkigramsDump> pageResult =
-                jkigramsDumpRepository.findAll(spec, pageRequest);
+            String search, String status, String department, String category,
+            org.springframework.data.domain.PageRequest pageRequest) {
+        org.springframework.data.jpa.domain.Specification<com.example.jk_samadhan_backend.models.JkigramsDump> spec = com.example.jk_samadhan_backend.repositories.JkigramsSpecification
+                .getJkigramsSpec(search, status, department, category);
+
+        org.springframework.data.domain.Page<com.example.jk_samadhan_backend.models.JkigramsDump> pageResult = jkigramsDumpRepository
+                .findAll(spec, pageRequest);
 
         List<com.example.jk_samadhan_backend.dto.JkigramsDTO.Item> content = pageResult.getContent().stream()
                 .map(this::mapJkigramsDumpToDTO)
@@ -1232,7 +1419,8 @@ public class GrievanceService {
                 .build();
     }
 
-    private com.example.jk_samadhan_backend.dto.JkigramsDTO.Item mapJkigramsDumpToDTO(com.example.jk_samadhan_backend.models.JkigramsDump d) {
+    private com.example.jk_samadhan_backend.dto.JkigramsDTO.Item mapJkigramsDumpToDTO(
+            com.example.jk_samadhan_backend.models.JkigramsDump d) {
         String dateStr = "";
         if (d.getApplicationDate() != null) {
             dateStr = d.getApplicationDate().toLocalDate().toString();
@@ -1264,8 +1452,8 @@ public class GrievanceService {
     }
 
     private GrievanceResponseDTO mapJkigramsToDetailDTO(com.example.jk_samadhan_backend.models.JkigramsDump d) {
-        List<com.example.jk_samadhan_backend.models.JkigramsMovementLog> logs =
-                jkigramsMovementLogRepository.findByReferenceIdOrderBySnoAsc(d.getReferenceId());
+        List<com.example.jk_samadhan_backend.models.JkigramsMovementLog> logs = jkigramsMovementLogRepository
+                .findByReferenceIdOrderBySnoAsc(d.getReferenceId());
 
         List<GrievanceResponseDTO.HistoryItemDTO> historyDTOs = new ArrayList<>();
         if (logs != null && !logs.isEmpty()) {
@@ -1273,7 +1461,8 @@ public class GrievanceService {
                 historyDTOs.add(GrievanceResponseDTO.HistoryItemDTO.builder()
                         .id(log.getId())
                         .uniqId(d.getReferenceId())
-                        .actionBy(log.getApplicantName() != null ? log.getApplicantName() : (log.getDepartment() != null ? log.getDepartment() : "Department Officer"))
+                        .actionBy(log.getApplicantName() != null ? log.getApplicantName()
+                                : (log.getDepartment() != null ? log.getDepartment() : "Department Officer"))
                         .dateTimeOfAction(log.getDate() != null ? log.getDate().toString() : "")
                         .actionTaken(log.getCurrentStatus() != null ? log.getCurrentStatus() : "Action Processed")
                         .remarks(log.getDescription() != null ? log.getDescription() : "")
@@ -1340,12 +1529,15 @@ public class GrievanceService {
     }
 
     private GrievanceResponseDTO mapCpgramToDetailDTO(com.example.jk_samadhan_backend.models.CpgramGrievanceMaster c) {
-        String dept = c.getForwardedDepartment() != null && !c.getForwardedDepartment().trim().isEmpty() 
-                ? c.getForwardedDepartment() 
+        String dept = c.getForwardedDepartment() != null && !c.getForwardedDepartment().trim().isEmpty()
+                ? c.getForwardedDepartment()
                 : (c.getFromOrgName() != null ? c.getFromOrgName() : "DOPG");
-        String cat = c.getCategory() != null && !c.getCategory().trim().isEmpty() ? c.getCategory() : "Central Grievance";
-        String dateStr = c.getCreatedDate() != null ? c.getCreatedDate().toString() : (c.getDateOfReceipt() != null ? c.getDateOfReceipt() : "");
-        String phone = c.getMobileNo() != null && !c.getMobileNo().trim().isEmpty() ? c.getMobileNo() : (c.getPhoneNo() != null ? c.getPhoneNo() : "");
+        String cat = c.getCategory() != null && !c.getCategory().trim().isEmpty() ? c.getCategory()
+                : "Central Grievance";
+        String dateStr = c.getCreatedDate() != null ? c.getCreatedDate().toString()
+                : (c.getDateOfReceipt() != null ? c.getDateOfReceipt() : "");
+        String phone = c.getMobileNo() != null && !c.getMobileNo().trim().isEmpty() ? c.getMobileNo()
+                : (c.getPhoneNo() != null ? c.getPhoneNo() : "");
         String name = c.getName() != null && !c.getName().trim().isEmpty() ? c.getName() : "CITIZEN USER";
 
         List<GrievanceResponseDTO.HistoryItemDTO> historyDTOs = new ArrayList<>();
@@ -1353,7 +1545,10 @@ public class GrievanceService {
             historyDTOs.add(GrievanceResponseDTO.HistoryItemDTO.builder()
                     .id((long) c.getId())
                     .uniqId(c.getRegistrationNo())
-                    .actionBy(c.getNodalOfficer() != null ? c.getNodalOfficer() + (c.getNodalOfficerDesignation() != null ? " (" + c.getNodalOfficerDesignation() + ")" : "") : "Nodal Officer")
+                    .actionBy(c.getNodalOfficer() != null ? c.getNodalOfficer()
+                            + (c.getNodalOfficerDesignation() != null ? " (" + c.getNodalOfficerDesignation() + ")"
+                                    : "")
+                            : "Nodal Officer")
                     .dateTimeOfAction(c.getUpdatedDate() != null ? c.getUpdatedDate().toString() : dateStr)
                     .actionTaken(c.getStatus() != null ? c.getStatus() : "Under Process")
                     .remarks(c.getRemark() != null ? c.getRemark() : "CPGRAMS Process Updated")
@@ -1403,16 +1598,344 @@ public class GrievanceService {
                         .mobile(phone)
                         .email(c.getEmailAddress())
                         .gender(c.getGender())
-                        .address(c.getAddress1() != null ? (c.getAddress1() + (c.getAddress2() != null ? ", " + c.getAddress2() : "")) : "")
+                        .address(c.getAddress1() != null
+                                ? (c.getAddress1() + (c.getAddress2() != null ? ", " + c.getAddress2() : ""))
+                                : "")
                         .build())
                 .block("N/A")
                 .panchayat("N/A")
                 .municipality("N/A")
                 .ward("N/A")
                 .emailId(c.getEmailAddress() != null ? c.getEmailAddress() : "N/A")
-                .address(c.getAddress1() != null ? (c.getAddress1() + (c.getAddress2() != null ? ", " + c.getAddress2() : "")) : "N/A")
+                .address(c.getAddress1() != null
+                        ? (c.getAddress1() + (c.getAddress2() != null ? ", " + c.getAddress2() : ""))
+                        : "N/A")
                 .appealDescription("N/A")
                 .history(historyDTOs)
                 .build();
+    }
+
+    public com.example.jk_samadhan_backend.dto.PaginatedDepartmentUserReportDTO getDepartmentUserReport(
+            int page, int size, String search, String department, String departmentType, String userType, String district) {
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        
+        List<Object[]> rawList = userRepository.fetchDepartmentUserReportRaw(search, department, departmentType, userType, district, pageable);
+        long totalElements = userRepository.countDepartmentUserReportRaw(search, department, departmentType, userType, district);
+
+        java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        List<com.example.jk_samadhan_backend.dto.DepartmentUserReportDTO> content = new java.util.ArrayList<>();
+        for (Object[] row : rawList) {
+            Long id = ((Number) row[0]).longValue();
+            String uname = row[1] != null ? row[1].toString() : "";
+            String mail = row[2] != null ? row[2].toString() : "";
+            String nameVal = row[3] != null ? row[3].toString() : "";
+            String deptVal = row[4] != null ? row[4].toString() : "";
+            String deptTypeVal = row[5] != null ? row[5].toString() : "";
+            String distVal = row[6] != null ? row[6].toString() : "";
+            String officeVal = row[7] != null ? row[7].toString() : "";
+            String desgVal = row[8] != null ? row[8].toString() : "";
+            String usrTypeVal = row[9] != null ? row[9].toString() : "";
+            String createdByVal = row[10] != null ? row[10].toString() : "";
+            
+            String dateStr = "N/A";
+            if (row[11] instanceof java.time.OffsetDateTime odt) {
+                dateStr = odt.format(dtf);
+            } else if (row[11] instanceof java.time.LocalDateTime ldt) {
+                dateStr = ldt.format(dtf);
+            } else if (row[11] instanceof java.util.Date d) {
+                dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(d);
+            } else if (row[11] != null) {
+                dateStr = row[11].toString();
+            }
+
+            String mobileVal = row[12] != null ? row[12].toString() : "N/A";
+            Boolean enabledVal = Boolean.TRUE.equals(row[13]);
+
+            content.add(com.example.jk_samadhan_backend.dto.DepartmentUserReportDTO.builder()
+                    .id(id)
+                    .username(uname)
+                    .email(mail)
+                    .name(nameVal)
+                    .department(deptVal)
+                    .departmentType(deptTypeVal)
+                    .district(distVal)
+                    .office(officeVal)
+                    .designation(desgVal)
+                    .userType(usrTypeVal)
+                    .createdBy(createdByVal)
+                    .createdAt(dateStr)
+                    .mobile(mobileVal)
+                    .enabled(enabledVal)
+                    .build());
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        List<String> depts = departmentRepository.findAll().stream()
+                .map(com.example.jk_samadhan_backend.models.Department::getName)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .sorted()
+                .toList();
+
+        List<String> deptTypes = java.util.List.of("ADMIN", "DOPG", "OTHER");
+        List<String> usrTypes = java.util.List.of("Administrative", "Appellate", "District", "HOD", "DEALINGHAND", "ROLE_Admin");
+
+        List<String> dists = districtRepository.findAll().stream()
+                .map(com.example.jk_samadhan_backend.models.District::getName)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .sorted()
+                .toList();
+
+        return com.example.jk_samadhan_backend.dto.PaginatedDepartmentUserReportDTO.builder()
+                .content(content)
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .departments(depts)
+                .departmentTypes(deptTypes)
+                .userTypes(usrTypes)
+                .districts(dists)
+                .build();
+    }
+
+    public com.example.jk_samadhan_backend.dto.PaginatedStatusWiseReportDTO getStatusWiseReport(
+            String mode, int page, int size, String search) {
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        String reportMode = (mode != null && mode.equalsIgnoreCase("user")) ? "user" : "department";
+        
+        List<com.example.jk_samadhan_backend.dto.StatusWiseReportDTO> content = new java.util.ArrayList<>();
+        long totalElements = 0;
+
+        if ("user".equalsIgnoreCase(reportMode)) {
+            List<Object[]> rawList = grievanceMasterRepository.fetchUserWiseStatusRaw(search, pageable);
+            totalElements = grievanceMasterRepository.countUserWiseStatusRaw(search);
+
+            for (Object[] row : rawList) {
+                Long id = row[0] != null ? ((Number) row[0]).longValue() : null;
+                String officerName = row[1] != null ? row[1].toString() : "";
+                String officeDesg = row[2] != null ? row[2].toString() : "";
+                String deptName = row[3] != null ? row[3].toString() : "";
+                String usrType = row[4] != null ? row[4].toString() : "";
+                String usrLevel = row[5] != null ? row[5].toString() : "";
+                String uname = row[6] != null ? row[6].toString() : "";
+
+                long total = row[7] != null ? ((Number) row[7]).longValue() : 0;
+                long resolved = row[8] != null ? ((Number) row[8]).longValue() : 0;
+                long pending = row[9] != null ? ((Number) row[9]).longValue() : 0;
+                long forwarded = row[10] != null ? ((Number) row[10]).longValue() : 0;
+                long dnp = row[11] != null ? ((Number) row[11]).longValue() : 0;
+                long remark = row[12] != null ? ((Number) row[12]).longValue() : 0;
+                long rejected = row[13] != null ? ((Number) row[13]).longValue() : 0;
+                long appealed = row[14] != null ? ((Number) row[14]).longValue() : 0;
+
+                content.add(com.example.jk_samadhan_backend.dto.StatusWiseReportDTO.builder()
+                        .id(id)
+                        .officerName(officerName)
+                        .officeAndDesignation(officeDesg)
+                        .departmentName(deptName)
+                        .userType(usrType)
+                        .userLevel(usrLevel)
+                        .username(uname)
+                        .totalCount(total)
+                        .resolvedCount(resolved)
+                        .pendingCount(pending)
+                        .forwardedCount(forwarded)
+                        .dnpCount(dnp)
+                        .remarkCount(remark)
+                        .rejectedCount(rejected)
+                        .appealedCount(appealed)
+                        .build());
+            }
+        } else {
+            List<Object[]> rawList = grievanceMasterRepository.fetchDepartmentWiseStatusRaw(search, pageable);
+            totalElements = grievanceMasterRepository.countDepartmentWiseStatusRaw(search);
+
+            for (Object[] row : rawList) {
+                String deptName = row[0] != null ? row[0].toString() : "Unassigned";
+                long total = row[1] != null ? ((Number) row[1]).longValue() : 0;
+                long resolved = row[2] != null ? ((Number) row[2]).longValue() : 0;
+                long forwarded = row[3] != null ? ((Number) row[3]).longValue() : 0;
+                long dnp = row[4] != null ? ((Number) row[4]).longValue() : 0;
+                long pending = row[5] != null ? ((Number) row[5]).longValue() : 0;
+                long rejected = row[6] != null ? ((Number) row[6]).longValue() : 0;
+                long appealed = row[7] != null ? ((Number) row[7]).longValue() : 0;
+
+                content.add(com.example.jk_samadhan_backend.dto.StatusWiseReportDTO.builder()
+                        .departmentName(deptName)
+                        .totalCount(total)
+                        .resolvedCount(resolved)
+                        .forwardedCount(forwarded)
+                        .dnpCount(dnp)
+                        .pendingCount(pending)
+                        .rejectedCount(rejected)
+                        .appealedCount(appealed)
+                        .build());
+            }
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedStatusWiseReportDTO.builder()
+                .mode(reportMode)
+                .content(content)
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .build();
+    }
+
+    public PaginatedGrievancesResponseDTO getStatusWiseGrievanceDetailsModal(
+            String department, String username, String status, int page, int size, String search) {
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+
+        List<Object[]> rawList = grievanceMasterRepository.fetchStatusWiseGrievanceDetailsRaw(department, username, status, search, pageable);
+        long totalElements = grievanceMasterRepository.countStatusWiseGrievanceDetailsRaw(department, username, status, search);
+
+        java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        List<GrievanceResponseDTO> content = new java.util.ArrayList<>();
+        for (Object[] row : rawList) {
+            Long id = ((Number) row[0]).longValue();
+            String uniqId = row[1] != null ? row[1].toString() : "";
+            String dept = row[2] != null ? row[2].toString() : "";
+            String cat = row[3] != null ? row[3].toString() : "";
+            String submitter = row[4] != null ? row[4].toString() : "";
+
+            String dateStr = "N/A";
+            if (row[5] instanceof java.time.OffsetDateTime odt) {
+                dateStr = odt.format(dtf);
+            } else if (row[5] instanceof java.time.LocalDateTime ldt) {
+                dateStr = ldt.format(dtf);
+            } else if (row[5] instanceof java.util.Date d) {
+                dateStr = new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(d);
+            } else if (row[5] != null) {
+                dateStr = row[5].toString();
+            }
+
+            String st = row[6] != null ? row[6].toString() : "Pending";
+
+            content.add(GrievanceResponseDTO.builder()
+                    .id(id)
+                    .uniqId(uniqId)
+                    .department(dept)
+                    .grievanceCategory(cat)
+                    .submittedBy(GrievanceResponseDTO.ComplainantInfo.builder().name(submitter).build())
+                    .createdAt(dateStr)
+                    .status(st)
+                    .finalStatus(st)
+                    .origin("JK-SAMADHAN")
+                    .build());
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return PaginatedGrievancesResponseDTO.builder()
+                .content(content)
+                .currentPage(page)
+                .pageSize(size)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .build();
+    }
+
+    public List<Map<String, Object>> getTreeDepartments() {
+        String sql = """
+            SELECT DISTINCT name FROM (
+                SELECT name FROM jks_3nf.departments WHERE name IS NOT NULL AND TRIM(name) != ''
+                UNION
+                SELECT department AS name FROM jks_3nf.jkigrams_dump WHERE department IS NOT NULL AND TRIM(department) != ''
+            ) dept_list ORDER BY name ASC
+        """;
+        return jdbcTemplate.queryForList(sql);
+    }
+
+    public List<Map<String, Object>> getTreeMainCategories(String departmentName) {
+        String deptFilter = (departmentName == null || departmentName.trim().isEmpty() || "0".equals(departmentName) || "all".equalsIgnoreCase(departmentName)) ? null : departmentName.trim();
+        String sql = """
+            SELECT category_name, SUM(cnt) AS count FROM (
+                SELECT c.name AS category_name, COUNT(g.id) AS cnt
+                FROM jks_3nf.categories c
+                JOIN jks_3nf.departments d ON c.department_id = d.id
+                LEFT JOIN jks_3nf.grievance_master g ON g.category_id = c.id
+                WHERE (? IS NULL OR LOWER(d.name) = LOWER(?))
+                GROUP BY c.id, c.name
+                UNION ALL
+                SELECT COALESCE(grievance_type, 'General') AS category_name, COUNT(*) AS cnt
+                FROM jks_3nf.jkigrams_dump
+                WHERE (? IS NULL OR LOWER(department) LIKE LOWER(CONCAT('%', ?, '%')))
+                GROUP BY grievance_type
+            ) combined
+            WHERE category_name IS NOT NULL AND TRIM(category_name) != ''
+            GROUP BY category_name
+            ORDER BY SUM(cnt) DESC, category_name ASC
+        """;
+        return jdbcTemplate.queryForList(sql, deptFilter, deptFilter, deptFilter, deptFilter);
+    }
+
+    public List<Map<String, Object>> getTreeSubCategoriesL1(String departmentName, String categoryName) {
+        String deptFilter = (departmentName == null || departmentName.trim().isEmpty() || "0".equals(departmentName) || "all".equalsIgnoreCase(departmentName)) ? null : departmentName.trim();
+        String catFilter = (categoryName == null || categoryName.trim().isEmpty()) ? null : categoryName.trim();
+        String sql = """
+            SELECT sub_category_name, SUM(cnt) AS count FROM (
+                SELECT s.name AS sub_category_name, COUNT(g.id) AS cnt
+                FROM jks_3nf.subcategory_level1 s
+                JOIN jks_3nf.categories c ON s.category_id = c.id
+                JOIN jks_3nf.departments d ON c.department_id = d.id
+                LEFT JOIN jks_3nf.grievance_master g ON g.sub_cat_l1_id = s.id
+                WHERE (? IS NULL OR LOWER(c.name) = LOWER(?))
+                  AND (? IS NULL OR LOWER(d.name) = LOWER(?))
+                GROUP BY s.id, s.name
+                UNION ALL
+                SELECT COALESCE(current_status, 'Under Process') AS sub_category_name, COUNT(*) AS cnt
+                FROM jks_3nf.jkigrams_dump
+                WHERE (? IS NULL OR LOWER(grievance_type) = LOWER(?))
+                  AND (? IS NULL OR LOWER(department) LIKE LOWER(CONCAT('%', ?, '%')))
+                GROUP BY current_status
+            ) combined
+            WHERE sub_category_name IS NOT NULL AND TRIM(sub_category_name) != ''
+            GROUP BY sub_category_name
+            ORDER BY SUM(cnt) DESC, sub_category_name ASC
+        """;
+        return jdbcTemplate.queryForList(sql, catFilter, catFilter, deptFilter, deptFilter, catFilter, catFilter, deptFilter, deptFilter);
+    }
+
+    public List<Map<String, Object>> getTreeGrievanceList(String departmentName, String categoryName, String subCategoryName) {
+        String deptFilter = (departmentName == null || departmentName.trim().isEmpty() || "0".equals(departmentName) || "all".equalsIgnoreCase(departmentName)) ? null : departmentName.trim();
+        String catFilter = (categoryName == null || categoryName.trim().isEmpty()) ? null : categoryName.trim();
+        String subCatFilter = (subCategoryName == null || subCategoryName.trim().isEmpty()) ? null : subCategoryName.trim();
+
+        String sql = """
+            SELECT id, reference_id AS grievanceId, department, grievance_type AS category, applicant_name AS submittedBy, current_status AS status, application_date AS date
+            FROM jks_3nf.jkigrams_dump
+            WHERE (? IS NULL OR LOWER(department) LIKE LOWER(CONCAT('%', ?, '%')))
+              AND (? IS NULL OR LOWER(grievance_type) = LOWER(?))
+              AND (? IS NULL OR LOWER(current_status) = LOWER(?))
+            ORDER BY application_date DESC
+            LIMIT 100
+        """;
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, deptFilter, deptFilter, catFilter, catFilter, subCatFilter, subCatFilter);
+        if (list == null || list.isEmpty()) {
+            String sql2 = """
+                SELECT g.id, g.uniq_id AS grievanceId, d.name AS department, c.name AS category, u.username AS submittedBy, g.status AS status, g.created_at AS date
+                FROM jks_3nf.grievance_master g
+                LEFT JOIN jks_3nf.categories c ON g.category_id = c.id
+                LEFT JOIN jks_3nf.departments d ON c.department_id = d.id
+                LEFT JOIN jks_3nf.users u ON g.submitted_by_user_id = u.id
+                WHERE (? IS NULL OR LOWER(d.name) = LOWER(?))
+                  AND (? IS NULL OR LOWER(c.name) = LOWER(?))
+                ORDER BY g.created_at DESC
+                LIMIT 100
+            """;
+            list = jdbcTemplate.queryForList(sql2, deptFilter, deptFilter, catFilter, catFilter);
+        }
+        return list;
     }
 }
