@@ -25,10 +25,72 @@ public class SuperAdminController {
 
     private final GrievanceService grievanceService;
     private final SuperAdminExportService superAdminExportService;
+    private final com.example.jk_samadhan_backend.services.FeedbackService feedbackService;
+    private final com.example.jk_samadhan_backend.repositories.UserRepository userRepository;
 
-    public SuperAdminController(GrievanceService grievanceService, SuperAdminExportService superAdminExportService) {
+    public SuperAdminController(GrievanceService grievanceService,
+                                SuperAdminExportService superAdminExportService,
+                                com.example.jk_samadhan_backend.services.FeedbackService feedbackService,
+                                com.example.jk_samadhan_backend.repositories.UserRepository userRepository) {
         this.grievanceService = grievanceService;
         this.superAdminExportService = superAdminExportService;
+        this.feedbackService = feedbackService;
+        this.userRepository = userRepository;
+    }
+
+    private String resolveDistrictForPrincipal(Principal principal, String inputDistrict) {
+        if (principal == null) return inputDistrict;
+        try {
+            String identifier = principal.getName();
+            com.example.jk_samadhan_backend.models.Users user = null;
+            try {
+                user = userRepository.findByUuid(java.util.UUID.fromString(identifier)).orElse(null);
+            } catch (Exception e) {
+            }
+            if (user == null) {
+                user = userRepository.findByIdentifier(identifier).orElse(null);
+            }
+            if (user != null) {
+                String role = (user.getUserType() != null && user.getUserType().getTypeName() != null)
+                        ? user.getUserType().getTypeName()
+                        : (user.getRole() != null ? user.getRole() : "");
+                if (role.toUpperCase().contains("DM") || role.toUpperCase().contains("DISTRICT")) {
+                    if (user.getDistrictEntity() != null && user.getDistrictEntity().getName() != null && !user.getDistrictEntity().getName().isBlank()) {
+                        return user.getDistrictEntity().getName();
+                    } else if (user.getDistrict() != null && !user.getDistrict().isBlank() && !"Other".equalsIgnoreCase(user.getDistrict())) {
+                        return user.getDistrict();
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return inputDistrict;
+    }
+
+    private String resolveOriginForPrincipal(Principal principal, String inputOrigin) {
+        if (principal == null) return inputOrigin;
+        try {
+            String identifier = principal.getName();
+            com.example.jk_samadhan_backend.models.Users user = null;
+            try {
+                user = userRepository.findByUuid(java.util.UUID.fromString(identifier)).orElse(null);
+            } catch (Exception e) {
+            }
+            if (user == null) {
+                user = userRepository.findByIdentifier(identifier).orElse(null);
+            }
+            if (user != null) {
+                String role = (user.getUserType() != null && user.getUserType().getTypeName() != null)
+                        ? user.getUserType().getTypeName()
+                        : (user.getRole() != null ? user.getRole() : "");
+                String r = role.toUpperCase();
+                if (r.contains("RAABITA") || r.contains("RMC")) {
+                    return "RAABITA";
+                }
+            }
+        } catch (Exception e) {
+        }
+        return inputOrigin;
     }
 
     @GetMapping("/grievances")
@@ -50,7 +112,11 @@ public class SuperAdminController {
             @RequestParam(required = false) String subCatL4,
             @RequestParam(required = false) String origin,
             @RequestParam(required = false) String finalStatus,
-            @RequestParam(required = false) String keyFlag) {
+            @RequestParam(required = false) String keyFlag,
+            Principal principal) {
+
+        String targetDistrict = resolveDistrictForPrincipal(principal, district);
+        String targetOrigin = resolveOriginForPrincipal(principal, origin);
 
         String mappedSortBy = sortBy;
         if ("grievanceId".equalsIgnoreCase(sortBy)) {
@@ -68,8 +134,8 @@ public class SuperAdminController {
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         
         PaginatedGrievancesResponseDTO response = grievanceService.getSuperAdminGrievances(
-                search, status, department, district, category, dateFrom, dateTo,
-                subCategory, subCatL2, subCatL3, subCatL4, origin, finalStatus, keyFlag, pageRequest);
+                search, status, department, targetDistrict, category, dateFrom, dateTo,
+                subCategory, subCatL2, subCatL3, subCatL4, targetOrigin, finalStatus, keyFlag, pageRequest);
                 
         return ResponseEntity.ok(response);
     }
@@ -89,17 +155,21 @@ public class SuperAdminController {
             @RequestParam(required = false) String subCatL4,
             @RequestParam(required = false) String origin,
             @RequestParam(required = false) String finalStatus,
-            @RequestParam(required = false) String keyFlag) {
+            @RequestParam(required = false) String keyFlag,
+            Principal principal) {
+
+        String targetDistrict = resolveDistrictForPrincipal(principal, district);
+        String targetOrigin = resolveOriginForPrincipal(principal, origin);
 
         SuperAdminSummaryDTO summary = grievanceService.getSuperAdminAnalyticsSummary(
-                search, status, department, district, category, dateFrom, dateTo,
-                subCategory, subCatL2, subCatL3, subCatL4, origin, finalStatus, keyFlag);
+                search, status, department, targetDistrict, category, dateFrom, dateTo,
+                subCategory, subCatL2, subCatL3, subCatL4, targetOrigin, finalStatus, keyFlag);
         return ResponseEntity.ok(summary);
     }
 
     @GetMapping("/dashboard/summary")
-    public ResponseEntity<SuperAdminSummaryDTO> getDashboardSummary() {
-        SuperAdminSummaryDTO summary = grievanceService.getSuperAdminDashboardSummary();
+    public ResponseEntity<SuperAdminSummaryDTO> getDashboardSummary(Principal principal) {
+        SuperAdminSummaryDTO summary = grievanceService.getSuperAdminDashboardSummary(principal);
         return ResponseEntity.ok(summary);
     }
 
@@ -111,6 +181,116 @@ public class SuperAdminController {
             @RequestParam(required = false) String search) {
         com.example.jk_samadhan_backend.dto.PaginatedStatusWiseReportDTO response =
                 grievanceService.getStatusWiseReport(mode, page, size, search);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/district-wise-report")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedDistrictWiseReportDTO> getDistrictWiseReport(
+            @RequestParam(defaultValue = "JKSAMADHAN") String origin,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Principal principal) {
+        com.example.jk_samadhan_backend.dto.PaginatedDistrictWiseReportDTO response =
+                grievanceService.getDistrictWiseReport(origin, page, size, search, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/district-wise-report/details")
+    public ResponseEntity<PaginatedGrievancesResponseDTO> getDistrictWiseReportDetails(
+            @RequestParam(required = false) String district,
+            @RequestParam(required = false) String origin,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Principal principal) {
+        PaginatedGrievancesResponseDTO response =
+                grievanceService.getDistrictWiseReportDetails(district, origin, status, page, size, search, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/heatmap")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedHeatmapDTO> getHeatmapReport(
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String statusCategory,
+            @RequestParam(required = false) String origin,
+            @RequestParam(required = false) String district,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) String search,
+            Principal principal) {
+        com.example.jk_samadhan_backend.dto.PaginatedHeatmapDTO response =
+                grievanceService.getHeatmapReport(dateFrom, dateTo, department, category, status, statusCategory, origin, district, page, size, search, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/average-time-report")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedAverageTimeTakenReportDTO> getAverageTimeReport(
+            @RequestParam(defaultValue = "department") String mode,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String district,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Principal principal) {
+        com.example.jk_samadhan_backend.dto.PaginatedAverageTimeTakenReportDTO response =
+                grievanceService.getAverageTimeTakenReport(mode, department, district, page, size, search, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/average-time-report/details")
+    public ResponseEntity<PaginatedGrievancesResponseDTO> getAverageTimeReportDetails(
+            @RequestParam(defaultValue = "department") String mode,
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Principal principal) {
+        PaginatedGrievancesResponseDTO response =
+                grievanceService.getAverageTimeTakenDetails(mode, name, page, size, search, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/appellate-report")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedAppellateReportDTO> getAppellateReport(
+            @RequestParam(required = false) String departmentType,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Principal principal) {
+        com.example.jk_samadhan_backend.dto.PaginatedAppellateReportDTO response =
+                grievanceService.getAppellateReport(departmentType, fromDate, toDate, page, size, search, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/appellate-report/details")
+    public ResponseEntity<PaginatedGrievancesResponseDTO> getAppellateReportDetails(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Principal principal) {
+        PaginatedGrievancesResponseDTO response =
+                grievanceService.getAppellateReportDetails(department, type, fromDate, toDate, page, size, search, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping({"/advance-query", "/reportAdvanced"})
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedAdvanceQueryDTO> executeAdvanceQuery(
+            @RequestBody com.example.jk_samadhan_backend.dto.AdvanceQueryRequestDTO request,
+            Principal principal) {
+        com.example.jk_samadhan_backend.dto.PaginatedAdvanceQueryDTO response =
+                grievanceService.executeAdvanceQuery(request, principal);
         return ResponseEntity.ok(response);
     }
 
@@ -459,5 +639,43 @@ public class SuperAdminController {
         PaginatedGrievancesResponseDTO response =
                 grievanceService.getStatusWiseGrievanceDetailsModal(department, username, status != null ? status : "Pending", page, size, search);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/feedback/summary")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.FeedbackSummaryDTO> getFeedbackSummary(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String district,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String satisfaction,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo) {
+        return ResponseEntity.ok(feedbackService.getFeedbackSummary(
+                department, district, category, gender, satisfaction, dateFrom, dateTo));
+    }
+
+    @GetMapping("/feedback/list")
+    public ResponseEntity<com.example.jk_samadhan_backend.dto.PaginatedFeedbackResponseDTO> getFeedbackList(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String district,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String satisfaction,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(feedbackService.getFeedbackList(
+                department, district, category, gender, satisfaction, dateFrom, dateTo, search, page, size));
+    }
+
+    @GetMapping("/feedback/mis-report")
+    public ResponseEntity<List<com.example.jk_samadhan_backend.dto.FeedbackMisReportDTO>> getFeedbackMisReport(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String district,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo) {
+        return ResponseEntity.ok(feedbackService.getFeedbackMisReport(department, district, dateFrom, dateTo));
     }
 }

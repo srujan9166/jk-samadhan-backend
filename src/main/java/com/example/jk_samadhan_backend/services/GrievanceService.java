@@ -497,7 +497,271 @@ public class GrievanceService {
     }
 
     @Transactional(readOnly = true)
-    public SuperAdminSummaryDTO getSuperAdminDashboardSummary() {
+    public SuperAdminSummaryDTO getSuperAdminDashboardSummary(Principal principal) {
+        String districtFilter = null;
+        boolean isRMC = false;
+        if (principal != null) {
+            try {
+                String identifier = principal.getName();
+                Users user = null;
+                try {
+                    user = userRepository.findByUuid(java.util.UUID.fromString(identifier)).orElse(null);
+                } catch (Exception e) {
+                }
+                if (user == null) {
+                    user = userRepository.findByIdentifier(identifier).orElse(null);
+                }
+                if (user != null) {
+                    String role = (user.getUserType() != null && user.getUserType().getTypeName() != null)
+                            ? user.getUserType().getTypeName()
+                            : (user.getRole() != null ? user.getRole() : "");
+
+                    String r = role.toUpperCase();
+                    if (r.contains("RAABITA") || r.contains("RMC")) {
+                        isRMC = true;
+                    } else if (r.contains("DM") || r.contains("DISTRICT")) {
+                        if (user.getDistrictEntity() != null && user.getDistrictEntity().getName() != null && !user.getDistrictEntity().getName().isBlank()) {
+                            districtFilter = user.getDistrictEntity().getName();
+                        } else if (user.getDistrict() != null && !user.getDistrict().isBlank() && !"Other".equalsIgnoreCase(user.getDistrict())) {
+                            districtFilter = user.getDistrict();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+            }
+        }
+        if (isRMC) {
+            return getSuperAdminAnalyticsSummary(null, null, null, null, null, null, null, null, null, null, null, "RAABITA", null, null);
+        }
+        return getSuperAdminDashboardSummary(districtFilter);
+    }
+
+    @Transactional(readOnly = true)
+    public SuperAdminSummaryDTO getSuperAdminDashboardSummary(String districtFilter) {
+        if (districtFilter != null && !districtFilter.trim().isEmpty() && !"All".equalsIgnoreCase(districtFilter.trim()) && !"Other".equalsIgnoreCase(districtFilter.trim())) {
+            return getSuperAdminDashboardSummaryDistrict(districtFilter.trim());
+        }
+        return getSuperAdminDashboardSummaryGlobal();
+    }
+
+    private SuperAdminSummaryDTO getSuperAdminDashboardSummaryDistrict(String district) {
+        long totalGrievances = 0;
+        long open = 0;
+        long pending = 0;
+        long resolved = 0;
+        long rejected = 0;
+        long escalated = 0;
+        double averageResolutionTime = 0.0;
+
+        long web = 0;
+        long app = 0;
+        long appealReceivedCount = 0;
+        long forwarded = 0;
+        long dnpCount = 0;
+        long cpgramClosed = 0;
+        long fwdToCPGRAM = 0;
+        long totalCPGRAM = 0;
+
+        Map<String, Long> statusDistribution = new HashMap<>();
+        String distClause = " LOWER(d.name) = LOWER(?) ";
+
+        try {
+            List<Map<String, Object>> statusCounts = jdbcTemplate.queryForList(
+                    "SELECT gm.status, COUNT(*) as count FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " GROUP BY gm.status", district);
+            for (Map<String, Object> row : statusCounts) {
+                String status = (String) row.get("status");
+                long count = ((Number) row.get("count")).longValue();
+                if (status != null) {
+                    statusDistribution.put(status, count);
+                    totalGrievances += count;
+                    if ("Registered".equalsIgnoreCase(status) || "Pending".equalsIgnoreCase(status)) {
+                        pending += count;
+                    } else if ("Open".equalsIgnoreCase(status)) {
+                        open += count;
+                    } else if ("Resolved".equalsIgnoreCase(status) || "Closed".equalsIgnoreCase(status)) {
+                        resolved += count;
+                    } else if ("Rejected".equalsIgnoreCase(status)) {
+                        rejected += count;
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        try {
+            escalated = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND (gm.key_flag = 'Priority' OR gm.key_flag = 'Urgent')",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            Double avgTime = jdbcTemplate.queryForObject(
+                    "SELECT AVG(EXTRACT(EPOCH FROM (gm.updated_at - gm.created_at))/86400) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.status IN ('Resolved', 'Closed') AND gm.updated_at IS NOT NULL",
+                    Double.class, district);
+            if (avgTime != null) {
+                averageResolutionTime = avgTime;
+            }
+        } catch (Exception e) {
+        }
+
+        try {
+            web = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.origin = 'JKSAMADHAN'",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            app = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.origin != 'JKSAMADHAN'",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            forwarded = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.status = 'Forwarded' AND (gm.final_status IS NULL OR gm.final_status = '' OR gm.final_status = 'NA')",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            cpgramClosed = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.status = 'Closed'",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            fwdToCPGRAM = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.status = 'Forwarded To CPGRAM'",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            totalCPGRAM = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND (gm.status = 'Forwarded To CPGRAM' OR gm.status = 'Closed')",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            appealReceivedCount = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.appeal_master am " +
+                    "JOIN jks_3nf.appeal_assign_user au ON am.id = au.appeal_id " +
+                    "JOIN jks_3nf.grievance_master gm ON gm.id = am.grievance_id " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND au.action = 'Pending' AND au.enabled = true",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        try {
+            dnpCount = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.status ILIKE ANY (ARRAY['dnpToOffice', 'Does not pertain to this office'])",
+                    Long.class, district);
+        } catch (Exception e) {
+        }
+
+        List<SuperAdminSummaryDTO.MapEntryDTO> deptCounts = new ArrayList<>();
+        try {
+            List<Map<String, Object>> deptRows = jdbcTemplate.queryForList(
+                    "SELECT COALESCE(dept.name, 'General Administration') as label, COUNT(gm.id) as value " +
+                    "FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "LEFT JOIN jks_3nf.categories c ON c.id = gm.category_id " +
+                    "LEFT JOIN jks_3nf.departments dept ON dept.id = c.department_id " +
+                    "WHERE " + distClause + " GROUP BY dept.name ORDER BY value DESC LIMIT 10", district);
+            for (Map<String, Object> row : deptRows) {
+                deptCounts.add(new SuperAdminSummaryDTO.MapEntryDTO((String) row.get("label"),
+                        ((Number) row.get("value")).longValue()));
+            }
+        } catch (Exception e) {
+        }
+
+        List<SuperAdminSummaryDTO.MapEntryDTO> distCounts = new ArrayList<>();
+        distCounts.add(new SuperAdminSummaryDTO.MapEntryDTO(district, totalGrievances));
+
+        List<SuperAdminSummaryDTO.MapEntryDTO> monthlyTrends = new ArrayList<>();
+        try {
+            List<Map<String, Object>> monthRows = jdbcTemplate.queryForList(
+                    "SELECT to_char(gm.created_at, 'YYYY-MM') as label, COUNT(*) as value " +
+                    "FROM jks_3nf.grievance_master gm " +
+                    "LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id " +
+                    "WHERE " + distClause + " AND gm.created_at >= NOW() - INTERVAL '6 months' " +
+                    "GROUP BY label ORDER BY label ASC", district);
+            for (Map<String, Object> row : monthRows) {
+                monthlyTrends.add(new SuperAdminSummaryDTO.MapEntryDTO((String) row.get("label"),
+                        ((Number) row.get("value")).longValue()));
+            }
+        } catch (Exception e) {
+        }
+
+        List<SuperAdminSummaryDTO.MapEntryDTO> monthlyCitizenTrends = new ArrayList<>();
+        try {
+            List<Map<String, Object>> citizenRows = jdbcTemplate.queryForList(
+                    "SELECT TO_CHAR(u.created_at, 'Mon-YY') as label, COUNT(*) as value " +
+                    "FROM jks_3nf.users u " +
+                    "LEFT JOIN jks_3nf.districts d ON u.district_id = d.id " +
+                    "WHERE u.user_type_id = 10 AND u.created_at IS NOT NULL AND LOWER(d.name) = LOWER(?) " +
+                    "GROUP BY TO_CHAR(u.created_at, 'Mon-YY'), EXTRACT(YEAR FROM u.created_at), EXTRACT(MONTH FROM u.created_at) " +
+                    "ORDER BY EXTRACT(YEAR FROM u.created_at) ASC, EXTRACT(MONTH FROM u.created_at) ASC", district);
+            for (Map<String, Object> row : citizenRows) {
+                monthlyCitizenTrends.add(new SuperAdminSummaryDTO.MapEntryDTO(
+                        (String) row.get("label"),
+                        ((Number) row.get("value")).longValue()));
+            }
+        } catch (Exception e) {
+        }
+
+        return SuperAdminSummaryDTO.builder()
+                .totalGrievances(totalGrievances)
+                .open(open)
+                .pending(pending)
+                .resolved(resolved)
+                .rejected(rejected)
+                .escalated(escalated)
+                .averageResolutionTimeDays(Math.round(averageResolutionTime * 10.0) / 10.0)
+                .web(web)
+                .app(app)
+                .appealReceivedCount(appealReceivedCount)
+                .forwarded(forwarded)
+                .dnpCount(dnpCount)
+                .cpgramClosed(cpgramClosed)
+                .fwdToCPGRAM(fwdToCPGRAM)
+                .totalCPGRAM(totalCPGRAM)
+                .statusDistribution(statusDistribution)
+                .departmentWiseCounts(deptCounts)
+                .districtWiseCounts(distCounts)
+                .monthlyTrends(monthlyTrends)
+                .monthlyCitizenTrends(monthlyCitizenTrends)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public SuperAdminSummaryDTO getSuperAdminDashboardSummaryGlobal() {
         long totalGrievances = 0;
         long open = 0;
         long pending = 0;
@@ -634,7 +898,7 @@ public class GrievanceService {
             List<Map<String, Object>> distRows = jdbcTemplate.queryForList(
                     "SELECT COALESCE(dist.name, 'NA') as label, COUNT(gm.id) as value " +
                             "FROM jks_3nf.grievance_master gm " +
-                            "LEFT JOIN jks_3nf.district dist ON gm.district_id = dist.id " +
+                            "LEFT JOIN jks_3nf.districts dist ON gm.district_id = dist.id " +
                             "GROUP BY dist.name " +
                             "ORDER BY value DESC LIMIT 10");
             for (Map<String, Object> row : distRows) {
@@ -767,9 +1031,6 @@ public class GrievanceService {
 
         final String finalTypeName = typeName;
         UserType ut = userTypeRepository.findByTypeName(finalTypeName)
-                .or(() -> userTypeRepository.findByTypeName("ROLE_DM"))
-                .or(() -> userTypeRepository.findByTypeName("ROLE_Admin"))
-                .or(() -> userTypeRepository.findAll().stream().findFirst())
                 .orElseGet(() -> {
                     UserType newUt = UserType.builder().typeName(finalTypeName).build();
                     return userTypeRepository.save(newUt);
@@ -1937,5 +2198,944 @@ public class GrievanceService {
             list = jdbcTemplate.queryForList(sql2, deptFilter, deptFilter, catFilter, catFilter);
         }
         return list;
+    }
+
+    @Transactional(readOnly = true)
+    public com.example.jk_samadhan_backend.dto.PaginatedDistrictWiseReportDTO getDistrictWiseReport(
+            String origin, int page, int size, String search, Principal principal) {
+
+        String userDistrict = null;
+        if (principal != null) {
+            try {
+                String identifier = principal.getName();
+                Users user = null;
+                try {
+                    user = userRepository.findByUuid(java.util.UUID.fromString(identifier)).orElse(null);
+                } catch (Exception e) {}
+                if (user == null) {
+                    user = userRepository.findByIdentifier(identifier).orElse(null);
+                }
+                if (user != null) {
+                    String role = (user.getUserType() != null && user.getUserType().getTypeName() != null)
+                            ? user.getUserType().getTypeName()
+                            : (user.getRole() != null ? user.getRole() : "");
+                    if (role.toUpperCase().contains("DM") || role.toUpperCase().contains("DISTRICT")) {
+                        if (user.getDistrictEntity() != null && user.getDistrictEntity().getName() != null && !user.getDistrictEntity().getName().isBlank()) {
+                            userDistrict = user.getDistrictEntity().getName();
+                        } else if (user.getDistrict() != null && !user.getDistrict().isBlank() && !"Other".equalsIgnoreCase(user.getDistrict())) {
+                            userDistrict = user.getDistrict();
+                        }
+                    }
+                }
+            } catch (Exception e) {}
+        }
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+            SELECT 
+                COALESCE(d.name, 'NA') AS district_name,
+                COUNT(*) AS total_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) IN ('resolved', 'closed')) AS resolved_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) IN ('registered', 'pending', 'open', 'under process', 'acknowledged')) AS pending_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) = 'forwarded') AS forwarded_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) IN ('dnptooffice', 'does not pertain to this office')) AS dnp_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) = 'remark added') AS remark_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) = 'rejected') AS rejected_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) = 'appealed') AS appealed_count
+            FROM jks_3nf.grievance_master gm
+            LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id
+            WHERE 1=1
+        """);
+
+        if (origin != null && !origin.trim().isEmpty() && !"all".equalsIgnoreCase(origin)) {
+            if ("CPGRAM".equalsIgnoreCase(origin) || "CPGRAMS".equalsIgnoreCase(origin)) {
+                sql.append(" AND gm.origin ILIKE '%CPGRAM%' ");
+            } else {
+                sql.append(" AND (gm.origin IS NULL OR gm.origin NOT ILIKE '%CPGRAM%') ");
+            }
+        }
+
+        if (userDistrict != null && !userDistrict.isBlank() && !"All".equalsIgnoreCase(userDistrict)) {
+            sql.append(" AND LOWER(d.name) = LOWER(?) ");
+            params.add(userDistrict.trim());
+        }
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND LOWER(d.name) LIKE LOWER(?) ");
+            params.add("%" + search.trim().toLowerCase() + "%");
+        }
+
+        sql.append(" GROUP BY d.name ORDER BY d.name ASC ");
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+
+        int totalElements = rows.size();
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalElements);
+
+        List<com.example.jk_samadhan_backend.dto.DistrictWiseReportDTO> content = new ArrayList<>();
+        if (fromIndex < totalElements) {
+            List<Map<String, Object>> pageSubList = rows.subList(fromIndex, toIndex);
+            for (Map<String, Object> r : pageSubList) {
+                content.add(com.example.jk_samadhan_backend.dto.DistrictWiseReportDTO.builder()
+                        .district(getMapString(r, "district_name"))
+                        .totalCount(getMapLong(r, "total_count"))
+                        .resolvedCount(getMapLong(r, "resolved_count"))
+                        .pendingCount(getMapLong(r, "pending_count"))
+                        .forwardedCount(getMapLong(r, "forwarded_count"))
+                        .dnpCount(getMapLong(r, "dnp_count"))
+                        .remarkCount(getMapLong(r, "remark_count"))
+                        .rejectedCount(getMapLong(r, "rejected_count"))
+                        .appealedCount(getMapLong(r, "appealed_count"))
+                        .build());
+            }
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedDistrictWiseReportDTO.builder()
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public com.example.jk_samadhan_backend.dto.PaginatedHeatmapDTO getHeatmapReport(
+            String dateFrom, String dateTo, String department, String category,
+            String status, String statusCategory, String origin, String district,
+            int page, int size, String search, Principal principal) {
+
+        String userDistrict = resolveDistrictForPrincipal(principal, district);
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+            SELECT 
+                d.id AS district_id,
+                COALESCE(d.name, 'NA') AS district_name,
+                COUNT(*) AS total_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) IN ('registered', 'pending', 'open', 'under process', 'acknowledged')) AS pending_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) IN ('resolved', 'closed')) AS resolved_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) = 'forwarded') AS forwarded_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) = 'rejected') AS rejected_count,
+                COUNT(*) FILTER (WHERE LOWER(gm.status) = 'appealed') AS appealed_count
+            FROM jks_3nf.grievance_master gm
+            LEFT JOIN jks_3nf.districts d ON d.id = gm.district_id
+            WHERE 1=1
+        """);
+
+        if (origin != null && !origin.trim().isEmpty() && !"all".equalsIgnoreCase(origin)) {
+            if ("CPGRAM".equalsIgnoreCase(origin) || "CPGRAMS".equalsIgnoreCase(origin)) {
+                sql.append(" AND gm.origin ILIKE '%CPGRAM%' ");
+            } else if ("webapp".equalsIgnoreCase(origin) || "web".equalsIgnoreCase(origin)) {
+                sql.append(" AND (gm.origin IS NULL OR gm.origin ILIKE '%web%') ");
+            } else if ("mobileapp".equalsIgnoreCase(origin) || "mobile".equalsIgnoreCase(origin)) {
+                sql.append(" AND gm.origin ILIKE '%mobile%' ");
+            } else {
+                sql.append(" AND (gm.origin IS NULL OR gm.origin NOT ILIKE '%CPGRAM%') ");
+            }
+        }
+
+        if (userDistrict != null && !userDistrict.isBlank() && !"All".equalsIgnoreCase(userDistrict)) {
+            sql.append(" AND LOWER(d.name) = LOWER(?) ");
+            params.add(userDistrict.trim());
+        }
+
+        if (department != null && !department.trim().isEmpty() && !"all".equalsIgnoreCase(department) && !"0".equals(department)) {
+            sql.append(" AND (gm.department_id = ? OR CAST(gm.department_id AS text) = ?) ");
+            try {
+                params.add(Integer.parseInt(department));
+            } catch (Exception e) {
+                params.add(-1);
+            }
+            params.add(department);
+        }
+
+        if (category != null && !category.trim().isEmpty() && !"all".equalsIgnoreCase(category) && !"0".equals(category)) {
+            sql.append(" AND (gm.category_id = ? OR CAST(gm.category_id AS text) = ?) ");
+            try {
+                params.add(Integer.parseInt(category));
+            } catch (Exception e) {
+                params.add(-1);
+            }
+            params.add(category);
+        }
+
+        if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
+            sql.append(" AND LOWER(gm.status) = LOWER(?) ");
+            params.add(status.trim());
+        } else if (statusCategory != null && !statusCategory.trim().isEmpty()) {
+            if ("Open".equalsIgnoreCase(statusCategory)) {
+                sql.append(" AND LOWER(gm.status) IN ('registered', 'pending', 'open', 'under process', 'acknowledged', 'forwarded', 'appealed', 'dnptooffice') ");
+            } else if ("Closed".equalsIgnoreCase(statusCategory)) {
+                sql.append(" AND LOWER(gm.status) IN ('resolved', 'closed', 'rejected') ");
+            }
+        }
+
+        if (dateFrom != null && !dateFrom.trim().isEmpty() && !"0".equals(dateFrom)) {
+            sql.append(" AND gm.created_at >= CAST(? AS timestamp) ");
+            params.add(dateFrom.trim() + " 00:00:00");
+        }
+
+        if (dateTo != null && !dateTo.trim().isEmpty() && !"0".equals(dateTo)) {
+            sql.append(" AND gm.created_at <= CAST(? AS timestamp) ");
+            params.add(dateTo.trim() + " 23:59:59");
+        }
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND LOWER(d.name) LIKE LOWER(?) ");
+            params.add("%" + search.trim().toLowerCase() + "%");
+        }
+
+        sql.append(" GROUP BY d.id, d.name ORDER BY total_count DESC, d.name ASC ");
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+
+        long grandTotalGrievances = 0;
+        long grandTotalPending = 0;
+        long grandTotalResolved = 0;
+        long maxDistrictCount = 0;
+
+        List<com.example.jk_samadhan_backend.dto.HeatmapDistrictDTO> allDistrictsList = new ArrayList<>();
+
+        for (Map<String, Object> r : rows) {
+            long total = getMapLong(r, "total_count");
+            long pending = getMapLong(r, "pending_count");
+            long resolved = getMapLong(r, "resolved_count");
+
+            grandTotalGrievances += total;
+            grandTotalPending += pending;
+            grandTotalResolved += resolved;
+            if (total > maxDistrictCount) {
+                maxDistrictCount = total;
+            }
+        }
+
+        for (Map<String, Object> r : rows) {
+            long total = getMapLong(r, "total_count");
+            double intensity = maxDistrictCount > 0 ? (double) total / maxDistrictCount : 0.0;
+            Integer dId = r.get("district_id") != null ? ((Number) r.get("district_id")).intValue() : null;
+
+            allDistrictsList.add(com.example.jk_samadhan_backend.dto.HeatmapDistrictDTO.builder()
+                    .districtId(dId)
+                    .districtName(getMapString(r, "district_name"))
+                    .totalGrievances(total)
+                    .pendingGrievances(getMapLong(r, "pending_count"))
+                    .resolvedGrievances(getMapLong(r, "resolved_count"))
+                    .forwardedGrievances(getMapLong(r, "forwarded_count"))
+                    .rejectedGrievances(getMapLong(r, "rejected_count"))
+                    .appealedGrievances(getMapLong(r, "appealed_count"))
+                    .heatIntensity(intensity)
+                    .build());
+        }
+
+        int totalElements = allDistrictsList.size();
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalElements);
+
+        List<com.example.jk_samadhan_backend.dto.HeatmapDistrictDTO> content = new ArrayList<>();
+        if (fromIndex < totalElements) {
+            content = allDistrictsList.subList(fromIndex, toIndex);
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / (size > 0 ? size : 10));
+
+        return com.example.jk_samadhan_backend.dto.PaginatedHeatmapDTO.builder()
+                .content(content)
+                .totalGrievances(grandTotalGrievances)
+                .totalPending(grandTotalPending)
+                .totalResolved(grandTotalResolved)
+                .maxDistrictCount(maxDistrictCount)
+                .page(page)
+                .size(size)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedGrievancesResponseDTO getDistrictWiseReportDetails(
+            String district, String origin, String status, int page, int size, String search, Principal principal) {
+
+        String targetDistrict = resolveDistrictForPrincipal(principal, district);
+
+        String targetStatus = null;
+        if (status != null && !"all".equalsIgnoreCase(status.trim())) {
+            targetStatus = status.trim();
+        }
+
+        String targetOrigin = null;
+        if (origin != null && !origin.trim().isEmpty() && !"all".equalsIgnoreCase(origin)) {
+            if ("CPGRAM".equalsIgnoreCase(origin) || "CPGRAMS".equalsIgnoreCase(origin)) {
+                targetOrigin = "CPGRAM";
+            } else {
+                targetOrigin = "JKSAMADHAN";
+            }
+        }
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return getSuperAdminGrievances(
+                search, targetStatus, null, targetDistrict, null, null, null,
+                null, null, null, null, targetOrigin, null, null, pageRequest);
+    }
+
+    private String resolveDistrictForPrincipal(Principal principal, String inputDistrict) {
+        if (principal == null) return inputDistrict;
+        try {
+            String identifier = principal.getName();
+            Users user = null;
+            try {
+                user = userRepository.findByUuid(java.util.UUID.fromString(identifier)).orElse(null);
+            } catch (Exception e) {
+            }
+            if (user == null) {
+                user = userRepository.findByIdentifier(identifier).orElse(null);
+            }
+            if (user != null) {
+                String role = (user.getUserType() != null && user.getUserType().getTypeName() != null)
+                        ? user.getUserType().getTypeName()
+                        : (user.getRole() != null ? user.getRole() : "");
+                if (role.toUpperCase().contains("DM") || role.toUpperCase().contains("DISTRICT")) {
+                    if (user.getDistrictEntity() != null && user.getDistrictEntity().getName() != null && !user.getDistrictEntity().getName().isBlank()) {
+                        return user.getDistrictEntity().getName();
+                    } else if (user.getDistrict() != null && !user.getDistrict().isBlank() && !"Other".equalsIgnoreCase(user.getDistrict())) {
+                        return user.getDistrict();
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return inputDistrict;
+    }
+
+    @Transactional(readOnly = true)
+    public com.example.jk_samadhan_backend.dto.PaginatedAverageTimeTakenReportDTO getAverageTimeTakenReport(
+            String mode, String filterDepartment, String filterDistrict, int page, int size, String search, Principal principal) {
+
+        String targetMode = (mode != null && mode.equalsIgnoreCase("district")) ? "district" : "department";
+        String userDistrict = resolveDistrictForPrincipal(principal, filterDistrict);
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+
+        if ("district".equalsIgnoreCase(targetMode)) {
+            sql.append("""
+                SELECT 
+                    COALESCE(dist.name, 'NA') AS label,
+                    COUNT(gm.id) AS total_grievances,
+                    ROUND(SUM(EXTRACT(EPOCH FROM (COALESCE(gm.updated_at, CURRENT_TIMESTAMP) - gm.created_at)) / 86400)::numeric, 1) AS cumulative_days,
+                    ROUND(AVG(EXTRACT(EPOCH FROM (COALESCE(gm.updated_at, CURRENT_TIMESTAMP) - gm.created_at)) / 86400)::numeric, 1) AS average_days
+                FROM jks_3nf.grievance_master gm
+                LEFT JOIN jks_3nf.districts dist ON dist.id = gm.district_id
+                WHERE LOWER(gm.status) IN ('resolved', 'closed', 'rejected')
+            """);
+
+            if (userDistrict != null && !userDistrict.isBlank() && !"All".equalsIgnoreCase(userDistrict) && !"0".equals(userDistrict)) {
+                sql.append(" AND LOWER(dist.name) = LOWER(?) ");
+                params.add(userDistrict.trim());
+            }
+
+            if (search != null && !search.trim().isEmpty()) {
+                sql.append(" AND LOWER(dist.name) LIKE LOWER(?) ");
+                params.add("%" + search.trim().toLowerCase() + "%");
+            }
+
+            sql.append(" GROUP BY dist.name ORDER BY dist.name ASC ");
+
+        } else {
+            sql.append("""
+                SELECT 
+                    COALESCE(dept.name, 'General Administration') AS label,
+                    COUNT(gm.id) AS total_grievances,
+                    ROUND(SUM(EXTRACT(EPOCH FROM (COALESCE(gm.updated_at, CURRENT_TIMESTAMP) - gm.created_at)) / 86400)::numeric, 1) AS cumulative_days,
+                    ROUND(AVG(EXTRACT(EPOCH FROM (COALESCE(gm.updated_at, CURRENT_TIMESTAMP) - gm.created_at)) / 86400)::numeric, 1) AS average_days
+                FROM jks_3nf.grievance_master gm
+                LEFT JOIN jks_3nf.categories c ON c.id = gm.category_id
+                LEFT JOIN jks_3nf.departments dept ON dept.id = c.department_id
+                LEFT JOIN jks_3nf.districts dist ON dist.id = gm.district_id
+                WHERE LOWER(gm.status) IN ('resolved', 'closed', 'rejected')
+            """);
+
+            if (filterDepartment != null && !filterDepartment.isBlank() && !"All".equalsIgnoreCase(filterDepartment) && !"0".equals(filterDepartment)) {
+                sql.append(" AND LOWER(dept.name) = LOWER(?) ");
+                params.add(filterDepartment.trim());
+            }
+
+            if (userDistrict != null && !userDistrict.isBlank() && !"All".equalsIgnoreCase(userDistrict) && !"0".equals(userDistrict)) {
+                sql.append(" AND LOWER(dist.name) = LOWER(?) ");
+                params.add(userDistrict.trim());
+            }
+
+            if (search != null && !search.trim().isEmpty()) {
+                sql.append(" AND LOWER(dept.name) LIKE LOWER(?) ");
+                params.add("%" + search.trim().toLowerCase() + "%");
+            }
+
+            sql.append(" GROUP BY dept.name ORDER BY dept.name ASC ");
+        }
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+
+        int totalElements = rows.size();
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalElements);
+
+        List<com.example.jk_samadhan_backend.dto.AverageTimeTakenReportDTO> content = new ArrayList<>();
+        if (fromIndex < totalElements) {
+            List<Map<String, Object>> pageSubList = rows.subList(fromIndex, toIndex);
+            for (Map<String, Object> r : pageSubList) {
+                content.add(com.example.jk_samadhan_backend.dto.AverageTimeTakenReportDTO.builder()
+                        .name(getMapString(r, "label"))
+                        .totalGrievances(getMapLong(r, "total_grievances"))
+                        .cumulativeDays(getMapDouble(r, "cumulative_days"))
+                        .averageDays(getMapDouble(r, "average_days"))
+                        .build());
+            }
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedAverageTimeTakenReportDTO.builder()
+                .mode(targetMode)
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedGrievancesResponseDTO getAverageTimeTakenDetails(
+            String mode, String name, int page, int size, String search, Principal principal) {
+
+        String targetDept = "department".equalsIgnoreCase(mode) ? name : null;
+        String targetDist = "district".equalsIgnoreCase(mode) ? name : null;
+        targetDist = resolveDistrictForPrincipal(principal, targetDist);
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+        return getSuperAdminGrievances(
+                search, "Resolved", targetDept, targetDist, null, null, null,
+                null, null, null, null, null, null, null, pageRequest);
+    }
+
+    public com.example.jk_samadhan_backend.dto.PaginatedAppellateReportDTO getAppellateReport(
+            String departmentType, String fromDate, String toDate, int page, int size, String search, Principal principal) {
+
+        String userDistrict = null;
+        if (principal != null) {
+            try {
+                String identifier = principal.getName();
+                Users user = null;
+                try {
+                    user = userRepository.findByUuid(java.util.UUID.fromString(identifier)).orElse(null);
+                } catch (Exception e) {}
+                if (user == null) {
+                    user = userRepository.findByIdentifier(identifier).orElse(null);
+                }
+                if (user != null) {
+                    String role = (user.getUserType() != null && user.getUserType().getTypeName() != null)
+                            ? user.getUserType().getTypeName()
+                            : (user.getRole() != null ? user.getRole() : "");
+                    if (role.toUpperCase().contains("DM") || role.toUpperCase().contains("DISTRICT")) {
+                        if (user.getDistrictEntity() != null && user.getDistrictEntity().getName() != null && !user.getDistrictEntity().getName().isBlank()) {
+                            userDistrict = user.getDistrictEntity().getName();
+                        } else if (user.getDistrict() != null && !user.getDistrict().isBlank() && !"Other".equalsIgnoreCase(user.getDistrict())) {
+                            userDistrict = user.getDistrict();
+                        }
+                    }
+                }
+            } catch (Exception e) {}
+        }
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+            SELECT 
+                u.id AS user_id,
+                TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.middle_name, ''), ' ', COALESCE(u.last_name, ''))) AS name,
+                COALESCE(desg.name, u.office_name, 'Appellate Authority') AS office,
+                COALESCE(dept.name, cdept.name, 'N/A') AS department,
+                COUNT(DISTINCT am.id) AS total_appeals,
+                COUNT(DISTINCT am.id) FILTER (WHERE LOWER(am.status) IN ('resolved', 'disposed')) AS resolved,
+                COUNT(DISTINCT am.id) FILTER (WHERE LOWER(am.status) NOT IN ('resolved', 'disposed')) AS pending
+            FROM jks_3nf.appeal_master am
+            JOIN jks_3nf.users u ON am.appealed_to_user_id = u.id
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            LEFT JOIN jks_3nf.designations desg ON desg.id = u.designation_id
+            LEFT JOIN jks_3nf.grievance_master gm ON gm.id = am.grievance_id
+            LEFT JOIN jks_3nf.categories cat ON cat.id = gm.category_id
+            LEFT JOIN jks_3nf.departments cdept ON cdept.id = cat.department_id
+            LEFT JOIN jks_3nf.districts dist ON dist.id = gm.district_id
+            WHERE 1=1
+        """);
+
+        if (departmentType != null && !departmentType.trim().isEmpty() && !"all".equalsIgnoreCase(departmentType.trim())) {
+            sql.append(" AND (LOWER(dept.department_type) = LOWER(?) OR LOWER(cdept.department_type) = LOWER(?)) ");
+            params.add(departmentType.trim());
+            params.add(departmentType.trim());
+        }
+
+        if (fromDate != null && !fromDate.trim().isEmpty()) {
+            sql.append(" AND am.created_at >= CAST(? AS timestamp) ");
+            params.add(fromDate.trim());
+        }
+
+        if (toDate != null && !toDate.trim().isEmpty()) {
+            sql.append(" AND am.created_at <= CAST(? AS timestamp) ");
+            params.add(toDate.trim() + " 23:59:59");
+        }
+
+        if (userDistrict != null && !userDistrict.isBlank() && !"All".equalsIgnoreCase(userDistrict)) {
+            sql.append(" AND LOWER(dist.name) = LOWER(?) ");
+            params.add(userDistrict.trim());
+        }
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (LOWER(u.first_name) LIKE LOWER(?) OR LOWER(u.last_name) LIKE LOWER(?) OR LOWER(dept.name) LIKE LOWER(?) OR LOWER(cdept.name) LIKE LOWER(?) OR LOWER(desg.name) LIKE LOWER(?)) ");
+            String q = "%" + search.trim() + "%";
+            params.add(q);
+            params.add(q);
+            params.add(q);
+            params.add(q);
+            params.add(q);
+        }
+
+        sql.append(" GROUP BY u.id, u.first_name, u.middle_name, u.last_name, desg.name, u.office_name, dept.name, cdept.name ");
+        sql.append(" ORDER BY total_appeals DESC, name ASC ");
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+
+        int totalElements = rows.size();
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalElements);
+
+        List<com.example.jk_samadhan_backend.dto.AppellateReportDTO> content = new ArrayList<>();
+        if (fromIndex < totalElements) {
+            List<Map<String, Object>> pageSubList = rows.subList(fromIndex, toIndex);
+            for (Map<String, Object> r : pageSubList) {
+                String appellateName = getMapString(r, "name");
+                if (appellateName == null || appellateName.isBlank()) {
+                    appellateName = "Appellate Officer";
+                }
+                content.add(com.example.jk_samadhan_backend.dto.AppellateReportDTO.builder()
+                        .id(getMapLong(r, "user_id"))
+                        .name(appellateName)
+                        .office(getMapString(r, "office"))
+                        .department(getMapString(r, "department"))
+                        .totalAppeals(getMapLong(r, "total_appeals"))
+                        .resolved(getMapLong(r, "resolved"))
+                        .pending(getMapLong(r, "pending"))
+                        .build());
+            }
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedAppellateReportDTO.builder()
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedGrievancesResponseDTO getAppellateReportDetails(
+            String department, String type, String fromDate, String toDate, int page, int size, String search, Principal principal) {
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder countSql = new StringBuilder("""
+            SELECT COUNT(DISTINCT gm.id)
+            FROM jks_3nf.appeal_master am
+            JOIN jks_3nf.grievance_master gm ON gm.id = am.grievance_id
+            JOIN jks_3nf.users u ON am.appealed_to_user_id = u.id
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            LEFT JOIN jks_3nf.categories cat ON cat.id = gm.category_id
+            LEFT JOIN jks_3nf.departments cdept ON cdept.id = cat.department_id
+            LEFT JOIN jks_3nf.districts dist ON dist.id = gm.district_id
+            WHERE 1=1
+        """);
+
+        StringBuilder selectSql = new StringBuilder("""
+            SELECT DISTINCT
+                gm.id,
+                COALESCE(gm.uniq_id, CAST(gm.id AS VARCHAR)) AS uniq_id,
+                COALESCE(gm.subject, 'N/A') AS subject,
+                COALESCE(gm.status, 'Appealed') AS status,
+                COALESCE(cat.name, 'N/A') AS category_name,
+                COALESCE(dept.name, cdept.name, 'N/A') AS department_name,
+                COALESCE(dist.name, 'N/A') AS district_name,
+                gm.created_at,
+                TRIM(CONCAT(COALESCE(sub.first_name, ''), ' ', COALESCE(sub.last_name, ''))) AS applicant_name,
+                COALESCE(gm.origin, 'JKSAMADHAN') AS origin
+            FROM jks_3nf.appeal_master am
+            JOIN jks_3nf.grievance_master gm ON gm.id = am.grievance_id
+            JOIN jks_3nf.users u ON am.appealed_to_user_id = u.id
+            LEFT JOIN jks_3nf.users sub ON sub.id = gm.submitted_by_user_id
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            LEFT JOIN jks_3nf.categories cat ON cat.id = gm.category_id
+            LEFT JOIN jks_3nf.departments cdept ON cdept.id = cat.department_id
+            LEFT JOIN jks_3nf.districts dist ON dist.id = gm.district_id
+            WHERE 1=1
+        """);
+
+        StringBuilder whereClause = new StringBuilder();
+
+        if (department != null && !department.trim().isEmpty() && !"all".equalsIgnoreCase(department.trim())) {
+            whereClause.append(" AND (LOWER(dept.name) = LOWER(?) OR LOWER(cdept.name) = LOWER(?)) ");
+            params.add(department.trim());
+            params.add(department.trim());
+        }
+
+        if (type != null && !type.trim().isEmpty()) {
+            if ("resolved".equalsIgnoreCase(type.trim())) {
+                whereClause.append(" AND LOWER(am.status) IN ('resolved', 'disposed') ");
+            } else if ("pending".equalsIgnoreCase(type.trim())) {
+                whereClause.append(" AND LOWER(am.status) NOT IN ('resolved', 'disposed') ");
+            }
+        }
+
+        if (fromDate != null && !fromDate.trim().isEmpty()) {
+            whereClause.append(" AND am.created_at >= CAST(? AS timestamp) ");
+            params.add(fromDate.trim());
+        }
+
+        if (toDate != null && !toDate.trim().isEmpty()) {
+            whereClause.append(" AND am.created_at <= CAST(? AS timestamp) ");
+            params.add(toDate.trim() + " 23:59:59");
+        }
+
+        if (search != null && !search.trim().isEmpty()) {
+            whereClause.append(" AND (LOWER(gm.uniq_id) LIKE LOWER(?) OR LOWER(gm.subject) LIKE LOWER(?) OR LOWER(sub.first_name) LIKE LOWER(?) OR LOWER(sub.last_name) LIKE LOWER(?)) ");
+            String q = "%" + search.trim() + "%";
+            params.add(q);
+            params.add(q);
+            params.add(q);
+            params.add(q);
+        }
+
+        countSql.append(whereClause);
+        selectSql.append(whereClause);
+        selectSql.append(" ORDER BY gm.created_at DESC LIMIT ? OFFSET ? ");
+
+        long totalElements = jdbcTemplate.queryForObject(countSql.toString(), Long.class, params.toArray());
+
+        List<Object> queryParams = new ArrayList<>(params);
+        queryParams.add(size);
+        queryParams.add(page * size);
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(selectSql.toString(), queryParams.toArray());
+
+        List<com.example.jk_samadhan_backend.dto.GrievanceResponseDTO> content = new ArrayList<>();
+        for (Map<String, Object> r : rows) {
+            String appName = getMapString(r, "applicant_name");
+            if (appName == null || appName.isBlank()) appName = "Citizen";
+
+            content.add(com.example.jk_samadhan_backend.dto.GrievanceResponseDTO.builder()
+                    .id(getMapLong(r, "id"))
+                    .uniqId(getMapString(r, "uniqId"))
+                    .status(getMapString(r, "status"))
+                    .grievanceCategory(getMapString(r, "category_name"))
+                    .department(getMapString(r, "department_name"))
+                    .district(getMapString(r, "district_name"))
+                    .createdAt(r.get("created_at") != null ? r.get("created_at").toString() : "")
+                    .citizenName(appName)
+                    .origin(getMapString(r, "origin"))
+                    .build());
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return PaginatedGrievancesResponseDTO.builder()
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
+
+    public com.example.jk_samadhan_backend.dto.PaginatedAdvanceQueryDTO executeAdvanceQuery(
+            com.example.jk_samadhan_backend.dto.AdvanceQueryRequestDTO req, Principal principal) {
+
+        int page = req.getPage() != null ? Math.max(0, req.getPage()) : 0;
+        int size = req.getSize() != null && req.getSize() > 0 ? req.getSize() : 10;
+
+        String userDistrict = null;
+        if (principal != null) {
+            try {
+                String identifier = principal.getName();
+                Users user = null;
+                try {
+                    user = userRepository.findByUuid(java.util.UUID.fromString(identifier)).orElse(null);
+                } catch (Exception e) {}
+                if (user == null) {
+                    user = userRepository.findByIdentifier(identifier).orElse(null);
+                }
+                if (user != null) {
+                    String role = (user.getUserType() != null && user.getUserType().getTypeName() != null)
+                            ? user.getUserType().getTypeName()
+                            : (user.getRole() != null ? user.getRole() : "");
+                    if (role.toUpperCase().contains("DM") || role.toUpperCase().contains("DISTRICT")) {
+                        if (user.getDistrictEntity() != null && user.getDistrictEntity().getName() != null && !user.getDistrictEntity().getName().isBlank()) {
+                            userDistrict = user.getDistrictEntity().getName();
+                        } else if (user.getDistrict() != null && !user.getDistrict().isBlank() && !"Other".equalsIgnoreCase(user.getDistrict())) {
+                            userDistrict = user.getDistrict();
+                        }
+                    }
+                }
+            } catch (Exception e) {}
+        }
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder countSql = new StringBuilder("""
+            SELECT COUNT(DISTINCT gm.id)
+            FROM jks_3nf.grievance_master gm
+            LEFT JOIN jks_3nf.categories cat ON cat.id = gm.category_id
+            LEFT JOIN jks_3nf.departments dept ON dept.id = cat.department_id
+            LEFT JOIN jks_3nf.categories sc ON sc.id = gm.sub_category_id
+            LEFT JOIN jks_3nf.categories sc2 ON sc2.id = gm.sub_category_l2_id
+            LEFT JOIN jks_3nf.categories sc3 ON sc3.id = gm.sub_category_l3_id
+            LEFT JOIN jks_3nf.categories sc4 ON sc4.id = gm.sub_category_l4_id
+            LEFT JOIN jks_3nf.districts dist ON dist.id = gm.district_id
+            LEFT JOIN jks_3nf.users cit ON cit.id = gm.submitted_by_user_id
+            LEFT JOIN jks_3nf.user_types ut ON ut.id = cit.user_type_id
+            WHERE 1=1
+        """);
+
+        StringBuilder selectSql = new StringBuilder("""
+            SELECT DISTINCT
+                gm.id,
+                COALESCE(gm.uniq_id, CAST(gm.id AS VARCHAR)) AS uniqid,
+                COALESCE(dept.name, 'N/A') AS department,
+                COALESCE(cat.name, 'N/A') AS category,
+                COALESCE(sc.name, 'N/A') AS sub_category,
+                COALESCE(sc2.name, 'N/A') AS sub_category_next_level2,
+                COALESCE(sc3.name, 'N/A') AS sub_category_next_level3,
+                COALESCE(sc4.name, 'N/A') AS sub_category_next_level4,
+                COALESCE(dist.name, 'N/A') AS usrdistrict,
+                COALESCE(cit.gender, 'N/A') AS gender,
+                TRIM(CONCAT(COALESCE(cit.first_name, ''), ' ', COALESCE(cit.last_name, ''))) AS name,
+                gm.created_at AS createddate,
+                COALESCE(gm.key_flag, 'Normal') AS flag,
+                COALESCE(gm.status, 'Pending') AS status,
+                CAST(EXTRACT(DAY FROM (CURRENT_TIMESTAMP - gm.created_at)) AS BIGINT) AS daysdiff,
+                COALESCE(ut.type_name, ut.name, 'N/A') AS usertype,
+                COALESCE(upd.username, 'System') AS updated_by
+            FROM jks_3nf.grievance_master gm
+            LEFT JOIN jks_3nf.categories cat ON cat.id = gm.category_id
+            LEFT JOIN jks_3nf.departments dept ON dept.id = cat.department_id
+            LEFT JOIN jks_3nf.categories sc ON sc.id = gm.sub_category_id
+            LEFT JOIN jks_3nf.categories sc2 ON sc2.id = gm.sub_category_l2_id
+            LEFT JOIN jks_3nf.categories sc3 ON sc3.id = gm.sub_category_l3_id
+            LEFT JOIN jks_3nf.categories sc4 ON sc4.id = gm.sub_category_l4_id
+            LEFT JOIN jks_3nf.districts dist ON dist.id = gm.district_id
+            LEFT JOIN jks_3nf.users cit ON cit.id = gm.submitted_by_user_id
+            LEFT JOIN jks_3nf.users upd ON upd.id = gm.updated_by_user_id
+            LEFT JOIN jks_3nf.user_types ut ON ut.id = cit.user_type_id
+            WHERE 1=1
+        """);
+
+        StringBuilder whereClause = new StringBuilder();
+
+        // 1. Gender filter
+        if (req.getGender() != null && !req.getGender().isEmpty()) {
+            List<String> cleanGenders = req.getGender().stream()
+                    .map(g -> g.replaceAll("'", "").trim())
+                    .filter(g -> !g.isBlank())
+                    .toList();
+            if (!cleanGenders.isEmpty()) {
+                whereClause.append(" AND UPPER(cit.gender) IN (");
+                for (int i = 0; i < cleanGenders.size(); i++) {
+                    whereClause.append(i > 0 ? ", ?" : "?");
+                    params.add(cleanGenders.get(i).toUpperCase());
+                }
+                whereClause.append(") ");
+            }
+        }
+
+        // 2. Department filter
+        if (req.getDepartments() != null && !req.getDepartments().isEmpty()) {
+            List<String> cleanDepts = req.getDepartments().stream()
+                    .map(d -> d.replaceAll("'", "").trim())
+                    .filter(d -> !d.isBlank() && !"0".equals(d))
+                    .toList();
+            if (!cleanDepts.isEmpty()) {
+                whereClause.append(" AND LOWER(dept.name) IN (");
+                for (int i = 0; i < cleanDepts.size(); i++) {
+                    whereClause.append(i > 0 ? ", ?" : "?");
+                    params.add(cleanDepts.get(i).toLowerCase());
+                }
+                whereClause.append(") ");
+            }
+        }
+
+        // 3. Category & SubCategories
+        if (req.getCategory() != null && !req.getCategory().isBlank() && !"0".equals(req.getCategory())) {
+            whereClause.append(" AND (LOWER(cat.name) = LOWER(?) OR CAST(cat.id AS VARCHAR) = ?) ");
+            params.add(req.getCategory().trim());
+            params.add(req.getCategory().trim());
+        }
+
+        if (req.getSubCategory() != null && !req.getSubCategory().isBlank() && !"0".equals(req.getSubCategory())) {
+            whereClause.append(" AND (LOWER(sc.name) = LOWER(?) OR CAST(sc.id AS VARCHAR) = ?) ");
+            params.add(req.getSubCategory().trim());
+            params.add(req.getSubCategory().trim());
+        }
+
+        if (req.getSubCategoryL2() != null && !req.getSubCategoryL2().isBlank() && !"0".equals(req.getSubCategoryL2())) {
+            whereClause.append(" AND (LOWER(sc2.name) = LOWER(?) OR CAST(sc2.id AS VARCHAR) = ?) ");
+            params.add(req.getSubCategoryL2().trim());
+            params.add(req.getSubCategoryL2().trim());
+        }
+
+        if (req.getSubCategoryL3() != null && !req.getSubCategoryL3().isBlank() && !"0".equals(req.getSubCategoryL3())) {
+            whereClause.append(" AND (LOWER(sc3.name) = LOWER(?) OR CAST(sc3.id AS VARCHAR) = ?) ");
+            params.add(req.getSubCategoryL3().trim());
+            params.add(req.getSubCategoryL3().trim());
+        }
+
+        if (req.getSubCategoryL4() != null && !req.getSubCategoryL4().isBlank() && !"0".equals(req.getSubCategoryL4())) {
+            whereClause.append(" AND (LOWER(sc4.name) = LOWER(?) OR CAST(sc4.id AS VARCHAR) = ?) ");
+            params.add(req.getSubCategoryL4().trim());
+            params.add(req.getSubCategoryL4().trim());
+        }
+
+        // 4. Status filter
+        if (req.getStatus() != null && !req.getStatus().isBlank() && !"0".equals(req.getStatus())) {
+            String st = req.getStatus().trim();
+            if ("Pending".equalsIgnoreCase(st)) {
+                whereClause.append(" AND LOWER(gm.status) IN ('pending', 'acknowledged', 'under process', 'registered') ");
+            } else {
+                whereClause.append(" AND LOWER(gm.status) = LOWER(?) ");
+                params.add(st);
+            }
+        }
+
+        // 5. User Type filter
+        if (req.getUserType() != null && !req.getUserType().isBlank() && !"0".equals(req.getUserType())) {
+            whereClause.append(" AND (LOWER(ut.name) = LOWER(?) OR LOWER(ut.type_name) = LOWER(?)) ");
+            params.add(req.getUserType().trim());
+            params.add(req.getUserType().trim());
+        }
+
+        // 6. Pending days metric & Operator
+        if (req.getPendingFrom() != null) {
+            String op = req.getOperator() != null ? req.getOperator().trim().toUpperCase() : "=";
+            if ("BETWEEN".equalsIgnoreCase(op) && req.getPendingTo() != null) {
+                whereClause.append(" AND EXTRACT(DAY FROM (CURRENT_TIMESTAMP - gm.created_at)) BETWEEN ? AND ? ");
+                params.add(req.getPendingFrom());
+                params.add(req.getPendingTo());
+            } else if ("<".equals(op)) {
+                whereClause.append(" AND EXTRACT(DAY FROM (CURRENT_TIMESTAMP - gm.created_at)) < ? ");
+                params.add(req.getPendingFrom());
+            } else if (">".equals(op)) {
+                whereClause.append(" AND EXTRACT(DAY FROM (CURRENT_TIMESTAMP - gm.created_at)) > ? ");
+                params.add(req.getPendingFrom());
+            } else {
+                whereClause.append(" AND EXTRACT(DAY FROM (CURRENT_TIMESTAMP - gm.created_at)) = ? ");
+                params.add(req.getPendingFrom());
+            }
+        }
+
+        // 7. Data Scope Security
+        if (userDistrict != null && !userDistrict.isBlank() && !"All".equalsIgnoreCase(userDistrict)) {
+            whereClause.append(" AND LOWER(dist.name) = LOWER(?) ");
+            params.add(userDistrict.trim());
+        }
+
+        // 8. Search query
+        if (req.getSearch() != null && !req.getSearch().isBlank()) {
+            whereClause.append(" AND (LOWER(gm.uniq_id) LIKE LOWER(?) OR LOWER(gm.subject) LIKE LOWER(?) OR LOWER(dept.name) LIKE LOWER(?) OR LOWER(cit.first_name) LIKE LOWER(?) OR LOWER(cit.last_name) LIKE LOWER(?)) ");
+            String q = "%" + req.getSearch().trim() + "%";
+            params.add(q);
+            params.add(q);
+            params.add(q);
+            params.add(q);
+            params.add(q);
+        }
+
+        countSql.append(whereClause);
+        selectSql.append(whereClause);
+        selectSql.append(" ORDER BY gm.id DESC LIMIT ? OFFSET ? ");
+
+        long totalElements = jdbcTemplate.queryForObject(countSql.toString(), Long.class, params.toArray());
+
+        List<Object> queryParams = new ArrayList<>(params);
+        queryParams.add(size);
+        queryParams.add(page * size);
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(selectSql.toString(), queryParams.toArray());
+
+        List<com.example.jk_samadhan_backend.dto.AdvanceQueryResultDTO> content = new ArrayList<>();
+        for (Map<String, Object> r : rows) {
+            String appName = getMapString(r, "name");
+            if (appName == null || appName.isBlank()) appName = "Citizen";
+
+            content.add(com.example.jk_samadhan_backend.dto.AdvanceQueryResultDTO.builder()
+                    .id(getMapLong(r, "id"))
+                    .uniqid(getMapString(r, "uniqid"))
+                    .department(getMapString(r, "department"))
+                    .category(getMapString(r, "category"))
+                    .subCategory(getMapString(r, "sub_category"))
+                    .subCategoryL2(getMapString(r, "sub_category_next_level2"))
+                    .subCategoryL3(getMapString(r, "sub_category_next_level3"))
+                    .subCategoryL4(getMapString(r, "sub_category_next_level4"))
+                    .district(getMapString(r, "usrdistrict"))
+                    .gender(getMapString(r, "gender"))
+                    .name(appName)
+                    .createddate(r.get("createddate") != null ? r.get("createddate").toString() : "")
+                    .flag(getMapString(r, "flag"))
+                    .status(getMapString(r, "status"))
+                    .daysdiff(getMapLong(r, "daysdiff"))
+                    .usertype(getMapString(r, "usertype"))
+                    .updatedBy(getMapString(r, "updated_by"))
+                    .build());
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedAdvanceQueryDTO.builder()
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
+
+    private double getMapDouble(Map<String, Object> map, String key) {
+        Object val = getMapVal(map, key);
+        return val instanceof Number ? Math.round(((Number) val).doubleValue() * 10.0) / 10.0 : 0.0;
+    }
+
+    private Object getMapVal(Map<String, Object> map, String key) {
+        if (map == null || key == null) return null;
+        if (map.containsKey(key)) return map.get(key);
+        if (map.containsKey(key.toUpperCase())) return map.get(key.toUpperCase());
+        if (map.containsKey(key.toLowerCase())) return map.get(key.toLowerCase());
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (key.equalsIgnoreCase(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    private long getMapLong(Map<String, Object> map, String key) {
+        Object val = getMapVal(map, key);
+        return val instanceof Number ? ((Number) val).longValue() : 0L;
+    }
+
+    private String getMapString(Map<String, Object> map, String key) {
+        Object val = getMapVal(map, key);
+        return val != null ? val.toString() : "NA";
     }
 }

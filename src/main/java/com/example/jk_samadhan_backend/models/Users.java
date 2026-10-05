@@ -244,13 +244,17 @@ public class Users implements UserDetails {
             activeRole = this.role != null ? this.role : "CITIZEN";
         }
 
+        boolean isExplicitCitizen = "CITIZEN".equalsIgnoreCase(activeRole) || "ROLE_CITIZEN".equalsIgnoreCase(activeRole) || "USER".equalsIgnoreCase(activeRole) || "ROLE_USER".equalsIgnoreCase(activeRole) || "CITIZEN_USER".equalsIgnoreCase(activeRole);
+
         String mailLower = this.email != null ? this.email.toLowerCase() : "";
         String unameLower = this.username != null ? this.username.toLowerCase() : "";
-        if (mailLower.contains("superadmin") || unameLower.contains("superadmin")) {
-            activeRole = "ROLE_SuperAdmin";
-        } else if (mailLower.contains("admin") || unameLower.contains("admin")) {
-            if (!activeRole.toUpperCase().contains("ADMIN")) {
-                activeRole = "ROLE_Admin";
+        if (!isExplicitCitizen) {
+            if (mailLower.contains("superadmin") || unameLower.contains("superadmin")) {
+                activeRole = "ROLE_SuperAdmin";
+            } else if (mailLower.contains("admin") || unameLower.contains("admin")) {
+                if (!activeRole.toUpperCase().contains("ADMIN")) {
+                    activeRole = "ROLE_Admin";
+                }
             }
         }
 

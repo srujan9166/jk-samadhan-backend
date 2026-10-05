@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,9 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,10 +36,12 @@ public class AnnouncementService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    public AnnouncementService(NotificationRepository notificationRepository, UserRepository userRepository) {
+    public AnnouncementService(NotificationRepository notificationRepository, UserRepository userRepository, JdbcTemplate jdbcTemplate) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public AnnouncementResponseDTO createAnnouncement(String to, String validTillStr, String announcementText, MultipartFile file, Principal principal) {
@@ -158,6 +163,302 @@ public class AnnouncementService {
         }
 
         return new FileSystemResource(file);
+    }
+
+    public com.example.jk_samadhan_backend.dto.PaginatedAnnouncementListDTO getAnnouncementList(
+            int page, int size, String search, Principal principal) {
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder countSql = new StringBuilder("""
+            SELECT COUNT(n.id)
+            FROM jks_3nf.notification n
+            LEFT JOIN jks_3nf.users u ON (u.id = n.user_id OR LOWER(u.username) = LOWER(n.createdby))
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            WHERE 1=1
+        """);
+
+        StringBuilder selectSql = new StringBuilder("""
+            SELECT 
+                n.id,
+                COALESCE(n.notification, '') AS notification,
+                COALESCE(n.notificationsentto, '') AS notificationsentto,
+                n.validtill,
+                n.createdat,
+                COALESCE(n.filepath, '') AS filepath,
+                COALESCE(n.createdby, '') AS createdby,
+                COALESCE(n.status, 'ACTIVE') AS status,
+                COALESCE(n.type, 'General') AS type,
+                COALESCE(n.isactive, 1) AS isactive,
+                COALESCE(dept.name, 'All Departments') AS department,
+                COALESCE(u.office_name, 'N/A') AS office_name,
+                TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, ''), 
+                    CASE WHEN desg.name IS NOT NULL AND desg.name != '' THEN CONCAT(' (', desg.name, ')') ELSE '' END)) AS name_with_designation
+            FROM jks_3nf.notification n
+            LEFT JOIN jks_3nf.users u ON (u.id = n.user_id OR LOWER(u.username) = LOWER(n.createdby))
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            LEFT JOIN jks_3nf.designations desg ON desg.id = u.designation_id
+            WHERE 1=1
+        """);
+
+        if (search != null && !search.trim().isEmpty()) {
+            String where = " AND (LOWER(n.notification) LIKE LOWER(?) OR LOWER(n.createdby) LIKE LOWER(?) OR LOWER(dept.name) LIKE LOWER(?) OR LOWER(u.office_name) LIKE LOWER(?)) ";
+            countSql.append(where);
+            selectSql.append(where);
+            String q = "%" + search.trim() + "%";
+            params.add(q);
+            params.add(q);
+            params.add(q);
+            params.add(q);
+        }
+
+        selectSql.append(" ORDER BY n.id DESC LIMIT ? OFFSET ? ");
+
+        long totalElements = jdbcTemplate.queryForObject(countSql.toString(), Long.class, params.toArray());
+
+        List<Object> queryParams = new ArrayList<>(params);
+        queryParams.add(size);
+        queryParams.add(page * size);
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(selectSql.toString(), queryParams.toArray());
+
+        List<AnnouncementResponseDTO> content = new ArrayList<>();
+        OffsetDateTime now = OffsetDateTime.now();
+
+        for (Map<String, Object> r : rows) {
+            OffsetDateTime validTill = null;
+            if (r.get("validtill") != null) {
+                if (r.get("validtill") instanceof java.sql.Timestamp ts) {
+                    validTill = ts.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+                } else if (r.get("validtill") instanceof OffsetDateTime odt) {
+                    validTill = odt;
+                }
+            }
+
+            OffsetDateTime createdAt = null;
+            if (r.get("createdat") != null) {
+                if (r.get("createdat") instanceof java.sql.Timestamp ts) {
+                    createdAt = ts.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+                } else if (r.get("createdat") instanceof OffsetDateTime odt) {
+                    createdAt = odt;
+                }
+            }
+
+            boolean isExpired = validTill != null && now.isAfter(validTill);
+            String creatorName = getMapString(r, "name_with_designation");
+            if (creatorName == null || creatorName.isBlank()) {
+                creatorName = getMapString(r, "createdby");
+            }
+
+            content.add(AnnouncementResponseDTO.builder()
+                    .id(getMapInt(r, "id"))
+                    .notification(getMapString(r, "notification"))
+                    .notificationsentto(getMapString(r, "notificationsentto"))
+                    .validtill(validTill)
+                    .createdat(createdAt)
+                    .filepath(getMapString(r, "filepath"))
+                    .createdby(getMapString(r, "createdby"))
+                    .status(getMapString(r, "status"))
+                    .type(getMapString(r, "type"))
+                    .isactive(getMapInt(r, "isactive"))
+                    .department(getMapString(r, "department"))
+                    .officeName(getMapString(r, "office_name"))
+                    .nameWithDesignation(creatorName)
+                    .isExpired(isExpired)
+                    .build());
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedAnnouncementListDTO.builder()
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
+
+    public void toggleAnnouncementStatus(Integer id, Integer isactive) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Announcement not found with ID: " + id));
+        notification.setIsactive(isactive != null && isactive == 1 ? 1 : 0);
+        notificationRepository.save(notification);
+    }
+
+    public com.example.jk_samadhan_backend.dto.PaginatedAnnouncementMisReportDTO getAnnouncementMisReport(
+            int page, int size, String search) {
+
+        List<Object> params = new ArrayList<>();
+        StringBuilder countSql = new StringBuilder("""
+            SELECT COUNT(DISTINCT COALESCE(dept.name, 'General / All Departments'))
+            FROM jks_3nf.notification n
+            LEFT JOIN jks_3nf.users u ON (u.id = n.user_id OR LOWER(u.username) = LOWER(n.createdby))
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            WHERE 1=1
+        """);
+
+        StringBuilder selectSql = new StringBuilder("""
+            SELECT 
+                COALESCE(dept.name, 'General / All Departments') AS department,
+                COUNT(n.id) AS announcement_count
+            FROM jks_3nf.notification n
+            LEFT JOIN jks_3nf.users u ON (u.id = n.user_id OR LOWER(u.username) = LOWER(n.createdby))
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            WHERE 1=1
+        """);
+
+        if (search != null && !search.trim().isEmpty()) {
+            String where = " AND LOWER(COALESCE(dept.name, 'General / All Departments')) LIKE LOWER(?) ";
+            countSql.append(where);
+            selectSql.append(where);
+            params.add("%" + search.trim() + "%");
+        }
+
+        selectSql.append(" GROUP BY COALESCE(dept.name, 'General / All Departments') ");
+        selectSql.append(" ORDER BY announcement_count DESC, department ASC LIMIT ? OFFSET ? ");
+
+        long totalElements = jdbcTemplate.queryForObject(countSql.toString(), Long.class, params.toArray());
+
+        List<Object> queryParams = new ArrayList<>(params);
+        queryParams.add(size);
+        queryParams.add(page * size);
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(selectSql.toString(), queryParams.toArray());
+
+        List<com.example.jk_samadhan_backend.dto.AnnouncementMisReportDTO> content = new ArrayList<>();
+        for (Map<String, Object> r : rows) {
+            content.add(com.example.jk_samadhan_backend.dto.AnnouncementMisReportDTO.builder()
+                    .department(getMapString(r, "department"))
+                    .count(getMapLong(r, "announcement_count"))
+                    .build());
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return com.example.jk_samadhan_backend.dto.PaginatedAnnouncementMisReportDTO.builder()
+                .content(content)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
+
+    public List<AnnouncementResponseDTO> getDepartmentAnnouncements(String department) {
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+            SELECT 
+                n.id,
+                COALESCE(n.notification, '') AS notification,
+                COALESCE(n.notificationsentto, '') AS notificationsentto,
+                n.validtill,
+                n.createdat,
+                COALESCE(n.filepath, '') AS filepath,
+                COALESCE(n.createdby, '') AS createdby,
+                COALESCE(n.status, 'ACTIVE') AS status,
+                COALESCE(n.type, 'General') AS type,
+                COALESCE(n.isactive, 1) AS isactive,
+                COALESCE(dept.name, 'All Departments') AS department,
+                COALESCE(u.office_name, 'N/A') AS office_name,
+                TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, ''), 
+                    CASE WHEN desg.name IS NOT NULL AND desg.name != '' THEN CONCAT(' (', desg.name, ')') ELSE '' END)) AS name_with_designation
+            FROM jks_3nf.notification n
+            LEFT JOIN jks_3nf.users u ON (u.id = n.user_id OR LOWER(u.username) = LOWER(n.createdby))
+            LEFT JOIN jks_3nf.departments dept ON dept.id = u.department_id
+            LEFT JOIN jks_3nf.designations desg ON desg.id = u.designation_id
+            WHERE 1=1
+        """);
+
+        if (department != null && !department.trim().isEmpty() && !"all".equalsIgnoreCase(department.trim())) {
+            if ("General / All Departments".equalsIgnoreCase(department.trim()) || "All Departments".equalsIgnoreCase(department.trim())) {
+                sql.append(" AND dept.name IS NULL ");
+            } else {
+                sql.append(" AND LOWER(dept.name) = LOWER(?) ");
+                params.add(department.trim());
+            }
+        }
+
+        sql.append(" ORDER BY n.id DESC ");
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+
+        List<AnnouncementResponseDTO> list = new ArrayList<>();
+        OffsetDateTime now = OffsetDateTime.now();
+
+        for (Map<String, Object> r : rows) {
+            OffsetDateTime validTill = null;
+            if (r.get("validtill") != null) {
+                if (r.get("validtill") instanceof java.sql.Timestamp ts) {
+                    validTill = ts.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+                } else if (r.get("validtill") instanceof OffsetDateTime odt) {
+                    validTill = odt;
+                }
+            }
+
+            OffsetDateTime createdAt = null;
+            if (r.get("createdat") != null) {
+                if (r.get("createdat") instanceof java.sql.Timestamp ts) {
+                    createdAt = ts.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+                } else if (r.get("createdat") instanceof OffsetDateTime odt) {
+                    createdAt = odt;
+                }
+            }
+
+            boolean isExpired = validTill != null && now.isAfter(validTill);
+            String creatorName = getMapString(r, "name_with_designation");
+            if (creatorName == null || creatorName.isBlank()) {
+                creatorName = getMapString(r, "createdby");
+            }
+
+            list.add(AnnouncementResponseDTO.builder()
+                    .id(getMapInt(r, "id"))
+                    .notification(getMapString(r, "notification"))
+                    .notificationsentto(getMapString(r, "notificationsentto"))
+                    .validtill(validTill)
+                    .createdat(createdAt)
+                    .filepath(getMapString(r, "filepath"))
+                    .createdby(getMapString(r, "createdby"))
+                    .status(getMapString(r, "status"))
+                    .type(getMapString(r, "type"))
+                    .isactive(getMapInt(r, "isactive"))
+                    .department(getMapString(r, "department"))
+                    .officeName(getMapString(r, "office_name"))
+                    .nameWithDesignation(creatorName)
+                    .isExpired(isExpired)
+                    .build());
+        }
+
+        return list;
+    }
+
+    private String getMapString(Map<String, Object> map, String key) {
+        if (map == null || key == null) return "";
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (key.equalsIgnoreCase(entry.getKey())) {
+                return entry.getValue() != null ? entry.getValue().toString() : "";
+            }
+        }
+        return "";
+    }
+
+    private int getMapInt(Map<String, Object> map, String key) {
+        if (map == null || key == null) return 0;
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (key.equalsIgnoreCase(entry.getKey()) && entry.getValue() instanceof Number num) {
+                return num.intValue();
+            }
+        }
+        return 0;
+    }
+
+    private long getMapLong(Map<String, Object> map, String key) {
+        if (map == null || key == null) return 0L;
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (key.equalsIgnoreCase(entry.getKey()) && entry.getValue() instanceof Number num) {
+                return num.longValue();
+            }
+        }
+        return 0L;
     }
 
     private AnnouncementResponseDTO mapToDTO(Notification n) {

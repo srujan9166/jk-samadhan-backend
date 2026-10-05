@@ -88,27 +88,8 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                     createdby VARCHAR(255),
                     isactive INTEGER DEFAULT 1,
                     user_id BIGINT
-                )
+                );
             """);
-
-            // Create database indexes for performance optimization on startup
-            jdbcTemplate.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON jks_3nf.users(username)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_users_enabled ON jks_3nf.users(enabled)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_users_user_type_id ON jks_3nf.users(user_type_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_users_department_id ON jks_3nf.users(department_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_users_designation_id ON jks_3nf.users(designation_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_users_district_id ON jks_3nf.users(district_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_users_state_id ON jks_3nf.users(state_id)");
-
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_gm_submitted_by_user_id ON jks_3nf.grievance_master(submitted_by_user_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_gm_category_id ON jks_3nf.grievance_master(category_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_gm_sub_cat_l1_id ON jks_3nf.grievance_master(sub_cat_l1_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_gm_district_id ON jks_3nf.grievance_master(district_id)");
-
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_au_grievance_id ON jks_3nf.assigned_users(grievance_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_au_assigned_to_user_id ON jks_3nf.assigned_users(assigned_to_user_id)");
-            jdbcTemplate.execute("CREATE INDEX IF NOT EXISTS idx_au_assigned_by_user_id ON jks_3nf.assigned_users(assigned_by_user_id)");
-
 
             // 2. Recreate public.users view
             jdbcTemplate.execute("""

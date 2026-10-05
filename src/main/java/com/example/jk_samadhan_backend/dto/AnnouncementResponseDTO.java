@@ -22,4 +22,10 @@ public class AnnouncementResponseDTO {
     private String status;
     private String type;
     private Integer isactive;
+
+    // Enhanced fields for JKSv2 Announcement List
+    private String department;
+    private String officeName;
+    private String nameWithDesignation;
+    private Boolean isExpired;
 }

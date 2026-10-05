@@ -27,13 +27,23 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody RegisterDTO registerDTO) throws Exception {
-        return ResponseEntity.ok().body(authService.signup(registerDTO));
+    public ResponseEntity<?> signup(@RequestBody RegisterDTO registerDTO) {
+        try {
+            return ResponseEntity.ok().body(authService.signup(registerDTO));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(java.util.Collections.singletonMap("message", e.getMessage()));
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
-        return ResponseEntity.ok().body(authService.login(loginDTO));
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+        try {
+            return ResponseEntity.ok().body(authService.login(loginDTO));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/forgot-password")
