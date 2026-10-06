@@ -181,6 +181,23 @@ public interface GrievanceMasterRepository extends JpaRepository<GrievanceMaster
            "LEFT JOIN g.district dist " +
            "LEFT JOIN g.submittedBy u " +
            "LEFT JOIN g.subCatL1 s1 " +
+           "WHERE UPPER(g.origin) = UPPER(:origin)")
+    List<GrievanceProjection> findProjectionsByOriginIgnoreCase(@Param("origin") String origin, Pageable pageable);
+
+    @Query("SELECT g.id as id, g.uniqId as uniqId, g.description as description, g.status as status, g.finalStatus as finalStatus, " +
+           "g.origin as origin, c.name as categoryName, d.name as deptName, dist.name as districtName, " +
+           "u.id as submitterId, u.firstName as submitterFirstName, u.middleName as submitterMiddleName, u.lastName as submitterLastName, u.mobile as submitterMobile, u.email as submitterEmail, u.gender as submitterGender, " +
+           "g.latitude as latitude, g.longitude as longitude, g.keyFlag as keyFlag, g.psga as psga, " +
+           "g.fileName as fileName, g.filePath as filePath, g.fileType as fileType, " +
+           "g.secondFileName as secondFileName, g.secondFilePath as secondFilePath, g.secondFileType as secondFileType, " +
+           "g.ackSlipName as ackSlipName, g.ackSlipPath as ackSlipPath, g.cpgramRegNo as cpgramRegNo, " +
+           "g.createdAt as createdAt, g.updatedAt as updatedAt, s1.name as subCategoryName " +
+           "FROM GrievanceMaster g " +
+           "LEFT JOIN g.category c " +
+           "LEFT JOIN c.department d " +
+           "LEFT JOIN g.district dist " +
+           "LEFT JOIN g.submittedBy u " +
+           "LEFT JOIN g.subCatL1 s1 " +
            "WHERE u.id = :userId")
     List<GrievanceProjection> findProjectionsBySubmittedById(@Param("userId") Long userId, Pageable pageable);
 

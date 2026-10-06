@@ -28,12 +28,14 @@ public class AuthService {
     private final com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository;
     private final com.example.jk_samadhan_backend.repositories.DistrictRepository districtRepository;
     private final StateRepository stateRepository;
+    private final com.example.jk_samadhan_backend.repositories.UserExtraDataRepository userExtraDataRepository;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager AuthenticationManager, JWTUtil jwtUtil, CaptchaService captchaService,
             com.example.jk_samadhan_backend.repositories.UserTypeRepository userTypeRepository,
             com.example.jk_samadhan_backend.repositories.DistrictRepository districtRepository,
-            StateRepository stateRepository) {
+            StateRepository stateRepository,
+            com.example.jk_samadhan_backend.repositories.UserExtraDataRepository userExtraDataRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.AuthenticationManager = AuthenticationManager;
@@ -42,6 +44,7 @@ public class AuthService {
         this.userTypeRepository = userTypeRepository;
         this.districtRepository = districtRepository;
         this.stateRepository = stateRepository;
+        this.userExtraDataRepository = userExtraDataRepository;
     }
 
     private String generateRandomPassword() {
@@ -282,8 +285,25 @@ public class AuthService {
         userProfile.put("userType", user.getUserType() != null ? user.getUserType().getTypeName() : activeRole);
         userProfile.put("gender", user.getGender() != null ? user.getGender() : "");
         userProfile.put("dateOfBirth", user.getDateOfBirth() != null ? user.getDateOfBirth() : (user.getDob() != null ? user.getDob().toString() : ""));
+        String resolvedDivision = "JAMMU";
+        try {
+            java.util.Optional<com.example.jk_samadhan_backend.models.UserExtraData> divExtra = 
+                    userExtraDataRepository.findByUserIdAndDataKey(user.getId(), "division");
+            if (divExtra.isPresent() && divExtra.get().getDataValue() != null && !divExtra.get().getDataValue().isBlank()) {
+                resolvedDivision = divExtra.get().getDataValue().trim().toUpperCase();
+            } else if (user.getDistrictEntity() != null && user.getDistrictEntity().getDivision() != null) {
+                resolvedDivision = user.getDistrictEntity().getDivision().getName().trim().toUpperCase();
+            } else if (user.getDistrict() != null && !user.getDistrict().isBlank()) {
+                java.util.Optional<com.example.jk_samadhan_backend.models.District> dOpt = 
+                        districtRepository.findByNameIgnoreCase(user.getDistrict().trim());
+                if (dOpt.isPresent() && dOpt.get().getDivision() != null) {
+                    resolvedDivision = dOpt.get().getDivision().getName().trim().toUpperCase();
+                }
+            }
+        } catch (Exception e) {}
         userProfile.put("pincode", user.getPincode() != null ? user.getPincode() : "");
         userProfile.put("state", (user.getState() != null && !user.getState().isBlank()) ? user.getState() : "Other");
+        userProfile.put("division", resolvedDivision);
 
         response.put("user", userProfile);
         return response;

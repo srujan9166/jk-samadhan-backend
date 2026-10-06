@@ -233,6 +233,9 @@ public class Users implements UserDetails {
         profile.put("dateOfBirth", this.dateOfBirth != null ? this.dateOfBirth : (this.dob != null ? this.dob.toString() : ""));
         profile.put("pincode", this.pincode != null ? this.pincode : "");
         profile.put("state", (getState() != null && !getState().isBlank()) ? getState() : "Other");
+        if (this.districtEntity != null && this.districtEntity.getDivision() != null) {
+            profile.put("division", this.districtEntity.getDivision().getName());
+        }
         
         String activeRole = null;
         try {

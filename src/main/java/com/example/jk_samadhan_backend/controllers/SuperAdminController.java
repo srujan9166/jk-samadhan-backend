@@ -341,10 +341,12 @@ public class SuperAdminController {
     }
 
     @PostMapping("/createOfficialUser")
-    public ResponseEntity<java.util.Map<String, String>> createOfficialUser(@RequestBody com.example.jk_samadhan_backend.dto.CreateUserReqDTO payload) {
+    public ResponseEntity<java.util.Map<String, String>> createOfficialUser(
+            @RequestBody com.example.jk_samadhan_backend.dto.CreateUserReqDTO payload,
+            java.security.Principal principal) {
         java.util.Map<String, String> response = new java.util.HashMap<>();
         try {
-            grievanceService.createOfficialUser(payload);
+            grievanceService.createOfficialUser(payload, principal);
             response.put("statusCode", "1");
             response.put("statusName", "Success");
             return ResponseEntity.ok(response);

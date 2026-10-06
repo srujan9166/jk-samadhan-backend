@@ -17,9 +17,11 @@ import com.example.jk_samadhan_backend.repositories.UserRepository;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final com.example.jk_samadhan_backend.services.GrievanceService grievanceService;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, com.example.jk_samadhan_backend.services.GrievanceService grievanceService) {
         this.userRepository = userRepository;
+        this.grievanceService = grievanceService;
     }
 
     @GetMapping("/me")
@@ -40,6 +42,10 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(user.toProfileMap());
+        Map<String, String> profile = user.toProfileMap();
+        String division = grievanceService.resolveUserDivision(user);
+        profile.put("division", division);
+
+        return ResponseEntity.ok(profile);
     }
 }

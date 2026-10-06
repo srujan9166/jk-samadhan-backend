@@ -278,6 +278,8 @@ public class GrievanceService {
             } else {
                 projections = grievanceMasterRepository.findAllProjections(pageRequest);
             }
+        } else if (role.toUpperCase().contains("RAABITA") || role.toUpperCase().contains("RMC")) {
+            projections = grievanceMasterRepository.findProjectionsByOriginIgnoreCase("RAABITA", pageRequest);
         } else if (role.equalsIgnoreCase("ROLE_DealingHand") || role.toUpperCase().contains("DEALINGHAND")) {
             projections = grievanceMasterRepository.findAssignedProjectionsByUserId(user.getId(), pageRequest);
         } else {
@@ -981,8 +983,45 @@ public class GrievanceService {
                 .build();
     }
 
+    public String resolveUserDivision(Users user) {
+        if (user == null) {
+            return "JAMMU";
+        }
+        try {
+            // 1. Check UserExtraData
+            Optional<UserExtraData> divExtra = userExtraDataRepository.findByUserIdAndDataKey(user.getId(), "division");
+            if (divExtra.isPresent() && divExtra.get().getDataValue() != null && !divExtra.get().getDataValue().isBlank()) {
+                return divExtra.get().getDataValue().trim().toUpperCase();
+            }
+
+            // 2. Check District Entity
+            if (user.getDistrictEntity() != null && user.getDistrictEntity().getDivision() != null) {
+                String dName = user.getDistrictEntity().getDivision().getName();
+                if (dName != null && !dName.isBlank()) {
+                    return dName.trim().toUpperCase();
+                }
+            }
+
+            // 3. Check District String
+            if (user.getDistrict() != null && !user.getDistrict().isBlank()) {
+                Optional<District> dOpt = districtRepository.findByNameIgnoreCase(user.getDistrict().trim());
+                if (dOpt.isPresent() && dOpt.get().getDivision() != null) {
+                    return dOpt.get().getDivision().getName().trim().toUpperCase();
+                }
+            }
+        } catch (Exception e) {
+            // fallback
+        }
+        return "JAMMU";
+    }
+
     @Transactional
     public void createOfficialUser(CreateUserReqDTO req) {
+        createOfficialUser(req, null);
+    }
+
+    @Transactional
+    public void createOfficialUser(CreateUserReqDTO req, java.security.Principal principal) {
         if (userRepository.existsByUsername(req.getEmail())) {
             throw new RuntimeException("Username/Email already exists: " + req.getEmail());
         }
@@ -991,6 +1030,50 @@ public class GrievanceService {
         }
         if (userRepository.existsByMobile(req.getMobile())) {
             throw new RuntimeException("Mobile number already exists: " + req.getMobile());
+        }
+
+        // Identify creator and enforce role-based boundaries
+        Users creator = null;
+        if (principal instanceof org.springframework.security.core.Authentication auth && auth.getPrincipal() instanceof Users u) {
+            creator = u;
+        } else if (principal != null) {
+            creator = userRepository.findByIdentifier(principal.getName()).orElse(null);
+        }
+
+        boolean isDealingHandCreator = false;
+        if (creator != null) {
+            String r = creator.getRole() != null ? creator.getRole().toUpperCase() : "";
+            String ut = (creator.getUserType() != null && creator.getUserType().getTypeName() != null)
+                    ? creator.getUserType().getTypeName().toUpperCase() : "";
+            if (r.contains("DEALING") || ut.contains("DEALING")) {
+                isDealingHandCreator = true;
+            }
+        }
+        if (!isDealingHandCreator && org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication() != null) {
+            for (org.springframework.security.core.GrantedAuthority ga : org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+                if (ga.getAuthority().toUpperCase().contains("DEALING")) {
+                    isDealingHandCreator = true;
+                    break;
+                }
+            }
+        }
+
+        if (isDealingHandCreator) {
+            String targetType = req.getUserType() != null ? req.getUserType().trim() : "";
+            boolean isDealingTarget = targetType.equalsIgnoreCase("Dealing Hand")
+                    || targetType.equalsIgnoreCase("DealingHand")
+                    || targetType.equalsIgnoreCase("Dealing Hand Head")
+                    || targetType.equalsIgnoreCase("ROLE_DealingHand")
+                    || targetType.equalsIgnoreCase("DH User")
+                    || targetType.isEmpty();
+
+            if (!isDealingTarget) {
+                throw new RuntimeException("Dealing Hand users are only authorized to create Dealing Hand users.");
+            }
+            req.setUserType("Dealing Hand");
+            String creatorDivision = resolveUserDivision(creator);
+            req.setDivision(creatorDivision);
+            req.setDistrict(null);
         }
 
         Users user = new Users();
@@ -1003,9 +1086,12 @@ public class GrievanceService {
         user.setMobile(req.getMobile());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setEnabled(true);
+        if (creator != null) {
+            user.setCreatedBy(creator);
+        }
 
         // Map userType role
-        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType()) || "DealingHand".equalsIgnoreCase(req.getUserType())) {
+        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType()) || "DealingHand".equalsIgnoreCase(req.getUserType()) || "Dealing Hand".equalsIgnoreCase(req.getUserType()) || "ROLE_DealingHand".equalsIgnoreCase(req.getUserType())) {
             user.setRole("DealingHand");
         } else if ("DM".equalsIgnoreCase(req.getUserType()) || "District Magistrate".equalsIgnoreCase(req.getUserType()) || "ROLE_DM".equalsIgnoreCase(req.getUserType())) {
             user.setRole("DM");
@@ -1019,7 +1105,7 @@ public class GrievanceService {
 
         // Set UserType entity
         String typeName = "ROLE_Admin";
-        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType()) || "DealingHand".equalsIgnoreCase(req.getUserType())) {
+        if ("Dealing Hand Head".equalsIgnoreCase(req.getUserType()) || "DealingHand".equalsIgnoreCase(req.getUserType()) || "Dealing Hand".equalsIgnoreCase(req.getUserType()) || "ROLE_DealingHand".equalsIgnoreCase(req.getUserType())) {
             typeName = "ROLE_DealingHand";
         } else if ("DM".equalsIgnoreCase(req.getUserType()) || "District Magistrate".equalsIgnoreCase(req.getUserType()) || "ROLE_DM".equalsIgnoreCase(req.getUserType())) {
             typeName = "ROLE_DM";
@@ -1040,13 +1126,18 @@ public class GrievanceService {
         // Set Office Name
         if (req.getOfficeName() != null && !req.getOfficeName().trim().isEmpty()) {
             user.setOfficeName(req.getOfficeName().trim());
+        } else if (isDealingHandCreator || "DealingHand".equalsIgnoreCase(user.getRole())) {
+            user.setOfficeName("Office of Dealing Hand (" + (req.getDivision() != null ? req.getDivision().trim() : "UT") + ")");
         }
 
-        // Set District
-        if (req.getDistrict() != null && !req.getDistrict().trim().isEmpty()) {
+        // Set District (Only if not dealing hand creator)
+        if (!isDealingHandCreator && req.getDistrict() != null && !req.getDistrict().trim().isEmpty()) {
             user.setDistrict(req.getDistrict().trim());
             districtRepository.findByNameIgnoreCase(req.getDistrict().trim())
                     .ifPresent(user::setDistrictEntity);
+        } else if (isDealingHandCreator) {
+            user.setDistrict(null);
+            user.setDistrictEntity(null);
         }
 
         // Set Designation
